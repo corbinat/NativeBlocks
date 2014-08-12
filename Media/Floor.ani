@@ -1,0 +1,23 @@
+Animations:
+{
+   Name: Floor
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 0
+      Height: 32
+      Width: 192
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 192
+      }
+   }
+}
+

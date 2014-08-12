@@ -1,0 +1,128 @@
+Animations:
+{
+   Name: Blue
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: Green
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 32
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: Yellow
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 64
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: Red
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 96
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: Pink
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 128
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: Garbage
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 160
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+

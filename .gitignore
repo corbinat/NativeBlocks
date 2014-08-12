@@ -1,0 +1,6 @@
+*.o
+main
+*.png
+*.xcf
+*.bmp
+*.ttf
