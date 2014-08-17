@@ -4,6 +4,8 @@
 
 #include "cObject.h"
 
+#include <unordered_set>
+
 enum eBeanColor
 {
    kBeanColorBlue,
@@ -33,8 +35,18 @@ public:
    virtual void Collision(cObject* a_pOther);
 
    void Fall();
+   eBeanColor GetColor();
+
+   void AddConnection(cBean* a_pOtherBean);
+
+   std::unordered_set<cBean*> CountConnections();
+
+   void Explode();
+   bool IsExploding();
 
 private:
+
+   void _CountConnections(std::unordered_set<cBean*>* a_ExcludeList);
 
    eBeanColor m_Color;
 
@@ -43,6 +55,10 @@ private:
 
    // If the beans have entered play (not in staging)
    bool m_InPlay;
+
+   std::unordered_set<cBean*> m_ConnectedBeans;
+
+   bool m_Exploding;
 
 };
 
