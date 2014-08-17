@@ -20,8 +20,8 @@ SourceDir = Source
 
 all: Blast
 
-Blast: main.o cPlayer.o cBean.o cFloor.o cBeanLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cBean.o cFloor.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
+Blast: main.o cPlayer.o cBean.o cFloor.o cWall.o cBeanLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cBean.o cFloor.o cWall.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
@@ -34,6 +34,9 @@ cBean.o: ${SourceDir}/cBean.cpp ${SourceDir}/cBean.h
 
 cFloor.o: ${SourceDir}/cFloor.cpp ${SourceDir}/cFloor.h
 	g++ ${CFLAGS} -c ${SourceDir}/cFloor.cpp ${LDFLAGS}
+
+cWall.o: ${SourceDir}/cWall.cpp ${SourceDir}/cWall.h
+	g++ ${CFLAGS} -c ${SourceDir}/cWall.cpp ${LDFLAGS}
 
 cBeanLevel.o: ${SourceDir}/cBeanLevel.cpp ${SourceDir}/cBeanLevel.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBeanLevel.cpp ${LDFLAGS}

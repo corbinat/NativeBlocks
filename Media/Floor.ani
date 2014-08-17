@@ -20,4 +20,25 @@ Animations:
       }
    }
 }
+{
+   Name: Wall
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 192
+      Y: 0
+      Height: 192
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 192
+         Width: 32
+      }
+   }
+}
 
