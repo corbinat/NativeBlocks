@@ -68,7 +68,9 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources)
    : cObject(a_pResources),
    m_Color(a_Color),
    m_FreeFall(false),
-   m_InPlay(false)
+   m_InPlay(false),
+   m_ConnectedBeans(),
+   m_Exploding(false)
 {
    SetType("Bean");
    SetSolid(true);
@@ -116,8 +118,6 @@ void cBean::Collision(cObject* a_pOther)
       // If we aren't free falling any more then let the player know
       if (!m_FreeFall)
       {
-         std::cout << "Settled Bean position: " << GetPosition().x << "," << GetPosition().y << std::endl;
-         std::cout << "\tother: " << a_pOther->GetPosition().x << "," << a_pOther->GetPosition().y << std::endl;
          SetVelocityY(0, kNormal);
          sMessage l_Message;
          l_Message.m_From = GetUniqueId();
@@ -150,6 +150,11 @@ void cBean::AddConnection(cBean* a_pOtherBean)
    a_pOtherBean->m_ConnectedBeans.insert(this);
 }
 
+std::unordered_set<cBean*> cBean::GetImmediateConnections()
+{
+   return m_ConnectedBeans;
+}
+
 std::unordered_set<cBean*> cBean::CountConnections()
 {
    std::unordered_set<cBean*> a_ExcludeList;
@@ -162,12 +167,10 @@ std::unordered_set<cBean*> cBean::CountConnections()
 
    a_ExcludeList.insert(this);
 
-   std::cout << "bean1: " << a_ExcludeList.size() << std::endl;
    for (cBean* l_pBean : m_ConnectedBeans)
    {
       l_pBean->_CountConnections(&a_ExcludeList);
    }
-   std::cout << "bean2: " << a_ExcludeList.size() << std::endl;
    //~ for (cBean* l_pBean : a_ExcludeList)
    //~ {
       //~ std::cout << "\t" << l_pBean->GetPosition().y << std::endl;

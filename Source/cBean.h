@@ -2,20 +2,10 @@
 #ifndef ___cBean_h___
 #define ___cBean_h___
 
+#include "cBeanInfo.h"
 #include "cObject.h"
 
 #include <unordered_set>
-
-enum eBeanColor
-{
-   kBeanColorBlue,
-   kBeanColorGreen,
-   kBeanColorYellow,
-   kBeanColorRed,
-   kBeanColorPink,
-   kBeanColorNumber, // Used to identify how many colors are possible
-   kBeanColorGarbage
-};
 
 class cBean: public cObject
 {
@@ -38,8 +28,11 @@ public:
    eBeanColor GetColor();
 
    void AddConnection(cBean* a_pOtherBean);
+   std::unordered_set<cBean*> GetImmediateConnections();
 
    std::unordered_set<cBean*> CountConnections();
+
+
 
    void Explode();
    bool IsExploding();

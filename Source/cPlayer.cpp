@@ -1,5 +1,6 @@
 #include "cPlayer.h"
 #include "cBean.h"
+#include "cBeanInfo.h"
 #include "cFloor.h"
 #include "cWall.h"
 
@@ -27,7 +28,7 @@ cPlayer::cPlayer(cResources* a_pResources)
      m_FastFall(false),
      m_BeanControlEnabled(false),
      m_KeyRepeatTime(0),
-     m_KeyRepeatLimit(80),
+     m_KeyRepeatLimit(150),
      m_LeftKeyDown(false),
      m_RightKeyDown(false),
      m_TotalSettleTime(0),
@@ -166,6 +167,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          m_pSwingBean->SetPosition(l_Position, kNormal, false);
 
          m_CurrentState = kStateControlBeans;
+         StateChange(kStateCreateBeans, kStateControlBeans);
 
          break;
       }
@@ -184,6 +186,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                m_BeanIsResting = false;
                m_RestingBeanTimer = 0;
                m_CurrentState = kStateWaitForBeansToSettle;
+               StateChange(kStateControlBeans, kStateWaitForBeansToSettle);
                m_RotationState = kRotationStateUp;
                m_KeyRepeatTime = 0;
                m_FallingBeans.push_back(m_pPivotBean);
@@ -225,12 +228,15 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
             }
          }
 
+         ControlBeans();
+
+         // TODO: Move this stuff to a human player class---------------
          if (m_CurrentState == kStateControlBeans && (m_LeftKeyDown || m_RightKeyDown))
          {
             m_KeyRepeatTime += a_ElapsedMiliSec;
             if (m_KeyRepeatTime > m_KeyRepeatLimit)
             {
-               m_KeyRepeatTime = 0;
+               m_KeyRepeatTime = 80;
                if (m_LeftKeyDown && !m_RightKeyDown)
                {
                   sf::Vector3<double> l_RelativePosition;
@@ -247,6 +253,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                }
             }
          }
+         ------------------------------------------------------------------
          break;
       }
 
@@ -254,11 +261,11 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
       {
          m_TotalSettleTime += a_ElapsedMiliSec;
          m_BeanControlEnabled = false;
-         std::cout << "Wait to settle: " << m_FallingBeans.size() << std::endl;
          if (m_FallingBeans.size() == 0 && m_TotalSettleTime > m_MinSettleTime)
          {
             m_TotalSettleTime = 0;
             m_CurrentState = kStateCheckForMatches;
+            StateChange(kStateWaitForBeansToSettle, kStateCheckForMatches);
          }
          break;
       }
@@ -273,8 +280,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
             double l_Y =
                ((*i)->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
-
-            std::cout << "Neighbor (" << l_X << "," << l_Y << ")" << std::endl;
 
             // Check beans around this one. If same color, add connections
             if (l_X > 0)
@@ -321,7 +326,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
             std::unordered_set<cBean*> l_FullConnections = (*i)->CountConnections();
 
-            std::cout << "Connections: " << l_FullConnections.size() << std::endl;
             if (l_FullConnections.size() > 3)
             {
                for (cBean* l_pConnection : l_FullConnections)
@@ -333,8 +337,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                      (l_pConnection->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
 
                   m_Beans[l_DeleteX][l_DeleteY] = NULL;
-
-                  std::cout << "Exploding " << l_DeleteX << "," << l_DeleteY << std::endl;
 
                   l_pConnection->Explode();
 
@@ -357,7 +359,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                        --l_DeleteY
                       )
                   {
-                     std::cout << "Falling (" << l_DeleteX << "," << l_DeleteY << ")" << std::endl;
                      if (!m_Beans[l_DeleteX][l_DeleteY]->IsExploding())
                      {
                         m_FallingBeans.push_back(m_Beans[l_DeleteX][l_DeleteY]);
@@ -367,6 +368,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
                }
                m_CurrentState = kStateWaitForBeansToSettle;
+               StateChange(kStateCheckForMatches, kStateWaitForBeansToSettle);
             }
 
          }
@@ -383,6 +385,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          if (m_CurrentState == kStateCheckForMatches)
          {
             m_CurrentState = kStateCreateBeans;
+            StateChange(kStateCheckForMatches, kStateCreate);
          }
 
       break;
@@ -413,7 +416,6 @@ void cPlayer::MessageReceived(sMessage a_Message)
          {
             if ((*i) == l_pObject)
             {
-               std::cout << "Bean Settled" << std::endl;
                double l_X =
                   ((*i)->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
 
@@ -428,6 +430,156 @@ void cPlayer::MessageReceived(sMessage a_Message)
          }
       }
    }
+}
+
+uint32_t cPlayer::SimulatePlay(cBean* a_pBean1, cBean* a_pBean2)
+{
+   // Make a copy of the playing field
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField =
+      ClonePlayingField();
+
+   // Add new beans, starting with the lowest
+   cBean* l_pBean1 = NULL;
+   cBean* l_pBean2 = NULL;
+   if (a_pBean1->GetPosition().y > a_pBean2->GetPosition().y)
+   {
+      l_pBean1 = a_pBean1;
+      l_pBean2 = a_pBean2;
+   }
+   else
+   {
+      l_pBean1 = a_pBean2;
+      l_pBean2 = a_pBean1;
+   }
+
+   // Keep track of columns that get modified so that we can check them for
+   // matches and things
+   std::unordered_set<uint32_t> l_ColumnsOfInterest;
+
+   sf::Vector2<uint32_t> l_GridPosition = _GetBeanGridPosition(l_pBean1);
+   l_ColumnsOfInterest.insert(l_GridPosition.x);
+
+   std::shared_ptr<cBeanInfo> l_NewBeanInfo =
+      std::shared_ptr<cBeanInfo>(new cBeanInfo(l_pBean1->GetColor()));
+
+   l_NewBeanInfo->SetGridPosition(l_GridPosition);
+
+
+   l_PlayingField[l_GridPosition.x][l_GridPosition.y] = l_NewBeanInfo;
+
+   _BubbleBeansDown(l_PlayingField[l_GridPosition.x]);
+
+   // Connect neighbors
+   _ConnectBeanToNeighbors(l_NewBeanInfo, l_PlayingField);
+
+   // Do bean 2
+   l_GridPosition = _GetBeanGridPosition(l_pBean2);
+   l_ColumnsOfInterest.insert(l_GridPosition.x);
+
+   l_NewBeanInfo =
+      std::shared_ptr<cBeanInfo>(new cBeanInfo(l_pBean2->GetColor()));
+
+   l_NewBeanInfo->SetGridPosition(l_GridPosition);
+
+   l_PlayingField[l_GridPosition.x][l_GridPosition.y] = l_NewBeanInfo;
+
+   _BubbleBeansDown(l_PlayingField[l_GridPosition.x]);
+
+   // Connect neighbors
+   _ConnectBeanToNeighbors(l_NewBeanInfo, l_PlayingField);
+
+   // Search through the columns and explode any beans with 4 connected
+   uint32_t l_ReturnScore = 0;
+   std::unordered_set<uint32_t> l_NewColumnsOfInterest;
+   for (uint32_t l_Column : l_ColumnsOfInterest)
+   {
+      l_ReturnScore +=
+         _SearchColumnAndExplodeConnections(
+            l_Column,
+            l_PlayingField,
+            &l_NewColumnsOfInterest
+            );
+   }
+
+   // _Bubbledown new columns of interest, connect neighbors, and explode again
+   while (l_NewColumnsOfInterest.size() != 0)
+   {
+      for (uint32_t l_Column : l_NewColumnsOfInterest)
+      {
+         _BubbleBeansDown(l_PlayingField[l_Column]);
+      }
+      for (uint32_t l_Column : l_NewColumnsOfInterest)
+      {
+         _ConnectColumnNeighbors(l_Column, l_PlayingField);
+      }
+
+      std::unordered_set<uint32_t> l_NewColumnsOfInterest2;
+      for (uint32_t l_Column : l_NewColumnsOfInterest)
+      {
+         l_ReturnScore +=
+            _SearchColumnAndExplodeConnections(
+               l_Column,
+               l_PlayingField,
+               &l_NewColumnsOfInterest2
+               );
+      }
+
+      l_NewColumnsOfInterest = l_NewColumnsOfInterest2;
+
+   }
+
+   return l_ReturnScore;
+}
+
+std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField()
+{
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField(
+      6,
+      std::vector<std::shared_ptr<cBeanInfo>>(13, NULL)
+      );
+
+   for (
+      uint32_t i = 0;
+      i < m_Beans.size();
+      ++i
+      )
+   {
+      for (
+         uint32_t j = 0;
+         j < m_Beans[i].size();
+         ++j
+         )
+      {
+         if (m_Beans[i][j] != NULL)
+         {
+            std::shared_ptr<cBeanInfo> l_NewBeanInfo =
+               std::shared_ptr<cBeanInfo>(new cBeanInfo(m_Beans[i][j]->GetColor()));
+            l_NewBeanInfo->SetGridPosition({i,j});
+            l_PlayingField[i][j] = l_NewBeanInfo;
+
+            std::unordered_set<cBean*> l_NewBeanConnections =
+               m_Beans[i][j]->GetImmediateConnections();
+
+            for (auto l_Bean : l_NewBeanConnections)
+            {
+               double l_X =
+                  (l_Bean->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+
+               double l_Y =
+                  (l_Bean->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+
+               if (l_PlayingField[l_X][l_Y] != NULL)
+               {
+                  l_PlayingField[l_X][l_Y]->AddConnection(l_NewBeanInfo.get());
+               }
+            }
+
+         }
+      }
+
+   }
+
+   return l_PlayingField;
 }
 
 void cPlayer::_Initialize()
@@ -545,6 +697,11 @@ bool cPlayer::_MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition)
    m_pPivotBean->SetPosition(a_NewRelativePosition, kRelative, false);
    m_pSwingBean->SetPosition(a_NewRelativePosition, kRelative, false);
 
+   if (a_NewRelativePosition.x != 0)
+   {
+      std::cout << "Score: " << SimulatePlay(m_pPivotBean, m_pSwingBean) << std::endl;
+   }
+
    if (_BeansAreResting())
    {
       m_BeanIsResting = true;
@@ -649,4 +806,147 @@ void cPlayer::_RotateBeans(eRotationDirection a_Rotation)
    {
       m_BeanIsResting = true;
    }
+}
+
+sf::Vector2<uint32_t> cPlayer::_GetBeanGridPosition(cBean* a_pBean)
+{
+   sf::Vector2<uint32_t> l_ReturnPosition;
+
+   l_ReturnPosition.x =
+      (a_pBean->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+
+   l_ReturnPosition.y =
+      (a_pBean->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+
+   return l_ReturnPosition;
+}
+
+void cPlayer::_ConnectBeanToNeighbors(
+   std::shared_ptr<cBeanInfo> a_pBean,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   )
+{
+   uint32_t l_X = a_pBean->GetGridPosition().x;
+   uint32_t l_Y = a_pBean->GetGridPosition().y;
+   if (l_X > 0)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X - 1][l_Y];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         a_pBean->AddConnection(l_pNeighbor.get());
+      }
+   }
+   if (l_X < 5)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X + 1][l_Y];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         a_pBean->AddConnection(l_pNeighbor.get());
+      }
+   }
+   if (l_Y > 0)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y - 1];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         a_pBean->AddConnection(l_pNeighbor.get());
+      }
+   }
+   if (l_Y < 12)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y + 1];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         a_pBean->AddConnection(l_pNeighbor.get());
+      }
+   }
+}
+
+void cPlayer::_ConnectColumnNeighbors(
+   uint32_t a_Column,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   )
+{
+   for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
+   {
+      if (a_rPlayingField[a_Column][l_Row] != NULL)
+      {
+         _ConnectBeanToNeighbors(
+            a_rPlayingField[a_Column][l_Row],
+            a_rPlayingField
+            );
+      }
+   }
+}
+
+bool cPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rColumn)
+{
+   bool l_SawNull = false;
+   bool l_RowUpdated = false;
+   uint32_t l_FirstNull = a_rColumn.size() - 1;
+   for (
+      int32_t i = a_rColumn.size() - 1;
+      i >= 0;
+      --i
+      )
+   {
+      if (a_rColumn[i] == NULL)
+      {
+         if (l_SawNull == false && i < l_FirstNull)
+         {
+            l_FirstNull = i;
+         }
+         l_SawNull = true;
+      }
+      else if (l_SawNull)
+      {
+         std::shared_ptr<cBeanInfo> l_Element = a_rColumn[i];
+         l_Element->RemoveAllConnections();
+         a_rColumn[i] = a_rColumn[i + 1];
+         a_rColumn[i + 1] = l_Element;
+         l_Element->SetRowPosition(i + 1);
+         l_SawNull = false;
+         l_RowUpdated = true;
+
+         // Add one because the next loop will decrement it again
+         i = l_FirstNull + 1;
+      }
+   }
+
+   return l_RowUpdated;
+}
+
+uint32_t cPlayer::_SearchColumnAndExplodeConnections(
+   uint32_t a_Column,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
+   )
+{
+   uint32_t l_ReturnScore = 0;
+   for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
+   {
+      if (a_rPlayingField[a_Column][l_Row] != NULL)
+      {
+         std::unordered_set<cBeanInfo*> l_Connections =
+            a_rPlayingField[a_Column][l_Row]->CountConnections();
+
+         std::cout << "Connections at " << a_Column << "," << l_Row << ": " << l_Connections.size() << std::endl;
+
+         if (l_Connections.size() > 3)
+         {
+            // Explode this bean and all of the connected beans
+            for (cBeanInfo* l_pConnection : l_Connections)
+            {
+               uint32_t l_DeleteX = l_pConnection->GetGridPosition().x;
+               uint32_t l_DeleteY = l_pConnection->GetGridPosition().y;
+
+               a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
+               a_pNewColumnsOfInterest->insert(l_DeleteX);
+               ++l_ReturnScore;
+            }
+         }
+      }
+   }
+
+   return l_ReturnScore;
 }

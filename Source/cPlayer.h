@@ -7,6 +7,8 @@
 #include "cObject.h"
 #include "cMessageDispatcher.h"
 
+#include <unordered_set>
+
 enum ePlayerState
 {
    kStateIdle,
@@ -32,6 +34,7 @@ enum eRotationDirection
 };
 
 class cBean;
+class cBeanInfo;
 
 class cPlayer: public cObject
 {
@@ -45,7 +48,18 @@ public:
    virtual void Step (uint32_t a_ElapsedMiliSec);
    virtual void Collision(cObject* a_pOther);
 
+   // These functions are derived by the "Brains"
+   virtual void StateChange(ePlayerState a_Old, ePlayerState a_New) = 0;
+   virtual void ControlBeans() = 0;
+
    void MessageReceived(sMessage a_Message);
+
+   // These functions are used by the AI--------------------
+
+   // This function returns the resulting score if a player were to play the
+   // provided beans
+   uint32_t SimulatePlay(cBean* a_pBean1, cBean* a_pBean2);
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> ClonePlayingField();
 
 private:
 
@@ -62,6 +76,28 @@ private:
    bool _MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition);
 
    void _RotateBeans(eRotationDirection a_Rotation);
+
+   sf::Vector2<uint32_t> _GetBeanGridPosition(cBean* a_pBean);
+
+   void _ConnectBeanToNeighbors(
+      std::shared_ptr<cBeanInfo> a_pBean,
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+      );
+
+   void _ConnectColumnNeighbors(
+      uint32_t a_Column,
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+      );
+
+   bool _BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_Column);
+
+   // returns how many exploded
+   uint32_t _SearchColumnAndExplodeConnections(
+      uint32_t a_Column,
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+      std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
+      );
+
 
    bool m_Initialized;
    ePlayerState m_CurrentState;
