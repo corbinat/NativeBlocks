@@ -33,7 +33,7 @@ public:
 
    eBeanColor GetColor();
 
-   void AddConnection(cBeanInfo* a_pOtherBean);
+   bool AddConnection(cBeanInfo* a_pOtherBean);
 
    std::unordered_set<cBeanInfo*> CountConnections();
 
@@ -41,8 +41,11 @@ public:
 
    void SetGridPosition(sf::Vector2<uint32_t> a_GridPosition);
    void SetRowPosition(uint32_t a_Row);
+   void SetColumnPosition(uint32_t a_Column);
 
    sf::Vector2<uint32_t> GetGridPosition();
+
+   std::unordered_set<cBeanInfo*> GetImmediateConnections();
 
 
 private:

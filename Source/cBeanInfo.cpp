@@ -65,10 +65,12 @@ eBeanColor cBeanInfo::GetColor()
    return m_Color;
 }
 
-void cBeanInfo::AddConnection(cBeanInfo* a_pOtherBean)
+bool cBeanInfo::AddConnection(cBeanInfo* a_pOtherBean)
 {
-   m_ConnectedBeans.insert(a_pOtherBean);
+   auto l_Insert = m_ConnectedBeans.insert(a_pOtherBean);
    a_pOtherBean->m_ConnectedBeans.insert(this);
+
+   return l_Insert.second;
 }
 
 std::unordered_set<cBeanInfo*> cBeanInfo::CountConnections()
@@ -122,7 +124,17 @@ void cBeanInfo::SetRowPosition(uint32_t a_Row)
    m_GridPosition.y = a_Row;
 }
 
+void cBeanInfo::SetColumnPosition(uint32_t a_Column)
+{
+   m_GridPosition.x = a_Column;
+}
+
 sf::Vector2<uint32_t> cBeanInfo::GetGridPosition()
 {
    return m_GridPosition;
+}
+
+std::unordered_set<cBeanInfo*> cBeanInfo::GetImmediateConnections()
+{
+   return m_ConnectedBeans;
 }
