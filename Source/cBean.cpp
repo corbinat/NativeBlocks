@@ -5,13 +5,14 @@
 #include <random>
 #include <iostream>
 
-cBean::cBean(cResources* a_pResources)
+cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
    : cObject(a_pResources),
    m_Color(kBeanColorBlue),
    m_FreeFall(false),
    m_InPlay(false),
    m_ConnectedBeans(),
-   m_Exploding(false)
+   m_Exploding(false),
+   m_ParentId(a_ParentId)
 {
    SetType("Bean");
    SetSolid(true);
@@ -64,13 +65,14 @@ cBean::cBean(cResources* a_pResources)
 
 }
 
-cBean::cBean(eBeanColor a_Color, cResources* a_pResources)
+cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    : cObject(a_pResources),
    m_Color(a_Color),
    m_FreeFall(false),
    m_InPlay(false),
    m_ConnectedBeans(),
-   m_Exploding(false)
+   m_Exploding(false),
+   m_ParentId(a_ParentId)
 {
    SetType("Bean");
    SetSolid(true);
@@ -121,7 +123,7 @@ void cBean::Collision(cObject* a_pOther)
          SetVelocityY(0, kNormal);
          sMessage l_Message;
          l_Message.m_From = GetUniqueId();
-         l_Message.m_Category = "Player1";
+         l_Message.m_Category = std::to_string(m_ParentId);
          l_Message.m_Key = GetResources()->GetMessageDispatcher()->Any();
          l_Message.m_Value = "BeanSettled";
          GetResources()->GetMessageDispatcher()->PostMessage(l_Message);

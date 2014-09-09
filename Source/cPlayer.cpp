@@ -38,7 +38,7 @@ cPlayer::cPlayer(cResources* a_pResources)
    // stop waiting for them to settle.
    sMessage l_Request;
    l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
-   l_Request.m_Category = "Player1";
+   l_Request.m_Category = std::to_string(GetUniqueId());
    l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
    l_Request.m_Value = "BeanSettled";
 
@@ -153,14 +153,14 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
    {
       case kStateCreateBeans:
       {
-         m_pPivotBean = new cBean(GetResources());
+         m_pPivotBean = new cBean(GetResources(), GetUniqueId());
          RegisterObject(m_pPivotBean);
          sf::Vector3<double> l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
          l_Position.y += GetResources()->GetGridCellSize().y;
          m_pPivotBean->SetPosition(l_Position, kNormal, false);
 
-         m_pSwingBean = new cBean(GetResources());
+         m_pSwingBean = new cBean(GetResources(),GetUniqueId());
          RegisterObject(m_pSwingBean);
          l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
@@ -403,7 +403,7 @@ void cPlayer::Collision(cObject* a_pOther)
 
 void cPlayer::MessageReceived(sMessage a_Message)
 {
-   if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == "Player1")
+   if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))
    {
       cObject* l_pObject = GetObjectWithId(a_Message.m_From);
       if (l_pObject != NULL)

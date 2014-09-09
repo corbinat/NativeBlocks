@@ -12,10 +12,10 @@ class cBean: public cObject
 public:
 
    // This constructor creates a random bean color
-   cBean(cResources* a_pResources);
+   cBean(cResources* a_pResources, uint32_t a_ParentId);
 
    // This constructor sets the bean color
-   cBean(eBeanColor a_Color, cResources* a_pResources);
+   cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId);
 
    virtual ~cBean();
 
@@ -52,6 +52,8 @@ private:
    std::unordered_set<cBean*> m_ConnectedBeans;
 
    bool m_Exploding;
+
+   uint32_t m_ParentId;
 
 };
 
