@@ -20,14 +20,20 @@ SourceDir = Source
 
 all: Blast
 
-Blast: main.o cPlayer.o cBean.o cBeanInfo.o cFloor.o cWall.o cBeanLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cBean.o cBeanInfo.o cFloor.o cWall.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
+Blast: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cFloor.o cWall.o cBeanLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cFloor.o cWall.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
 
 cPlayer.o: ${SourceDir}/cPlayer.cpp ${SourceDir}/cPlayer.h
 	g++ ${CFLAGS} -c ${SourceDir}/cPlayer.cpp ${LDFLAGS}
+
+cHumanPlayer.o: ${SourceDir}/cHumanPlayer.cpp ${SourceDir}/cHumanPlayer.h
+	g++ ${CFLAGS} -c ${SourceDir}/cHumanPlayer.cpp ${LDFLAGS}
+
+cAiPlayer.o: ${SourceDir}/cAiPlayer.cpp ${SourceDir}/cAiPlayer.h
+	g++ ${CFLAGS} -c ${SourceDir}/cAiPlayer.cpp ${LDFLAGS}
 
 cBean.o: ${SourceDir}/cBean.cpp ${SourceDir}/cBean.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBean.cpp ${LDFLAGS}

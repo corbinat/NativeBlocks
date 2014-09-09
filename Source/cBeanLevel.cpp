@@ -1,5 +1,6 @@
 #include "cBeanLevel.h"
-#include "cPlayer.h"
+#include "cHumanPlayer.h"
+#include "cAiPlayer.h"
 
 #include "cResources.h"
 
@@ -28,7 +29,13 @@ cObject* cBeanLevel::PixelToObject(
 {
    if (a_Color.r == 0 && a_Color.g == 0 && a_Color.b == 0)
    {
-      cPlayer* l_pPlayer = new cPlayer(a_pResources);
+      cHumanPlayer* l_pPlayer = new cHumanPlayer(a_pResources);
+      return l_pPlayer;
+      //return NULL;
+   }
+   else if (a_Color.r == 255 && a_Color.g == 0 && a_Color.b == 0)
+   {
+      cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources);
       return l_pPlayer;
    }
    else

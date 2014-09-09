@@ -50,15 +50,38 @@ public:
 
    // These functions are derived by the "Brains"
    virtual void StateChange(ePlayerState a_Old, ePlayerState a_New) = 0;
-   virtual void ControlBeans() = 0;
+   virtual void ControlBeans(uint32_t a_ElapsedMiliSec) = 0;
 
    void MessageReceived(sMessage a_Message);
+
+   sf::Vector2<cBean*> GetBeansInPlay();
+   sf::Vector2<uint32_t> GetBeanGridPosition(cBean* a_pBean);
+
+   // Function used to move beans during the kStateControlBeans state. This is
+   // called due to user input or to move beans down. Returns true if success.
+   bool MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition);
+
+   // This function moves the beans by one grid size left or right.
+   bool ShiftControlledBeansColumn(int32_t a_RelativeColumn);
+
+   void RotateBeans(eRotationDirection a_Rotation);
+   eRotationState GetRotationState();
+
+   void SetFastFall(bool a_FastFall);
+
+   ePlayerState GetPlayerState();
+
 
    // These functions are used by the AI--------------------
 
    // This function returns the resulting score if a player were to play the
    // provided beans
-   uint32_t SimulatePlay(cBean* a_pBean1, cBean* a_pBean2);
+   uint32_t SimulatePlay(
+      std::shared_ptr<cBeanInfo> a_pBean1,
+      std::shared_ptr<cBeanInfo> a_pBean2,
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+      );
+
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>> ClonePlayingField();
 
 private:
@@ -71,20 +94,12 @@ private:
 
    bool _BeansAreResting();
 
-   // Function used to move beans during the kStateControlBeans state. This is
-   // called due to user input or to move beans down. Returns true if success.
-   bool _MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition);
-
-   void _RotateBeans(eRotationDirection a_Rotation);
-
-   sf::Vector2<uint32_t> _GetBeanGridPosition(cBean* a_pBean);
-
-   void _ConnectBeanToNeighbors(
+   uint32_t _ConnectBeanToNeighbors(
       std::shared_ptr<cBeanInfo> a_pBean,
       std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
       );
 
-   void _ConnectColumnNeighbors(
+   uint32_t _ConnectColumnNeighbors(
       uint32_t a_Column,
       std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
       );
@@ -128,16 +143,11 @@ private:
    // If the user is pressing Down then make the bean fall fast
    bool m_FastFall;
 
-   bool m_BeanControlEnabled;
-
-   uint32_t m_KeyRepeatTime;
-   const uint32_t m_KeyRepeatLimit;
-   bool m_LeftKeyDown;
-   bool m_RightKeyDown;
-
    // We must wait in the settle time state for a minimum amount of time
    int32_t m_TotalSettleTime;
    const uint32_t m_MinSettleTime;
+
+   uint32_t m_RoundScore;
 
 };
 
