@@ -85,6 +85,23 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
             _AnalyzeMove(l_PivotBean, l_SwingBean, l_RotationState, l_CopyPlayingField);
          }
 
+         l_PivotBean->SetGridPosition(l_PivotPosition);
+         l_SwingBean->SetGridPosition(l_SwingPosition);
+         if (l_RotationState == kRotationStateLeft)
+         {
+            l_MinRow = 1;
+            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
+         }
+         else if (l_RotationState == kRotationStateRight)
+         {
+            l_MaxRow = 4;
+            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
+         }
+         else if (l_RotationState == kRotationStateDown)
+         {
+            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
+         }
+
          // Simulate to the right
          while (l_PivotBean->GetGridPosition().x < l_MaxRow)
          {
@@ -227,7 +244,7 @@ void cAiPlayer::_AnalyzeMove(
    l_NewMove.m_Column = a_pBean1->GetGridPosition().x;
    l_NewMove.m_Rotation = a_RotationState;
    l_NewMove.m_Score =
-      SimulatePlay(a_pBean1, a_pBean2, l_TempPlayingField);
+      SimulatePlay(a_pBean1, a_pBean2, a_rPlayingField);
 
    if (m_OptimalMoves.size() == 0)
    {

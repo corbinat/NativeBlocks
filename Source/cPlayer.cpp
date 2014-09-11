@@ -904,6 +904,7 @@ uint32_t cPlayer::_SearchColumnAndExplodeConnections(
                std::cout << "(" << l_DeleteX << "," << l_DeleteY << ") ";
 
                a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
+               l_pConnection->RemoveAllConnections();
                a_pNewColumnsOfInterest->insert(l_DeleteX);
                ++l_ReturnScore;
             }
