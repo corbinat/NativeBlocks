@@ -29,10 +29,10 @@ main.o: ${SourceDir}/main.cpp
 cPlayer.o: ${SourceDir}/cPlayer.cpp ${SourceDir}/cPlayer.h
 	g++ ${CFLAGS} -c ${SourceDir}/cPlayer.cpp ${LDFLAGS}
 
-cHumanPlayer.o: ${SourceDir}/cHumanPlayer.cpp ${SourceDir}/cHumanPlayer.h
+cHumanPlayer.o: ${SourceDir}/cHumanPlayer.cpp ${SourceDir}/cHumanPlayer.h cPlayer.o
 	g++ ${CFLAGS} -c ${SourceDir}/cHumanPlayer.cpp ${LDFLAGS}
 
-cAiPlayer.o: ${SourceDir}/cAiPlayer.cpp ${SourceDir}/cAiPlayer.h
+cAiPlayer.o: ${SourceDir}/cAiPlayer.cpp ${SourceDir}/cAiPlayer.h cPlayer.o
 	g++ ${CFLAGS} -c ${SourceDir}/cAiPlayer.cpp ${LDFLAGS}
 
 cBean.o: ${SourceDir}/cBean.cpp ${SourceDir}/cBean.h
