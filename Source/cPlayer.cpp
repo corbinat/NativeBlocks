@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <unordered_set>
+#include <sstream>
 
 cPlayer::cPlayer(cResources* a_pResources)
    : cObject(a_pResources),
@@ -19,7 +20,7 @@ cPlayer::cPlayer(cResources* a_pResources)
      m_pSwingBean(NULL),
      m_FallingBeans(),
      m_NewBeans(),
-     m_Beans(6, std::vector<cBean*>(13, NULL)),
+     m_Beans(6, std::vector<cBean*>(g_kTotalRows, NULL)),
      m_MiliSecPerFall(500),
      m_MiliSecSinceLastFall(0),
      m_RestingBeanTimer(0),
@@ -28,7 +29,9 @@ cPlayer::cPlayer(cResources* a_pResources)
      m_FastFall(false),
      m_TotalSettleTime(0),
      m_MinSettleTime(200),
-     m_RoundScore(0)
+     m_RoundScore(0),
+     m_GarbageAcumulator(0),
+     m_GarbageDropped(false)
 {
    // Receive messages when beans finish falling. That way we can know when to
    // stop waiting for them to settle.
@@ -45,6 +48,19 @@ cPlayer::cPlayer(cResources* a_pResources)
       GetUniqueId(),
       l_MessageCallback,
       l_Request
+      );
+
+   // Receive messages when garbage beans are sent our way
+   sMessage l_GarbageRequest;
+   l_GarbageRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_GarbageRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_GarbageRequest.m_Key = "SendingGarbage";
+   l_GarbageRequest.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_GarbageRequest
       );
 
    _StartGame();
@@ -87,17 +103,21 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
    {
       case kStateCreateBeans:
       {
+         m_RoundScore = 0;
+         m_GarbageDropped = false;
+
          m_pPivotBean = new cBean(GetResources(), GetUniqueId());
          RegisterObject(m_pPivotBean);
          sf::Vector3<double> l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
-         l_Position.y += GetResources()->GetGridCellSize().y;
+         l_Position.y -= GetResources()->GetGridCellSize().y;
          m_pPivotBean->SetPosition(l_Position, kNormal, false);
 
          m_pSwingBean = new cBean(GetResources(),GetUniqueId());
          RegisterObject(m_pSwingBean);
          l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
+         l_Position.y -= GetResources()->GetGridCellSize().y * 2;
          m_pSwingBean->SetPosition(l_Position, kNormal, false);
 
          m_CurrentState = kStateControlBeans;
@@ -161,9 +181,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
          ControlBeans(a_ElapsedMiliSec);
 
-         // TODO: Move this stuff to a human player class---------------
-
-         //------------------------------------------------------------------
          break;
       }
 
@@ -184,11 +201,16 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          // Find neighbors
          for (auto i = m_NewBeans.begin(); i != m_NewBeans.end(); ++i)
          {
+            if ((*i)->GetColor() == kBeanColorGarbage)
+            {
+               continue;
+            }
+
             double l_X =
-               ((*i)->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+               GetBeanGridPosition(*i).x;
 
             double l_Y =
-               ((*i)->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+               GetBeanGridPosition(*i).y;
 
             // Check beans around this one. If same color, add connections
             if (l_X > 0)
@@ -215,7 +237,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   (*i)->AddConnection(l_pNeighbor);
                }
             }
-            if (l_Y < 12)
+            if (l_Y < g_kTotalRows - 1)
             {
                cBean* l_pNeighbor = m_Beans[l_X][l_Y + 1];
                if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == (*i)->GetColor())
@@ -237,18 +259,65 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
             if (l_FullConnections.size() > 3)
             {
+               uint32_t l_OldRoundScore = m_RoundScore;
+               std::unordered_set<cBean*> l_ToExplodeList = l_FullConnections;
                for (cBean* l_pConnection : l_FullConnections)
                {
+                  uint32_t l_BeanX =
+                     GetBeanGridPosition(l_pConnection).x;
+
+                  uint32_t l_BeanY =
+                     GetBeanGridPosition(l_pConnection).y;
+
+                  ++m_RoundScore;
+
+                  // Find all of the garbage beans touching and add them to the
+                  // list of beans to explode
+                  if (l_BeanX > 0)
+                  {
+                     cBean* l_pNeighbor = m_Beans[l_BeanX - 1][l_BeanY];
+                     if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                     {
+                        l_ToExplodeList.insert(l_pNeighbor);
+                     }
+                  }
+                  if (l_BeanX < 5)
+                  {
+                     cBean* l_pNeighbor = m_Beans[l_BeanX + 1][l_BeanY];
+                     if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                     {
+                        l_ToExplodeList.insert(l_pNeighbor);
+                     }
+                  }
+                  if (l_BeanY > 0)
+                  {
+                     cBean* l_pNeighbor = m_Beans[l_BeanX][l_BeanY - 1];
+                     if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                     {
+                       l_ToExplodeList.insert(l_pNeighbor);
+                     }
+                  }
+                  if (l_BeanY < g_kTotalRows - 1)
+                  {
+                     cBean* l_pNeighbor = m_Beans[l_BeanX][l_BeanY + 1];
+                     if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                     {
+                        l_ToExplodeList.insert(l_pNeighbor);
+                     }
+                  }
+               }
+
+               for (cBean* l_pConnection : l_ToExplodeList)
+               {
                   double l_DeleteX =
-                     (l_pConnection->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+                     GetBeanGridPosition(l_pConnection).x;
 
                   double l_DeleteY =
-                     (l_pConnection->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+                     GetBeanGridPosition(l_pConnection).y;
 
                   m_Beans[l_DeleteX][l_DeleteY] = NULL;
 
                   l_pConnection->Explode();
-                  ++m_RoundScore;
 
                   // Don't wait on this bean to fall because it is exploding
                   std::list<cBean*>::iterator l_Find =
@@ -277,6 +346,21 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   }
 
                }
+
+               // Figure out how many garbage beans to send
+               uint32_t l_PreviousSent =
+                  _CalculateGarbageBeanNumber(l_OldRoundScore);
+
+               uint32_t l_TotalToSend =
+                  _CalculateGarbageBeanNumber(m_RoundScore);
+
+               sMessage l_Message;
+               l_Message.m_From = GetUniqueId();
+               l_Message.m_Category = GetResources()->GetMessageDispatcher()->Any();
+               l_Message.m_Key = "SendingGarbage";
+               l_Message.m_Value = std::to_string(l_TotalToSend - l_PreviousSent);
+               GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+
                m_CurrentState = kStateWaitForBeansToSettle;
                StateChange(kStateCheckForMatches, kStateWaitForBeansToSettle);
             }
@@ -294,13 +378,79 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          // start next bean drop
          if (m_CurrentState == kStateCheckForMatches)
          {
-            m_CurrentState = kStateCreateBeans;
-            StateChange(kStateCheckForMatches, kStateCreateBeans);
+            if (m_GarbageAcumulator != 0 && !m_GarbageDropped)
+            {
+               m_CurrentState = kStateDropGarbage;
+               StateChange(kStateCheckForMatches, kStateDropGarbage);
+            }
+            else
+            {
+               m_CurrentState = kStateCreateBeans;
+               StateChange(kStateCheckForMatches, kStateCreateBeans);
+            }
          }
 
          break;
       }
+      case kStateDropGarbage:
+      {
+         m_GarbageDropped = true;
+         // Start at row 4. Rows 0 - 4 are for accumulating garbage
+         int32_t l_Row = 4;
 
+         uint32_t l_GarbageAcumulator = m_GarbageAcumulator;
+
+         // While garbage accumulator is greater than 6 && row >= 0
+         while (l_GarbageAcumulator >= 6 && l_Row >= 0)
+         {
+            m_GarbageAcumulator -= 6;
+            l_GarbageAcumulator -= 6;
+
+            for (uint32_t i = 0; i < 6; ++i)
+            {
+               _CreateGarbageBean(i, l_Row);
+            }
+
+            l_Row -= 1;
+
+         }
+
+         if (l_Row != -1)
+         {
+            if (l_GarbageAcumulator > 0)
+            {
+               // create list of numbers 0 - 5
+               std::vector<uint32_t> l_Columns;
+               for (uint32_t i = 0; i < 6; ++i)
+               {
+                  l_Columns.push_back(i);
+               }
+
+               while (l_GarbageAcumulator > 0)
+               {
+                  // generate random number between 0 and size
+                  std::random_device l_Generator;
+                  std::uniform_int_distribution<int> l_Distribution(0, l_Columns.size() - 1);
+                  int l_Number = l_Distribution(l_Generator);
+                  l_Number = l_Distribution(l_Generator);
+
+                  // Pull that number out of the column list
+                  uint32_t l_Column = l_Columns[l_Number];
+                  l_Columns.erase(l_Columns.begin() + l_Number);
+
+                  _CreateGarbageBean(l_Column, l_Row);
+
+                  --m_GarbageAcumulator;
+                  --l_GarbageAcumulator;
+               }
+
+            }
+         }
+
+         m_CurrentState = kStateWaitForBeansToSettle;
+         StateChange(kStateCheckForMatches, kStateWaitForBeansToSettle);
+         break;
+      }
       default:
       {
       }
@@ -327,10 +477,10 @@ void cPlayer::MessageReceived(sMessage a_Message)
             if ((*i) == l_pObject)
             {
                double l_X =
-                  ((*i)->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+                  GetBeanGridPosition(*i).x;
 
                double l_Y =
-                  ((*i)->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+                  GetBeanGridPosition(*i).y;
 
                m_Beans[l_X][l_Y] = *i;
                m_NewBeans.push_back(*i);
@@ -339,6 +489,14 @@ void cPlayer::MessageReceived(sMessage a_Message)
             }
          }
       }
+   }
+   else if(a_Message.m_Key == "SendingGarbage" && a_Message.m_From != GetUniqueId())
+   {
+      std::istringstream l_Stream(a_Message.m_Value);
+      uint32_t l_NewGarbage;
+      l_Stream >> l_NewGarbage;
+
+      m_GarbageAcumulator += l_NewGarbage;
    }
 }
 
@@ -519,9 +677,6 @@ uint32_t cPlayer::SimulatePlay(
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
    )
 {
-   std::cout << "Start Simulating" << std::endl;
-   std::cout << "\t" << a_pBean1->GetGridPosition().x << std::endl;
-
    // Keep track of columns that get modified so that we can check them for
    // matches and things
    std::unordered_set<uint32_t> l_ColumnsOfInterest;
@@ -540,49 +695,14 @@ uint32_t cPlayer::SimulatePlay(
    {
       for (uint32_t l_Column : l_ColumnsOfInterest)
       {
-         // Debugging
-         std::cout << "Before bubble:";
-         for (int i = 0; i < a_rPlayingField[l_Column].size(); ++i)
-         {
-            if (a_rPlayingField[l_Column][i] == NULL)
-            {
-               std::cout << "x";
-            }
-            else if (a_rPlayingField[l_Column][i]->GetGridPosition().y != i)
-            {
-               std::cout << "!";
-            }
-            else
-            {
-               std::cout << "o";
-            }
-         }
-         std::cout << std::endl;
-
-         std::cout << " bubble column: " << l_Column << std::endl;;
          _BubbleBeansDown(a_rPlayingField[l_Column]);
-
-         // Debugging
-         std::cout << "After bubble:";
-         for (int i = 0; i < a_rPlayingField[l_Column].size(); ++i)
-         {
-            if (a_rPlayingField[l_Column][i] == NULL)
-            {
-               std::cout << "x";
-            }
-            else
-            {
-               std::cout << "o";
-            }
-         }
-         std::cout << std::endl;
 
       }
       for (uint32_t l_Column : l_ColumnsOfInterest)
       {
          // Adding to the return score influences the AI to go for connections
          // even if it can't cause beens to explode
-         l_ReturnScore +=
+         //l_ReturnScore +=
             _ConnectColumnNeighbors(l_Column, a_rPlayingField);
       }
 
@@ -600,7 +720,6 @@ uint32_t cPlayer::SimulatePlay(
       l_ColumnsOfInterest = l_NewColumnsOfInterest;
 
    }
-   std::cout << "Done Simulating" << std::endl;
    return l_ReturnScore;
 }
 
@@ -608,7 +727,7 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField(
 {
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField(
       6,
-      std::vector<std::shared_ptr<cBeanInfo>>(13, NULL)
+      std::vector<std::shared_ptr<cBeanInfo>>(g_kTotalRows, NULL)
       );
 
    for (
@@ -635,11 +754,11 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField(
 
             for (auto l_Bean : l_NewBeanConnections)
             {
-               double l_X =
-                  (l_Bean->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+               int32_t l_X =
+                  GetBeanGridPosition(l_Bean).x;
 
-               double l_Y =
-                  (l_Bean->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+               int32_t l_Y =
+                  GetBeanGridPosition(l_Bean).y;
 
                if (l_PlayingField[l_X][l_Y] != NULL)
                {
@@ -662,35 +781,33 @@ void cPlayer::_Initialize()
    cFloor* l_NewFloor = new cFloor(GetResources());
    RegisterObject(l_NewFloor);
    sf::Vector3<double> l_Position = GetPosition();
-   l_Position.y += GetResources()->GetGridCellSize().y * 13;
+   l_Position.y += GetResources()->GetGridCellSize().y * 12;
    l_NewFloor->SetPosition(l_Position, kNormal, false);
 
    cWall* l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x -= GetResources()->GetGridCellSize().x;
-   l_Position.y += GetResources()->GetGridCellSize().y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x += GetResources()->GetGridCellSize().x * 6;
-   l_Position.y += GetResources()->GetGridCellSize().y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x -= GetResources()->GetGridCellSize().x;
-   l_Position.y += l_NewWall->GetBoundingBox().height + GetResources()->GetGridCellSize().y;
+   l_Position.y += l_NewWall->GetBoundingBox().height;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x += GetResources()->GetGridCellSize().x * 6;
-   l_Position.y += l_NewWall->GetBoundingBox().height + GetResources()->GetGridCellSize().y;
+   l_Position.y += l_NewWall->GetBoundingBox().height;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 }
 
@@ -743,8 +860,9 @@ sf::Vector2<uint32_t> cPlayer::GetBeanGridPosition(cBean* a_pBean)
    l_ReturnPosition.x =
       (a_pBean->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
 
+   // Subtract 5 because the top 5 is above the player is is just buffer for garbage
    l_ReturnPosition.y =
-      (a_pBean->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y;
+      ((a_pBean->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y) + 5;
 
    return l_ReturnPosition;
 }
@@ -796,7 +914,7 @@ uint32_t cPlayer::_ConnectBeanToNeighbors(
          }
       }
    }
-   if (l_Y < 12)
+   if (l_Y < g_kTotalRows - 1)
    {
       std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y + 1];
       if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
@@ -835,7 +953,6 @@ uint32_t cPlayer::_ConnectColumnNeighbors(
 
 bool cPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rColumn)
 {
-   std::cout << "Bubbling Down" << std::endl;
    bool l_SawNull = false;
    bool l_RowUpdated = false;
    uint32_t l_FirstNull = a_rColumn.size() - 1;
@@ -855,15 +972,11 @@ bool cPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rColum
       }
       else if (l_SawNull)
       {
-         std::cout << "Moving " << i << " to " << i+1 << std::endl;
          std::shared_ptr<cBeanInfo> l_Element = a_rColumn[i];
-         std::cout << "Removing connections" << std::endl;
          l_Element->RemoveAllConnections();
-         std::cout << "Performing Swap" << std::endl;
          a_rColumn[i] = a_rColumn[i + 1];
          a_rColumn[i + 1] = l_Element;
          l_Element->SetRowPosition(i + 1);
-         std::cout << "Done with swap" << std::endl;
          l_SawNull = false;
          l_RowUpdated = true;
 
@@ -871,7 +984,6 @@ bool cPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rColum
          i = l_FirstNull + 1;
       }
    }
-   std::cout << "Done Bubbling Down" << std::endl;
    return l_RowUpdated;
 }
 
@@ -881,7 +993,6 @@ uint32_t cPlayer::_SearchColumnAndExplodeConnections(
    std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
    )
 {
-   std::cout << "Searching columns" << std::endl;
    uint32_t l_ReturnScore = 0;
    for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
    {
@@ -890,43 +1001,76 @@ uint32_t cPlayer::_SearchColumnAndExplodeConnections(
          std::unordered_set<cBeanInfo*> l_Connections =
             a_rPlayingField[a_Column][l_Row]->CountConnections();
 
-         std::cout << "Connections at " << a_Column << "," << l_Row << ": " << l_Connections.size() << std::endl;
-         std::cout << "\tShould be same: " << a_rPlayingField[a_Column][l_Row]->GetGridPosition().x << "," << a_rPlayingField[a_Column][l_Row]->GetGridPosition().y << std::endl;
 
          if (l_Connections.size() > 3)
          {
-            std::cout << "Exploding:";
             // Explode this bean and all of the connected beans
             for (cBeanInfo* l_pConnection : l_Connections)
             {
                uint32_t l_DeleteX = l_pConnection->GetGridPosition().x;
                uint32_t l_DeleteY = l_pConnection->GetGridPosition().y;
-               std::cout << "(" << l_DeleteX << "," << l_DeleteY << ") ";
 
                a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
                l_pConnection->RemoveAllConnections();
                a_pNewColumnsOfInterest->insert(l_DeleteX);
                ++l_ReturnScore;
-            }
-            std::cout << std::endl;
 
-               // Debugging
-            std::cout << "After exploding " << a_Column << ":";
-            for (int i = 0; i < a_rPlayingField[a_Column].size(); ++i)
-            {
-               if (a_rPlayingField[a_Column][i] == NULL)
+
+               // Delete garbage beans that are touching
+               if (l_DeleteX > 0)
                {
-                  std::cout << "x";
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX - 1][l_DeleteY];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX - 1][l_DeleteY] = NULL;
+                     a_pNewColumnsOfInterest->insert(l_DeleteX - 1);
+                  }
                }
-               else
+               if (l_DeleteX < 5)
                {
-                  std::cout << "o";
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX + 1][l_DeleteY];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX + 1][l_DeleteY] = NULL;
+                     a_pNewColumnsOfInterest->insert(l_DeleteX + 1);
+                  }
+               }
+               if (l_DeleteY > 0)
+               {
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY - 1];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX][l_DeleteY - 1] = NULL;
+                  }
+               }
+               if (l_DeleteY < g_kTotalRows - 1)
+               {
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY + 1];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX][l_DeleteY + 1] = NULL;
+                  }
                }
             }
-            std::cout << std::endl;
          }
       }
    }
-   std::cout << "Done Searching columns" << std::endl;
    return l_ReturnScore;
+}
+
+void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
+{
+   cBean* l_pGarbageBean = new cBean(kBeanColorGarbage, GetResources(), GetUniqueId());
+   RegisterObject(l_pGarbageBean);
+   sf::Vector3<double> l_Position = GetPosition();
+   l_Position.x += GetResources()->GetGridCellSize().x * a_Column;
+   l_Position.y -= GetResources()->GetGridCellSize().y * (5 - a_Row);
+   l_pGarbageBean->SetPosition(l_Position, kNormal, false);
+   l_pGarbageBean->Fall();
+   m_FallingBeans.push_back(l_pGarbageBean);
+}
+
+uint32_t cPlayer::_CalculateGarbageBeanNumber(uint32_t a_Score)
+{
+   return static_cast<uint32_t>(((a_Score * 10) * (a_Score - 3) / 70.0) + 0.5);
 }

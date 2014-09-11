@@ -78,6 +78,39 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    SetSolid(true);
    LoadAnimations("Media/Beans.ani");
    PlayAnimationLoop("Blue");
+
+   switch(m_Color)
+   {
+      case kBeanColorBlue:
+      {
+         PlayAnimationLoop("Blue");
+         break;
+      }
+      case kBeanColorGreen:
+      {
+         PlayAnimationLoop("Green");
+         break;
+      }
+      case kBeanColorYellow:
+      {
+         PlayAnimationLoop("Yellow");
+         break;
+      }
+      case kBeanColorRed:
+      {
+         PlayAnimationLoop("Red");
+         break;
+      }
+      case kBeanColorPink:
+      {
+         PlayAnimationLoop("Pink");
+         break;
+      }
+      default:
+      {
+         PlayAnimationLoop("Garbage");
+      }
+   }
 }
 
 cBean::~cBean()
@@ -91,7 +124,7 @@ void cBean::Event(std::list<sf::Event> * a_pEventList)
 
 void cBean::Step (uint32_t a_ElapsedMiliSec)
 {
-   if (m_FreeFall && GetVelocity().y < 2000)
+   if (m_FreeFall && GetVelocity().y < 1000)
    {
       SetVelocityY(2 * a_ElapsedMiliSec, kRelative);
    }

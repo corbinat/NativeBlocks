@@ -48,7 +48,6 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
 
       for (eRotationState l_RotationState : l_RotationStates)
       {
-         std::cout << "Pivot Start at : " << l_PivotPosition.x << "," << l_PivotPosition.y << std::endl;
          l_PivotBean->SetGridPosition(l_PivotPosition);
          l_SwingBean->SetGridPosition(l_SwingPosition);
          // Adjust the swing bean for each rotation state
@@ -169,7 +168,6 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    }
    else
    {
-      //std::cout << "AI expecting score: " << l_Destination.m_Score << std::endl;
       // The rotation and position are good, so just fall
       SetFastFall(true);
    }
@@ -182,7 +180,7 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cAiPlayer::DeepCopyGivenPla
 {
     std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField(
       6,
-      std::vector<std::shared_ptr<cBeanInfo>>(13, NULL)
+      std::vector<std::shared_ptr<cBeanInfo>>(g_kTotalRows, NULL)
       );
 
    for (
@@ -233,13 +231,9 @@ void cAiPlayer::_AnalyzeMove(
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
    )
 {
-   std::cout << "Analyzing" << std::endl;
    sf::Vector2<uint32_t> l_PivotPosition = a_pBean1->GetGridPosition();
    sf::Vector2<uint32_t> l_SwingPosition = a_pBean2->GetGridPosition();
 
-
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_TempPlayingField =
-      a_rPlayingField;
    sOptimalPosition l_NewMove;
    l_NewMove.m_Column = a_pBean1->GetGridPosition().x;
    l_NewMove.m_Rotation = a_RotationState;

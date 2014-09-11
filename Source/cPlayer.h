@@ -9,13 +9,17 @@
 
 #include <unordered_set>
 
+// Size is 12 + 5 for garbage queue
+static const uint32_t g_kTotalRows = 17;
+
 enum ePlayerState
 {
    kStateIdle,
    kStateCreateBeans,
    kStateControlBeans,
    kStateWaitForBeansToSettle,
-   kStateCheckForMatches
+   kStateCheckForMatches,
+   kStateDropGarbage
 };
 
 // Spinning bean relative to the pivot bean. Starts Up.
@@ -113,6 +117,9 @@ private:
       std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
       );
 
+   void _CreateGarbageBean(uint32_t a_Column, uint32_t a_Row);
+
+   uint32_t _CalculateGarbageBeanNumber(uint32_t a_Score);
 
    bool m_Initialized;
    ePlayerState m_CurrentState;
@@ -148,6 +155,9 @@ private:
    const uint32_t m_MinSettleTime;
 
    uint32_t m_RoundScore;
+
+   uint32_t m_GarbageAcumulator;
+   bool m_GarbageDropped;
 
 };
 
