@@ -33,6 +33,8 @@ cPlayer::cPlayer(cResources* a_pResources)
      m_GarbageAcumulator(0),
      m_GarbageDropped(false)
 {
+   SetType("cPlayer");
+   SetSolid(false);
    // Receive messages when beans finish falling. That way we can know when to
    // stop waiting for them to settle.
    sMessage l_Request;
@@ -533,7 +535,7 @@ bool cPlayer::MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition)
    // Make sure we can move first.
    for (cObject* i : l_Collisions)
    {
-      if (i != m_pSwingBean && i != m_pPivotBean)
+      if (i != m_pSwingBean && i != m_pPivotBean && i->IsSolid())
       {
          return false;
       }
