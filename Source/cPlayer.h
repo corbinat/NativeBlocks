@@ -78,13 +78,7 @@ public:
 
    // These functions are used by the AI--------------------
 
-   // This function returns the resulting score if a player were to play the
-   // provided beans
-   uint32_t SimulatePlay(
-      std::shared_ptr<cBeanInfo> a_pBean1,
-      std::shared_ptr<cBeanInfo> a_pBean2,
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
-      );
+
 
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>> ClonePlayingField();
 
@@ -97,25 +91,6 @@ private:
    void _StartGame();
 
    bool _BeansAreResting();
-
-   uint32_t _ConnectBeanToNeighbors(
-      std::shared_ptr<cBeanInfo> a_pBean,
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
-      );
-
-   uint32_t _ConnectColumnNeighbors(
-      uint32_t a_Column,
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
-      );
-
-   bool _BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_Column);
-
-   // returns how many exploded
-   uint32_t _SearchColumnAndExplodeConnections(
-      uint32_t a_Column,
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
-      std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
-      );
 
    void _CreateGarbageBean(uint32_t a_Column, uint32_t a_Row);
 

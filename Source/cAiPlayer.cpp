@@ -238,7 +238,7 @@ void cAiPlayer::_AnalyzeMove(
    l_NewMove.m_Column = a_pBean1->GetGridPosition().x;
    l_NewMove.m_Rotation = a_RotationState;
    l_NewMove.m_Score =
-      SimulatePlay(a_pBean1, a_pBean2, a_rPlayingField);
+      _SimulatePlay(a_pBean1, a_pBean2, a_rPlayingField);
 
    if (m_OptimalMoves.size() == 0)
    {
@@ -262,3 +262,247 @@ void cAiPlayer::_AnalyzeMove(
    a_pBean1->RemoveAllConnections();
    a_pBean2->RemoveAllConnections();
 }
+
+uint32_t cAiPlayer::_SimulatePlay(
+   std::shared_ptr<cBeanInfo> a_pBean1,
+   std::shared_ptr<cBeanInfo> a_pBean2,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   )
+{
+   // Keep track of columns that get modified so that we can check them for
+   // matches and things
+   std::unordered_set<uint32_t> l_ColumnsOfInterest;
+
+   l_ColumnsOfInterest.insert(a_pBean1->GetGridPosition().x);
+   l_ColumnsOfInterest.insert(a_pBean2->GetGridPosition().x);
+
+   a_rPlayingField[a_pBean1->GetGridPosition().x][a_pBean1->GetGridPosition().y] = a_pBean1;
+   a_rPlayingField[a_pBean2->GetGridPosition().x][a_pBean2->GetGridPosition().y] = a_pBean2;
+
+   // Search through the columns and explode any beans with 4 connected
+   uint32_t l_ReturnScore = 0;
+
+   // _Bubbledown new columns of interest, connect neighbors, and explode again
+   while (l_ColumnsOfInterest.size() != 0)
+   {
+      for (uint32_t l_Column : l_ColumnsOfInterest)
+      {
+         _BubbleBeansDown(a_rPlayingField[l_Column]);
+
+      }
+      for (uint32_t l_Column : l_ColumnsOfInterest)
+      {
+         // Adding to the return score influences the AI to go for connections
+         // even if it can't cause beens to explode
+         //l_ReturnScore +=
+            _ConnectColumnNeighbors(l_Column, a_rPlayingField);
+      }
+
+      std::unordered_set<uint32_t> l_NewColumnsOfInterest;
+      for (uint32_t l_Column : l_ColumnsOfInterest)
+      {
+         l_ReturnScore +=
+            _SearchColumnAndExplodeConnections(
+               l_Column,
+               a_rPlayingField,
+               &l_NewColumnsOfInterest
+               );
+      }
+
+      l_ColumnsOfInterest = l_NewColumnsOfInterest;
+
+   }
+   return l_ReturnScore;
+}
+
+uint32_t cAiPlayer::_ConnectBeanToNeighbors(
+   std::shared_ptr<cBeanInfo> a_pBean,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   )
+{
+   uint32_t l_ReturnConnections = 0;
+
+   if (a_pBean->GetColor() == kBeanColorGarbage)
+   {
+      return l_ReturnConnections;
+   }
+
+   uint32_t l_X = a_pBean->GetGridPosition().x;
+   uint32_t l_Y = a_pBean->GetGridPosition().y;
+   if (l_X > 0)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X - 1][l_Y];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         {
+            ++l_ReturnConnections;
+         }
+      }
+   }
+   if (l_X < 5)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X + 1][l_Y];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         {
+            ++l_ReturnConnections;
+         }
+      }
+   }
+   if (l_Y > 0)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y - 1];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         {
+            ++l_ReturnConnections;
+         }
+      }
+   }
+   if (l_Y < g_kTotalRows - 1)
+   {
+      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y + 1];
+      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      {
+         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         {
+            ++l_ReturnConnections;
+         }
+      }
+   }
+
+   return l_ReturnConnections;
+}
+
+uint32_t cAiPlayer::_ConnectColumnNeighbors(
+   uint32_t a_Column,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   )
+{
+   uint32_t l_ReturnConnections = 0;
+
+   for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
+   {
+      if (a_rPlayingField[a_Column][l_Row] != NULL)
+      {
+         l_ReturnConnections +=
+            _ConnectBeanToNeighbors(
+               a_rPlayingField[a_Column][l_Row],
+               a_rPlayingField
+               );
+      }
+   }
+
+   return l_ReturnConnections;
+}
+
+bool cAiPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rColumn)
+{
+   bool l_SawNull = false;
+   bool l_RowUpdated = false;
+   uint32_t l_FirstNull = a_rColumn.size() - 1;
+   for (
+      int32_t i = a_rColumn.size() - 1;
+      i >= 0;
+      --i
+      )
+   {
+      if (a_rColumn[i] == NULL)
+      {
+         if (l_SawNull == false && i < l_FirstNull)
+         {
+            l_FirstNull = i;
+         }
+         l_SawNull = true;
+      }
+      else if (l_SawNull)
+      {
+         std::shared_ptr<cBeanInfo> l_Element = a_rColumn[i];
+         l_Element->RemoveAllConnections();
+         a_rColumn[i] = a_rColumn[i + 1];
+         a_rColumn[i + 1] = l_Element;
+         l_Element->SetRowPosition(i + 1);
+         l_SawNull = false;
+         l_RowUpdated = true;
+
+         // Add one because the next loop will decrement it again
+         i = l_FirstNull + 1;
+      }
+   }
+   return l_RowUpdated;
+}
+
+uint32_t cAiPlayer::_SearchColumnAndExplodeConnections(
+   uint32_t a_Column,
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
+   )
+{
+   uint32_t l_ReturnScore = 0;
+   for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
+   {
+      if (a_rPlayingField[a_Column][l_Row] != NULL)
+      {
+         std::unordered_set<cBeanInfo*> l_Connections =
+            a_rPlayingField[a_Column][l_Row]->CountConnections();
+
+
+         if (l_Connections.size() > 3)
+         {
+            // Explode this bean and all of the connected beans
+            for (cBeanInfo* l_pConnection : l_Connections)
+            {
+               uint32_t l_DeleteX = l_pConnection->GetGridPosition().x;
+               uint32_t l_DeleteY = l_pConnection->GetGridPosition().y;
+
+               a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
+               l_pConnection->RemoveAllConnections();
+               a_pNewColumnsOfInterest->insert(l_DeleteX);
+               ++l_ReturnScore;
+
+
+               // Delete garbage beans that are touching
+               if (l_DeleteX > 0)
+               {
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX - 1][l_DeleteY];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX - 1][l_DeleteY] = NULL;
+                     a_pNewColumnsOfInterest->insert(l_DeleteX - 1);
+                  }
+               }
+               if (l_DeleteX < 5)
+               {
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX + 1][l_DeleteY];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX + 1][l_DeleteY] = NULL;
+                     a_pNewColumnsOfInterest->insert(l_DeleteX + 1);
+                  }
+               }
+               if (l_DeleteY > 0)
+               {
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY - 1];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX][l_DeleteY - 1] = NULL;
+                  }
+               }
+               if (l_DeleteY < g_kTotalRows - 1)
+               {
+                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY + 1];
+                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  {
+                     a_rPlayingField[l_DeleteX][l_DeleteY + 1] = NULL;
+                  }
+               }
+            }
+         }
+      }
+   }
+   return l_ReturnScore;
+}
+
