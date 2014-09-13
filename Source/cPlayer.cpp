@@ -10,6 +10,7 @@
 #include <iostream>
 #include <unordered_set>
 #include <sstream>
+#include <cmath> // ceil
 
 cPlayer::cPlayer(cResources* a_pResources)
    : cObject(a_pResources),
@@ -29,7 +30,10 @@ cPlayer::cPlayer(cResources* a_pResources)
      m_FastFall(false),
      m_TotalSettleTime(0),
      m_MinSettleTime(200),
-     m_RoundScore(0),
+     m_BeansExploded(0),
+     m_ScoreMultiplier(0),
+     m_NumberDifferentGroups(0),
+     m_ChainCount(0),
      m_GarbageAcumulator(0),
      m_GarbageDropped(false)
 {
@@ -105,7 +109,8 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
    {
       case kStateCreateBeans:
       {
-         m_RoundScore = 0;
+         // Reset Scoring
+         m_ChainCount = 0;
          m_GarbageDropped = false;
 
          m_pPivotBean = new cBean(GetResources(), GetUniqueId());
@@ -188,12 +193,15 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
       case kStateWaitForBeansToSettle:
       {
-         m_TotalSettleTime += a_ElapsedMiliSec;
-         if (m_FallingBeans.size() == 0 && m_TotalSettleTime > m_MinSettleTime)
+         if (m_FallingBeans.size() == 0)
          {
-            m_TotalSettleTime = 0;
-            m_CurrentState = kStateCheckForMatches;
-            StateChange(kStateWaitForBeansToSettle, kStateCheckForMatches);
+            m_TotalSettleTime += a_ElapsedMiliSec;
+            if (m_TotalSettleTime > m_MinSettleTime)
+            {
+               m_TotalSettleTime = 0;
+               m_CurrentState = kStateCheckForMatches;
+               StateChange(kStateWaitForBeansToSettle, kStateCheckForMatches);
+            }
          }
          break;
       }
@@ -261,7 +269,9 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
             if (l_FullConnections.size() > 3)
             {
-               uint32_t l_OldRoundScore = m_RoundScore;
+               ++m_NumberDifferentGroups;
+               uint32_t l_NewBeansExploded = 0;
+
                std::unordered_set<cBean*> l_ToExplodeList = l_FullConnections;
                for (cBean* l_pConnection : l_FullConnections)
                {
@@ -271,7 +281,8 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   uint32_t l_BeanY =
                      GetBeanGridPosition(l_pConnection).y;
 
-                  ++m_RoundScore;
+                  ++m_BeansExploded;
+                  ++l_NewBeansExploded;
 
                   // Find all of the garbage beans touching and add them to the
                   // list of beans to explode
@@ -308,6 +319,13 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                      }
                   }
                }
+
+               if (m_ScoreMultiplier < (l_NewBeansExploded - 3))
+               {
+                  m_ScoreMultiplier = l_NewBeansExploded - 3;
+               }
+
+
 
                for (cBean* l_pConnection : l_ToExplodeList)
                {
@@ -349,25 +367,30 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
                }
 
-               // Figure out how many garbage beans to send
-               uint32_t l_PreviousSent =
-                  _CalculateGarbageBeanNumber(l_OldRoundScore);
-
-               uint32_t l_TotalToSend =
-                  _CalculateGarbageBeanNumber(m_RoundScore);
-
-               sMessage l_Message;
-               l_Message.m_From = GetUniqueId();
-               l_Message.m_Category = GetResources()->GetMessageDispatcher()->Any();
-               l_Message.m_Key = "SendingGarbage";
-               l_Message.m_Value = std::to_string(l_TotalToSend - l_PreviousSent);
-               GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
-
-               m_CurrentState = kStateWaitForBeansToSettle;
-               StateChange(kStateCheckForMatches, kStateWaitForBeansToSettle);
             }
-
          }
+
+         // Figure out how many garbage beans to send if some connections were
+         // made
+         if (m_BeansExploded > 0)
+         {
+            uint32_t l_TotalToSend =
+               _CalculateGarbageBeanNumber();
+
+            sMessage l_Message;
+            l_Message.m_From = GetUniqueId();
+            l_Message.m_Category = GetResources()->GetMessageDispatcher()->Any();
+            l_Message.m_Key = "SendingGarbage";
+            l_Message.m_Value = std::to_string(l_TotalToSend);
+            GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+            m_CurrentState = kStateWaitForBeansToSettle;
+            StateChange(kStateCheckForMatches, kStateWaitForBeansToSettle);
+         }
+
+         // Reset temp scores
+         m_NumberDifferentGroups = 0;
+         m_ScoreMultiplier = 0;
+         m_BeansExploded = 0;
 
          for (auto i = m_FallingBeans.begin(); i != m_FallingBeans.end(); ++i)
          {
@@ -390,6 +413,12 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                m_CurrentState = kStateCreateBeans;
                StateChange(kStateCheckForMatches, kStateCreateBeans);
             }
+         }
+         else
+         {
+            // We made at least one match, so we're rolling back to
+            // kStateWaitForBeansToSettle.
+            ++m_ChainCount;
          }
 
          break;
@@ -843,7 +872,45 @@ void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
    m_FallingBeans.push_back(l_pGarbageBean);
 }
 
-uint32_t cPlayer::_CalculateGarbageBeanNumber(uint32_t a_Score)
+uint32_t cPlayer::_CalculateGarbageBeanNumber()
 {
-   return static_cast<uint32_t>(((a_Score * 10) * (a_Score - 3) / 70.0) + 0.5);
+   // Score forumla:
+   // (P1X10 + ... + PnX10) x (HighestMultiplier + 3(DifferentGroups-1) + 8*chains)
+   uint32_t l_Score = 0;
+   uint32_t l_Multiplier = 0;
+
+   // Figure out the multiplier
+   if (m_ScoreMultiplier > 1)
+   {
+      l_Multiplier += m_ScoreMultiplier;
+   }
+   l_Multiplier += 3 * (m_NumberDifferentGroups - 1);
+   l_Multiplier += 8 * m_ChainCount;
+   if (l_Multiplier == 0)
+   {
+      l_Multiplier = 1;
+   }
+
+   // Multiply in the number of beans exploded.
+   l_Score = m_BeansExploded * 10;
+
+   std::cout << "Score: " << l_Score << "x" << l_Multiplier << std::endl;
+   std::cout << "Total: " << ceil(static_cast<double>(l_Score * l_Multiplier)/70.0) << std::endl;
+
+   uint32_t l_Garbage =
+      ceil(static_cast<double>(l_Score * l_Multiplier) / 70.0);
+   std::cout << "Sending Garbage: " << l_Garbage << std::endl;
+
+   // Add a little randomness into the garbage. 1 in 5 change to remove one
+   std::random_device l_Generator;
+   std::uniform_int_distribution<int> l_Distribution(0, 4);
+   int l_Number = l_Distribution(l_Generator);
+   l_Number = l_Distribution(l_Generator);
+   if (l_Number == 4)
+   {
+      --l_Garbage;
+      std::cout << "Actually removing one!" << std::endl;
+   }
+
+   return l_Garbage;
 }

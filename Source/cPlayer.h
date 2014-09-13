@@ -94,7 +94,7 @@ private:
 
    void _CreateGarbageBean(uint32_t a_Column, uint32_t a_Row);
 
-   uint32_t _CalculateGarbageBeanNumber(uint32_t a_Score);
+   uint32_t _CalculateGarbageBeanNumber();
 
    bool m_Initialized;
    ePlayerState m_CurrentState;
@@ -129,9 +129,25 @@ private:
    int32_t m_TotalSettleTime;
    const uint32_t m_MinSettleTime;
 
-   uint32_t m_RoundScore;
+   // Scoring--------
+   // This counts how many beans exploded. It resets once beans fall.
+   uint32_t m_BeansExploded;
 
+   // This holds the multiplier, which goes up for every extra bean exploded. It
+   // resets once beans fall.
+   uint32_t m_ScoreMultiplier;
+
+   // This holds how many separate groups exploded. It resets once beans fall.
+   uint32_t m_NumberDifferentGroups;
+
+   // This holds how many chain reactions have gone off. It resets once new
+   // beans are created.
+   uint32_t m_ChainCount;
+
+   // This holds how many garbage beans need to fall on this player.
    uint32_t m_GarbageAcumulator;
+
+   // Prevents multple garbage bean groups from falling in one round
    bool m_GarbageDropped;
 
 };
