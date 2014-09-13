@@ -782,7 +782,13 @@ bool cPlayer::_BeansAreResting()
 
       if (l_Collisions.size() > 0)
       {
-         return true;
+         for (cObject* l_pObject : l_Collisions)
+         {
+            if (l_pObject->IsSolid())
+            {
+               return true;
+            }
+         }
       }
    }
 
@@ -798,7 +804,13 @@ bool cPlayer::_BeansAreResting()
 
       if (l_Collisions.size() > 0)
       {
-         return true;
+         for (cObject* l_pObject : l_Collisions)
+         {
+            if (l_pObject->IsSolid())
+            {
+               return true;
+            }
+         }
       }
    }
 
