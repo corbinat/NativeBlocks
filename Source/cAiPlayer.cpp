@@ -283,6 +283,7 @@ uint32_t cAiPlayer::_SimulatePlay(
    uint32_t l_ReturnScore = 0;
 
    // _Bubbledown new columns of interest, connect neighbors, and explode again
+   uint32_t l_Chains = 0;
    while (l_ColumnsOfInterest.size() != 0)
    {
       for (uint32_t l_Column : l_ColumnsOfInterest)
@@ -294,22 +295,33 @@ uint32_t cAiPlayer::_SimulatePlay(
       {
          // Adding to the return score influences the AI to go for connections
          // even if it can't cause beens to explode
-         //l_ReturnScore +=
+         l_ReturnScore +=
             _ConnectColumnNeighbors(l_Column, a_rPlayingField);
       }
 
       std::unordered_set<uint32_t> l_NewColumnsOfInterest;
       for (uint32_t l_Column : l_ColumnsOfInterest)
       {
+         uint32_t l_BeansExploded = 0;
+         uint32_t l_Multiplier = 0;
+         uint32_t l_DifferentGroups = 0;
+
+
+         _SearchColumnAndExplodeConnections(
+            l_Column,
+            a_rPlayingField,
+            &l_NewColumnsOfInterest,
+            &l_BeansExploded,
+            &l_Multiplier,
+            &l_DifferentGroups
+            );
+
          l_ReturnScore +=
-            _SearchColumnAndExplodeConnections(
-               l_Column,
-               a_rPlayingField,
-               &l_NewColumnsOfInterest
-               );
+            (2 * CalculateScore(l_BeansExploded, l_Multiplier, l_DifferentGroups, l_Chains));
       }
 
       l_ColumnsOfInterest = l_NewColumnsOfInterest;
+      ++l_Chains;
 
    }
    return l_ReturnScore;
@@ -435,13 +447,19 @@ bool cAiPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rCol
    return l_RowUpdated;
 }
 
-uint32_t cAiPlayer::_SearchColumnAndExplodeConnections(
+void cAiPlayer::_SearchColumnAndExplodeConnections(
    uint32_t a_Column,
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
-   std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
+   std::unordered_set<uint32_t>* a_pNewColumnsOfInterest,
+   uint32_t* a_BeansExploded,
+   uint32_t* a_Multiplier,
+   uint32_t* a_DifferentGroups
    )
 {
-   uint32_t l_ReturnScore = 0;
+   *a_DifferentGroups = 0;
+   *a_Multiplier = 1;
+   *a_BeansExploded = 0;
+
    for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
    {
       if (a_rPlayingField[a_Column][l_Row] != NULL)
@@ -452,6 +470,15 @@ uint32_t cAiPlayer::_SearchColumnAndExplodeConnections(
 
          if (l_Connections.size() > 3)
          {
+            ++(*a_DifferentGroups);
+            *a_BeansExploded = l_Connections.size();
+            uint32_t l_BeansExplodedThisGroup = l_Connections.size();
+            uint32_t l_MultiplierThisGroup = l_BeansExplodedThisGroup - 3;
+            if (l_MultiplierThisGroup > *a_Multiplier)
+            {
+               *a_Multiplier = l_MultiplierThisGroup;
+            }
+
             // Explode this bean and all of the connected beans
             for (cBeanInfo* l_pConnection : l_Connections)
             {
@@ -461,8 +488,6 @@ uint32_t cAiPlayer::_SearchColumnAndExplodeConnections(
                a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
                l_pConnection->RemoveAllConnections();
                a_pNewColumnsOfInterest->insert(l_DeleteX);
-               ++l_ReturnScore;
-
 
                // Delete garbage beans that are touching
                if (l_DeleteX > 0)
@@ -503,6 +528,5 @@ uint32_t cAiPlayer::_SearchColumnAndExplodeConnections(
          }
       }
    }
-   return l_ReturnScore;
 }
 

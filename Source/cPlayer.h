@@ -76,11 +76,15 @@ public:
    ePlayerState GetPlayerState();
 
 
-   // These functions are used by the AI--------------------
-
-
-
    std::vector<std::vector<std::shared_ptr<cBeanInfo>>> ClonePlayingField();
+
+   // TODO: This doesn't need to be a member function
+   uint32_t CalculateScore(
+      uint32_t a_Matches,
+      uint32_t a_Multiplier,
+      uint32_t a_Groups,
+      uint32_t a_Chains
+      );
 
 private:
 

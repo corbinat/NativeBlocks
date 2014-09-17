@@ -62,10 +62,13 @@ private:
    bool _BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_Column);
 
    // returns how many exploded
-   uint32_t _SearchColumnAndExplodeConnections(
+   void _SearchColumnAndExplodeConnections(
       uint32_t a_Column,
       std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
-      std::unordered_set<uint32_t>* a_pNewColumnsOfInterest
+      std::unordered_set<uint32_t>* a_pNewColumnsOfInterest,
+      uint32_t* a_BeansExploded,
+      uint32_t* a_Multiplier,
+      uint32_t* a_DifferentGroups
       );
 
 

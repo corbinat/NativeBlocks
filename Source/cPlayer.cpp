@@ -325,8 +325,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   m_ScoreMultiplier = l_NewBeansExploded - 3;
                }
 
-
-
                for (cBean* l_pConnection : l_ToExplodeList)
                {
                   double l_DeleteX =
@@ -755,6 +753,38 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField(
    return l_PlayingField;
 }
 
+uint32_t cPlayer::CalculateScore(
+   uint32_t a_Matches,
+   uint32_t a_Multiplier,
+   uint32_t a_Groups,
+   uint32_t a_Chains
+   )
+{
+   // Score forumla:
+   // (P1X10 + ... + PnX10) x (HighestMultiplier + 3(DifferentGroups-1) + 8*chains)
+   uint32_t l_Score = 0;
+   uint32_t l_Multiplier = 0;
+
+   // Figure out the multiplier
+   if (a_Multiplier > 1)
+   {
+      l_Multiplier += a_Multiplier;
+   }
+   l_Multiplier += 3 * (a_Groups - 1);
+   l_Multiplier += 8 * a_Chains;
+   if (l_Multiplier == 0)
+   {
+      l_Multiplier = 1;
+   }
+
+   // Multiply in the number of beans exploded.
+   l_Score = a_Matches * 10;
+
+   std::cout << "Score: " << l_Score << "x" << l_Multiplier << std::endl;
+
+   return l_Score * l_Multiplier;
+}
+
 void cPlayer::_Initialize()
 {
    m_Initialized = true;
@@ -874,31 +904,16 @@ void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
 
 uint32_t cPlayer::_CalculateGarbageBeanNumber()
 {
-   // Score forumla:
-   // (P1X10 + ... + PnX10) x (HighestMultiplier + 3(DifferentGroups-1) + 8*chains)
-   uint32_t l_Score = 0;
-   uint32_t l_Multiplier = 0;
-
-   // Figure out the multiplier
-   if (m_ScoreMultiplier > 1)
-   {
-      l_Multiplier += m_ScoreMultiplier;
-   }
-   l_Multiplier += 3 * (m_NumberDifferentGroups - 1);
-   l_Multiplier += 8 * m_ChainCount;
-   if (l_Multiplier == 0)
-   {
-      l_Multiplier = 1;
-   }
-
-   // Multiply in the number of beans exploded.
-   l_Score = m_BeansExploded * 10;
-
-   std::cout << "Score: " << l_Score << "x" << l_Multiplier << std::endl;
-   std::cout << "Total: " << ceil(static_cast<double>(l_Score * l_Multiplier)/70.0) << std::endl;
+   uint32_t l_Score =
+      CalculateScore(
+         m_BeansExploded,
+         m_ScoreMultiplier,
+         m_NumberDifferentGroups,
+         m_ChainCount
+         );
 
    uint32_t l_Garbage =
-      ceil(static_cast<double>(l_Score * l_Multiplier) / 70.0);
+      ceil(static_cast<double>(l_Score) / 70.0);
    std::cout << "Sending Garbage: " << l_Garbage << std::endl;
 
    // Add a little randomness into the garbage. 1 in 5 change to remove one
