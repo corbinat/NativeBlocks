@@ -1,8 +1,8 @@
 #include "cHumanPlayer.h"
 #include "cResources.h"
 
-cHumanPlayer::cHumanPlayer(cResources* a_pResources)
-   : cPlayer(a_pResources),
+cHumanPlayer::cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine)
+   : cPlayer(a_pResources, a_RandomNumberEngine),
      m_KeyRepeatTime(0),
      m_KeyRepeatLimit(150),
      m_LeftKeyDown(false),

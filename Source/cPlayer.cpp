@@ -12,8 +12,12 @@
 #include <sstream>
 #include <cmath> // ceil
 
-cPlayer::cPlayer(cResources* a_pResources)
+cPlayer::cPlayer(
+   cResources* a_pResources,
+   std::minstd_rand a_RandomNumberEngine
+   )
    : cObject(a_pResources),
+     m_RandomNumberEngine(),
      m_Initialized(false),
      m_CurrentState(kStateIdle),
      m_RotationState(kRotationStateUp),
@@ -39,6 +43,9 @@ cPlayer::cPlayer(cResources* a_pResources)
 {
    SetType("cPlayer");
    SetSolid(false);
+
+   m_RandomNumberEngine = a_RandomNumberEngine;
+
    // Receive messages when beans finish falling. That way we can know when to
    // stop waiting for them to settle.
    sMessage l_Request;
@@ -113,14 +120,20 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          m_ChainCount = 0;
          m_GarbageDropped = false;
 
-         m_pPivotBean = new cBean(GetResources(), GetUniqueId());
+         // Advance the random number engine
+         m_RandomNumberEngine();
+
+         m_pPivotBean = new cBean(m_RandomNumberEngine, GetResources(), GetUniqueId());
          RegisterObject(m_pPivotBean);
          sf::Vector3<double> l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
          l_Position.y -= GetResources()->GetGridCellSize().y;
          m_pPivotBean->SetPosition(l_Position, kNormal, false);
 
-         m_pSwingBean = new cBean(GetResources(),GetUniqueId());
+         // Advance the random number engine
+         m_RandomNumberEngine();
+
+         m_pSwingBean = new cBean(m_RandomNumberEngine, GetResources(),GetUniqueId());
          RegisterObject(m_pSwingBean);
          l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
@@ -779,8 +792,6 @@ uint32_t cPlayer::CalculateScore(
 
    // Multiply in the number of beans exploded.
    l_Score = a_Matches * 10;
-
-   std::cout << "Score: " << l_Score << "x" << l_Multiplier << std::endl;
 
    return l_Score * l_Multiplier;
 }

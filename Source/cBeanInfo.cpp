@@ -33,7 +33,7 @@ cBeanInfo::cBeanInfo()
       }
       case 3:
       {
-         m_Color = kBeanColorRed;
+         m_Color = kBeanColorOrange;
          break;
       }
       case 4:

@@ -17,6 +17,9 @@ public:
    // This constructor sets the bean color
    cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId);
 
+   // This constructor uses the passed in random engine to create a color
+   cBean(std::minstd_rand a_Engine, cResources* a_pResources, uint32_t a_ParentId);
+
    virtual ~cBean();
 
    // These functions are overloaded from cObject

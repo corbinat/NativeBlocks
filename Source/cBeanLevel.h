@@ -17,6 +17,7 @@ public:
 
    ~cBeanLevel(){}
 
+   void Initialize();
    void Step (uint32_t a_ElapsedMiliSec);
 
    cObject* PixelToObject(
@@ -29,6 +30,8 @@ public:
    void PixelToTile();
 
 private:
+
+   std::minstd_rand m_RandomNumberEngine;
 
 };
 

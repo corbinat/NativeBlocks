@@ -44,7 +44,7 @@ class cPlayer: public cObject
 {
 public:
 
-   cPlayer(cResources* a_pResources);
+   cPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine);
    virtual ~cPlayer();
 
    // These functions are overloaded from cObject
@@ -99,6 +99,8 @@ private:
    void _CreateGarbageBean(uint32_t a_Column, uint32_t a_Row);
 
    uint32_t _CalculateGarbageBeanNumber();
+
+   std::minstd_rand m_RandomNumberEngine;
 
    bool m_Initialized;
    ePlayerState m_CurrentState;

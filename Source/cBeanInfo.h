@@ -13,7 +13,7 @@ enum eBeanColor
    kBeanColorBlue,
    kBeanColorGreen,
    kBeanColorYellow,
-   kBeanColorRed,
+   kBeanColorOrange,
    kBeanColorPink,
    kBeanColorNumber, // Used to identify how many colors are possible
    kBeanColorGarbage
