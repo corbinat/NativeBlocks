@@ -485,8 +485,8 @@ void cAiPlayer::_SearchColumnAndExplodeConnections(
                uint32_t l_DeleteX = l_pConnection->GetGridPosition().x;
                uint32_t l_DeleteY = l_pConnection->GetGridPosition().y;
 
-               a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
                l_pConnection->RemoveAllConnections();
+               a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
                a_pNewColumnsOfInterest->insert(l_DeleteX);
 
                // Delete garbage beans that are touching
