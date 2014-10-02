@@ -28,7 +28,7 @@ Animations:
       Image: Media/Textures.png
       X: 192
       Y: 0
-      Height: 192
+      Height: 224
       Width: 32
       Origin: 0
       BoundingBoxes:
@@ -36,7 +36,7 @@ Animations:
          Name: Full Box
          X: 0
          Y: 0
-         Height: 192
+         Height: 224
          Width: 32
       }
    }

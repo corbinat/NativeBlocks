@@ -47,6 +47,9 @@ cFloor.o: ${SourceDir}/cFloor.cpp ${SourceDir}/cFloor.h
 cWall.o: ${SourceDir}/cWall.cpp ${SourceDir}/cWall.h
 	g++ ${CFLAGS} -c ${SourceDir}/cWall.cpp ${LDFLAGS}
 
+cRoof.o: ${SourceDir}/cRoof.cpp ${SourceDir}/cRoof.h
+	g++ ${CFLAGS} -c ${SourceDir}/cRoof.cpp ${LDFLAGS}
+
 cBeanLevel.o: ${SourceDir}/cBeanLevel.cpp ${SourceDir}/cBeanLevel.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBeanLevel.cpp ${LDFLAGS}
 

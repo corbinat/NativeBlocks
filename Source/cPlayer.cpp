@@ -3,6 +3,7 @@
 #include "cBeanInfo.h"
 #include "cFloor.h"
 #include "cWall.h"
+#include "cRoof.h"
 
 #include "cResources.h"
 
@@ -810,27 +811,36 @@ void cPlayer::_Initialize()
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x -= GetResources()->GetGridCellSize().x;
+   l_Position.y -= GetResources()->GetGridCellSize().y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x += GetResources()->GetGridCellSize().x * 6;
+   l_Position.y -= GetResources()->GetGridCellSize().y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
    l_Position.x -= GetResources()->GetGridCellSize().x;
-   l_Position.y += l_NewWall->GetBoundingBox().height;
+   l_Position.y += l_NewWall->GetBoundingBox().height - GetResources()->GetGridCellSize().y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    RegisterObject(l_NewWall);
    l_Position = GetPosition();
+   l_Position.y += l_NewWall->GetBoundingBox().height - GetResources()->GetGridCellSize().y;
    l_Position.x += GetResources()->GetGridCellSize().x * 6;
-   l_Position.y += l_NewWall->GetBoundingBox().height;
    l_NewWall->SetPosition(l_Position, kNormal, false);
+
+   cRoof * l_NewRoof = new cRoof(GetResources());
+   RegisterObject(l_NewRoof);
+   l_Position = GetPosition();
+   l_Position.y -= GetResources()->GetGridCellSize().y;
+   l_NewRoof->SetPosition(l_Position, kNormal, false);
+
 }
 
 void cPlayer::_StartGame()
