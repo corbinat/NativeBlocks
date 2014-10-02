@@ -65,65 +65,6 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
 
 }
 
-cBean::cBean(std::minstd_rand a_Engine, cResources* a_pResources, uint32_t a_ParentId)
-   : cObject(a_pResources),
-   m_Color(kBeanColorBlue),
-   m_FreeFall(false),
-   m_InPlay(false),
-   m_ConnectedBeans(),
-   m_Exploding(false),
-   m_ParentId(a_ParentId)
-{
-   SetType("Bean");
-   SetSolid(true);
-   LoadAnimations("Media/Beans.ani");
-
-   std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 1);
-   //std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 4);
-
-   int l_Number = l_Distribution(a_Engine);
-   l_Number = l_Distribution(a_Engine);
-   switch(l_Number)
-   {
-      case 0:
-      {
-         PlayAnimationLoop("Blue");
-         m_Color = kBeanColorBlue;
-         break;
-      }
-      case 1:
-      {
-         PlayAnimationLoop("Green");
-         m_Color = kBeanColorGreen;
-         break;
-      }
-      case 2:
-      {
-         PlayAnimationLoop("Yellow");
-         m_Color = kBeanColorYellow;
-         break;
-      }
-      case 3:
-      {
-         PlayAnimationLoop("Red");
-         m_Color = kBeanColorOrange;
-         break;
-      }
-      case 4:
-      {
-         PlayAnimationLoop("Pink");
-         m_Color = kBeanColorPink;
-         break;
-      }
-      default:
-      {
-         PlayAnimationLoop("Garbage");
-         m_Color = kBeanColorGarbage;
-      }
-   }
-
-}
-
 cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    : cObject(a_pResources),
    m_Color(a_Color),

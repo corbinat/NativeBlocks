@@ -1,4 +1,4 @@
-DEBUG = -g -DDEBUG_PRINTS
+DEBUG = -O0 -g -DDEBUG_PRINTS
 
 # SFML library
 SFMLDIR = ../External/SFML-2.0-rc
@@ -20,13 +20,13 @@ SourceDir = Source
 
 all: Blast
 
-Blast: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cFloor.o cWall.o cBeanLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cFloor.o cWall.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
+Blast: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
 
-cPlayer.o: ${SourceDir}/cPlayer.cpp ${SourceDir}/cPlayer.h
+cPlayer.o: ${SourceDir}/cPlayer.cpp ${SourceDir}/cPlayer.h cStaging.o
 	g++ ${CFLAGS} -c ${SourceDir}/cPlayer.cpp ${LDFLAGS}
 
 cHumanPlayer.o: ${SourceDir}/cHumanPlayer.cpp ${SourceDir}/cHumanPlayer.h cPlayer.o
@@ -40,6 +40,12 @@ cBean.o: ${SourceDir}/cBean.cpp ${SourceDir}/cBean.h
 
 cBeanInfo.o: ${SourceDir}/cBeanInfo.cpp ${SourceDir}/cBeanInfo.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBeanInfo.cpp ${LDFLAGS}
+
+cStaging.o: ${SourceDir}/cStaging.cpp ${SourceDir}/cStaging.h
+	g++ ${CFLAGS} -c ${SourceDir}/cStaging.cpp ${LDFLAGS}
+
+cStagingObserver.o: ${SourceDir}/cStagingObserver.cpp ${SourceDir}/cStagingObserver.h cStaging.o
+	g++ ${CFLAGS} -c ${SourceDir}/cStagingObserver.cpp ${LDFLAGS}
 
 cFloor.o: ${SourceDir}/cFloor.cpp ${SourceDir}/cFloor.h
 	g++ ${CFLAGS} -c ${SourceDir}/cFloor.cpp ${LDFLAGS}

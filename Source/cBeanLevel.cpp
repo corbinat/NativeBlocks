@@ -1,6 +1,7 @@
 #include "cBeanLevel.h"
 #include "cHumanPlayer.h"
 #include "cAiPlayer.h"
+#include "cStagingObserver.h"
 
 #include "cResources.h"
 
@@ -40,14 +41,27 @@ cObject* cBeanLevel::PixelToObject(
 {
    if (a_Color.r == 0 && a_Color.g == 0 && a_Color.b == 0)
    {
-      //cHumanPlayer* l_pPlayer = new cHumanPlayer(a_pResources, m_RandomNumberEngine);
-      //return l_pPlayer;
-      return NULL;
+      cHumanPlayer* l_pPlayer = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1");
+      return l_pPlayer;
+      //return NULL;
    }
+   else if (a_Color.r == 100 && a_Color.g == 100 && a_Color.b == 100)
+   {
+      cStagingObserver* l_pPlayer1Staging = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player1");
+      return l_pPlayer1Staging;
+      //return NULL;
+   }
+
    else if (a_Color.r == 255 && a_Color.g == 0 && a_Color.b == 0)
    {
-      cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine);
+      cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2");
       return l_pPlayer;
+   }
+   else if (a_Color.r == 100 && a_Color.g == 0 && a_Color.b == 0)
+   {
+      cStagingObserver* l_pPlayer2Staging = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player2");
+      return l_pPlayer2Staging;
+      //return NULL;
    }
    else
    {

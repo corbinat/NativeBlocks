@@ -5,8 +5,8 @@
 
 #include <iostream>
 
-cAiPlayer::cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine)
-   : cPlayer(a_pResources, a_RandomNumberEngine),
+cAiPlayer::cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
+   : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
      m_OptimalMoves(),
      m_DoneThinking(false)
 {

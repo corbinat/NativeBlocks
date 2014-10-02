@@ -20,7 +20,7 @@ struct sOptimalPosition
 class cAiPlayer : public cPlayer
 {
 public:
-   cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine);
+   cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier);
    ~cAiPlayer();
 
    void StateChange(ePlayerState a_Old, ePlayerState a_New);

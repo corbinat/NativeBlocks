@@ -6,6 +6,7 @@
 
 #include "cObject.h"
 #include "cMessageDispatcher.h"
+#include "cStaging.h"
 
 #include <unordered_set>
 
@@ -44,7 +45,7 @@ class cPlayer: public cObject
 {
 public:
 
-   cPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine);
+   cPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier);
    virtual ~cPlayer();
 
    // These functions are overloaded from cObject
@@ -100,8 +101,6 @@ private:
 
    uint32_t _CalculateGarbageBeanNumber();
 
-   std::minstd_rand m_RandomNumberEngine;
-
    bool m_Initialized;
    ePlayerState m_CurrentState;
    eRotationState m_RotationState;
@@ -109,6 +108,8 @@ private:
    // Beans in play
    cBean* m_pPivotBean;
    cBean* m_pSwingBean;
+
+   cStaging m_Staging;
 
    // These are beans we need to wait on to finish falling
    std::list<cBean*> m_FallingBeans;

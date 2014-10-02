@@ -6,7 +6,7 @@
 class cHumanPlayer : public cPlayer
 {
 public:
-   cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine);
+   cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier);
    ~cHumanPlayer();
 
    // These functions are overloaded from cPlayer

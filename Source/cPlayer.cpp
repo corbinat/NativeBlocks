@@ -15,15 +15,16 @@
 
 cPlayer::cPlayer(
    cResources* a_pResources,
-   std::minstd_rand a_RandomNumberEngine
+   std::minstd_rand a_RandomNumberEngine,
+   std::string a_Identifier
    )
    : cObject(a_pResources),
-     m_RandomNumberEngine(),
      m_Initialized(false),
      m_CurrentState(kStateIdle),
      m_RotationState(kRotationStateUp),
      m_pPivotBean(NULL),
      m_pSwingBean(NULL),
+     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId()),
      m_FallingBeans(),
      m_NewBeans(),
      m_Beans(6, std::vector<cBean*>(g_kTotalRows, NULL)),
@@ -42,10 +43,8 @@ cPlayer::cPlayer(
      m_GarbageAcumulator(0),
      m_GarbageDropped(false)
 {
-   SetType("cPlayer");
+   SetType(a_Identifier);
    SetSolid(false);
-
-   m_RandomNumberEngine = a_RandomNumberEngine;
 
    // Receive messages when beans finish falling. That way we can know when to
    // stop waiting for them to settle.
@@ -121,28 +120,35 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          m_ChainCount = 0;
          m_GarbageDropped = false;
 
-         // Advance the random number engine
-         m_RandomNumberEngine();
 
-         m_pPivotBean = new cBean(m_RandomNumberEngine, GetResources(), GetUniqueId());
+         m_pPivotBean = m_Staging.GetNextBean();
          RegisterObject(m_pPivotBean);
          sf::Vector3<double> l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
          l_Position.y -= GetResources()->GetGridCellSize().y;
          m_pPivotBean->SetPosition(l_Position, kNormal, false);
 
-         // Advance the random number engine
-         m_RandomNumberEngine();
+         std::cout << "Pivot At: " << m_pPivotBean->GetPosition().x << "," << m_pPivotBean->GetPosition().y <<":" << m_pPivotBean->GetColor() << std::endl;
 
-         m_pSwingBean = new cBean(m_RandomNumberEngine, GetResources(),GetUniqueId());
+         m_pSwingBean = m_Staging.GetNextBean();
          RegisterObject(m_pSwingBean);
          l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
          l_Position.y -= GetResources()->GetGridCellSize().y * 2;
          m_pSwingBean->SetPosition(l_Position, kNormal, false);
+         std::cout << "Swing At: " << m_pSwingBean->GetPosition().x << "," << m_pSwingBean->GetPosition().y <<":" << m_pSwingBean->GetColor()<< std::endl;
 
          m_CurrentState = kStateControlBeans;
          StateChange(kStateCreateBeans, kStateControlBeans);
+         m_MiliSecSinceLastFall = 500;
+
+         // Tell the staging observer area to update
+         sMessage l_Message;
+         l_Message.m_From = GetUniqueId();
+         l_Message.m_Category = GetType();
+         l_Message.m_Key = GetResources()->GetMessageDispatcher()->Any();
+         l_Message.m_Value = "NewBean";
+         GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
 
          break;
       }
@@ -713,8 +719,6 @@ ePlayerState cPlayer::GetPlayerState()
 {
    return m_CurrentState;
 }
-
-
 
 std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField()
 {
