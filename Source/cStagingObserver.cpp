@@ -52,7 +52,6 @@ void cStagingObserver::Collision(cObject* a_pOther)
 
 void cStagingObserver::MessageReceived(sMessage a_Message)
 {
-   std::cout << "Message received" << std::endl;
    if (a_Message.m_Value == "NewBean" && a_Message.m_Category == m_Identifier)
    {
       _GetNewBeans();
@@ -63,14 +62,13 @@ void cStagingObserver::MessageReceived(sMessage a_Message)
 
 void cStagingObserver::_GetNewBeans()
 {
-   std::cout << "Getting new beans" << std::endl;
    if (a_pPivotBean != NULL)
    {
       UnregisterObject(a_pPivotBean, true);
    }
    if (a_pSwingBean != NULL)
    {
-      UnregisterObject(a_pPivotBean, true);
+      UnregisterObject(a_pSwingBean, true);
    }
 
    a_pPivotBean = m_Staging.GetNextBean();

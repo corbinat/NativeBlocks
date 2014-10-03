@@ -128,15 +128,12 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          l_Position.y -= GetResources()->GetGridCellSize().y;
          m_pPivotBean->SetPosition(l_Position, kNormal, false);
 
-         std::cout << "Pivot At: " << m_pPivotBean->GetPosition().x << "," << m_pPivotBean->GetPosition().y <<":" << m_pPivotBean->GetColor() << std::endl;
-
          m_pSwingBean = m_Staging.GetNextBean();
          RegisterObject(m_pSwingBean);
          l_Position = GetPosition();
          l_Position.x += GetResources()->GetGridCellSize().x * 2;
          l_Position.y -= GetResources()->GetGridCellSize().y * 2;
          m_pSwingBean->SetPosition(l_Position, kNormal, false);
-         std::cout << "Swing At: " << m_pSwingBean->GetPosition().x << "," << m_pSwingBean->GetPosition().y <<":" << m_pSwingBean->GetColor()<< std::endl;
 
          m_CurrentState = kStateControlBeans;
          StateChange(kStateCreateBeans, kStateControlBeans);
@@ -939,7 +936,6 @@ uint32_t cPlayer::_CalculateGarbageBeanNumber()
 
    uint32_t l_Garbage =
       ceil(static_cast<double>(l_Score) / 70.0);
-   std::cout << "Sending Garbage: " << l_Garbage << std::endl;
 
    // Add a little randomness into the garbage. 1 in 5 change to remove one
    std::random_device l_Generator;
@@ -949,7 +945,6 @@ uint32_t cPlayer::_CalculateGarbageBeanNumber()
    if (l_Number == 4)
    {
       --l_Garbage;
-      std::cout << "Actually removing one!" << std::endl;
    }
 
    return l_Garbage;
