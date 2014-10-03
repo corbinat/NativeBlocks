@@ -135,6 +135,12 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          l_Position.y -= GetResources()->GetGridCellSize().y * 2;
          m_pSwingBean->SetPosition(l_Position, kNormal, false);
 
+         // See if beans are already resting
+         if (_BeansAreResting())
+         {
+            m_BeanIsResting = true;
+         }
+
          m_CurrentState = kStateControlBeans;
          StateChange(kStateCreateBeans, kStateControlBeans);
          m_MiliSecSinceLastFall = 500;
@@ -425,8 +431,8 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
             }
             else
             {
-               m_CurrentState = kStateCreateBeans;
-               StateChange(kStateCheckForMatches, kStateCreateBeans);
+               m_CurrentState = kStateCheckForLosingState;
+               StateChange(kStateCheckForMatches, kStateCheckForLosingState);
             }
          }
          else
@@ -444,17 +450,16 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          // Start at row 4. Rows 0 - 4 are for accumulating garbage
          int32_t l_Row = 4;
 
-         uint32_t l_GarbageAcumulator = m_GarbageAcumulator;
-
          // While garbage accumulator is greater than 6 && row >= 0
-         while (l_GarbageAcumulator >= 6 && l_Row >= 0)
+         while (m_GarbageAcumulator >= 6 && l_Row >= 0)
          {
-            m_GarbageAcumulator -= 6;
-            l_GarbageAcumulator -= 6;
-
             for (uint32_t i = 0; i < 6; ++i)
             {
-               _CreateGarbageBean(i, l_Row);
+               if (m_Beans[i][l_Row] == NULL)
+               {
+                  _CreateGarbageBean(i, l_Row);
+                  --m_GarbageAcumulator;
+               }
             }
 
             l_Row -= 1;
@@ -463,7 +468,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
          if (l_Row != -1)
          {
-            if (l_GarbageAcumulator > 0)
+            if (m_GarbageAcumulator != 0)
             {
                // create list of numbers 0 - 5
                std::vector<uint32_t> l_Columns;
@@ -472,7 +477,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   l_Columns.push_back(i);
                }
 
-               while (l_GarbageAcumulator > 0)
+               while (m_GarbageAcumulator != 0)
                {
                   // generate random number between 0 and size
                   std::random_device l_Generator;
@@ -483,19 +488,49 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   // Pull that number out of the column list
                   uint32_t l_Column = l_Columns[l_Number];
                   l_Columns.erase(l_Columns.begin() + l_Number);
-
-                  _CreateGarbageBean(l_Column, l_Row);
-
-                  --m_GarbageAcumulator;
-                  --l_GarbageAcumulator;
+                  if (m_Beans[l_Column][l_Row] == NULL)
+                  {
+                     _CreateGarbageBean(l_Column, l_Row);
+                     --m_GarbageAcumulator;
+                  }
+                  else if (l_Columns.size() == 0)
+                  {
+                     // There must have already been garbage in this row
+                     // preventing us from unleashing all the garbage we wanted
+                     // to.
+                     --l_Row;
+                     for (uint32_t i = 0; i < 6; ++i)
+                     {
+                        l_Columns.push_back(i);
+                     }
+                     if (l_Row == -1)
+                     {
+                        break;
+                     }
+                  }
                }
 
             }
          }
 
          m_CurrentState = kStateWaitForBeansToSettle;
-         StateChange(kStateCheckForMatches, kStateWaitForBeansToSettle);
+         StateChange(kStateDropGarbage, kStateWaitForBeansToSettle);
          break;
+      }
+      case kStateCheckForLosingState:
+      {
+         // If a bean exists at (4,2) then game over.
+         if (m_Beans[2][4] != NULL)
+         {
+            m_CurrentState = kStateIdle;
+            StateChange(kStateCheckForLosingState, kStateIdle);
+            std::cout << GetType() << " Lost" << std::endl;
+         }
+         else
+         {
+            m_CurrentState = kStateCreateBeans;
+            StateChange(kStateCheckForLosingState, kStateCreateBeans);
+         }
       }
       default:
       {

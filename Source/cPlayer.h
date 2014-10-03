@@ -20,7 +20,8 @@ enum ePlayerState
    kStateControlBeans,
    kStateWaitForBeansToSettle,
    kStateCheckForMatches,
-   kStateDropGarbage
+   kStateDropGarbage,
+   kStateCheckForLosingState
 };
 
 // Spinning bean relative to the pivot bean. Starts Up.
