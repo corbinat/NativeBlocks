@@ -31,6 +31,12 @@ private:
       std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
       );
 
+   void _AnalyzeAllMoves(
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>> & a_PlayingField,
+      uint32_t a_Depth,
+      sOptimalPosition a_InitialMove
+   );
+
    // This helper will simulate the given play and analyze the resulting score.
    // If the score is higher than what is in the Optimal Moves vector, then the
    // vector will be cleared and the new play will be added.
@@ -38,7 +44,9 @@ private:
       std::shared_ptr<cBeanInfo> a_pBean1,
       std::shared_ptr<cBeanInfo> a_pBean2,
       eRotationState a_RotationState,
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+      sOptimalPosition a_InitialMove,
+      uint32_t a_Depth
       );
 
    // This function returns the resulting score if a player were to play the
@@ -76,6 +84,11 @@ private:
 
    // Vector keeps a list of optimal moves
    std::vector<sOptimalPosition> m_OptimalMoves;
+
+   uint32_t m_DelayToFirstMove;
+   uint32_t m_DelayTimer;
+
+   uint32_t m_AIThoughtLevel;
 };
 
 #endif

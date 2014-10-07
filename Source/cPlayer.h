@@ -88,6 +88,9 @@ public:
       uint32_t a_Chains
       );
 
+protected:
+   cStaging m_Staging;
+
 private:
 
    // Create initial playing surface for this object
@@ -109,8 +112,6 @@ private:
    // Beans in play
    cBean* m_pPivotBean;
    cBean* m_pSwingBean;
-
-   cStaging m_Staging;
 
    // These are beans we need to wait on to finish falling
    std::list<cBean*> m_FallingBeans;

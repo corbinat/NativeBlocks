@@ -8,7 +8,10 @@
 cAiPlayer::cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
    : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
      m_OptimalMoves(),
-     m_DoneThinking(false)
+     m_DoneThinking(false),
+     m_DelayToFirstMove(0),
+     m_DelayTimer(0),
+     m_AIThoughtLevel(1)
 {
 
 }
@@ -27,108 +30,17 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
       std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField =
          ClonePlayingField();
 
-      // Copy the current beans in play
-      sf::Vector2<cBean*> l_BeansInPlay = GetBeansInPlay();
-
-      std::shared_ptr<cBeanInfo> l_PivotBean =
-         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_BeansInPlay.x->GetColor()));
-      std::shared_ptr<cBeanInfo> l_SwingBean =
-         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_BeansInPlay.y->GetColor()));
-
-      sf::Vector2<uint32_t> l_PivotPosition =
-         GetBeanGridPosition(l_BeansInPlay.x);
-      sf::Vector2<uint32_t> l_SwingPosition =
-         GetBeanGridPosition(l_BeansInPlay.y);
-
-      std::vector<eRotationState> l_RotationStates;
-      l_RotationStates.push_back(kRotationStateUp);
-      l_RotationStates.push_back(kRotationStateDown);
-      l_RotationStates.push_back(kRotationStateLeft);
-      l_RotationStates.push_back(kRotationStateRight);
-
-      for (eRotationState l_RotationState : l_RotationStates)
-      {
-         l_PivotBean->SetGridPosition(l_PivotPosition);
-         l_SwingBean->SetGridPosition(l_SwingPosition);
-         // Adjust the swing bean for each rotation state
-         uint32_t l_MinRow = 0;
-         uint32_t l_MaxRow = 5;
-
-         if (l_RotationState == kRotationStateLeft)
-         {
-            l_MinRow = 1;
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
-         }
-         else if (l_RotationState == kRotationStateRight)
-         {
-            l_MaxRow = 4;
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
-         }
-         else if (l_RotationState == kRotationStateDown)
-         {
-            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
-         }
-
-         std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
-            DeepCopyGivenPlayingField(l_PlayingField);
-         _AnalyzeMove(l_PivotBean, l_SwingBean, l_RotationState, l_CopyPlayingField);
-
-         // Simulate to the left.
-         // TODO: This allows us to stop if we hit a wall of beans
-         while (l_PivotBean->GetGridPosition().x > l_MinRow)
-         {
-            l_PivotBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
-            std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
-               DeepCopyGivenPlayingField(l_PlayingField);
-            _AnalyzeMove(l_PivotBean, l_SwingBean, l_RotationState, l_CopyPlayingField);
-         }
-
-         l_PivotBean->SetGridPosition(l_PivotPosition);
-         l_SwingBean->SetGridPosition(l_SwingPosition);
-         if (l_RotationState == kRotationStateLeft)
-         {
-            l_MinRow = 1;
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
-         }
-         else if (l_RotationState == kRotationStateRight)
-         {
-            l_MaxRow = 4;
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
-         }
-         else if (l_RotationState == kRotationStateDown)
-         {
-            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
-         }
-
-         // Simulate to the right
-         while (l_PivotBean->GetGridPosition().x < l_MaxRow)
-         {
-            l_PivotBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
-            std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
-               DeepCopyGivenPlayingField(l_PlayingField);
-            _AnalyzeMove(l_PivotBean, l_SwingBean, l_RotationState, l_CopyPlayingField);
-         }
-      }
-
-      // We now have a list of potential moves. Pick one at random to work
-      // towards.
-      std::random_device l_Generator;
-      std::uniform_int_distribution<int> l_Distribution(0, m_OptimalMoves.size() - 1);
-
-      int l_Number = l_Distribution(l_Generator);
-      l_Number = l_Distribution(l_Generator);
-
-      sOptimalPosition l_Final = m_OptimalMoves[l_Number];
-      m_OptimalMoves.clear();
-      m_OptimalMoves.push_back(l_Final);
-      m_DoneThinking = true;
+      // TODO: This is a little weird because the l_Positions is only used as
+      // internal book-keeping during the function's recursion. I could make a
+      // small wrapper to hide this detail.
+      sOptimalPosition l_Positions;
+      _AnalyzeAllMoves(l_PlayingField, 0, l_Positions);
    }
    else
    {
       m_OptimalMoves.clear();
       m_DoneThinking = false;
+      SetFastFall(false);
    }
 }
 
@@ -140,9 +52,23 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       return;
    }
 
+   //~ m_DelayTimer += a_ElapsedMiliSec;
+   //~ if (m_DelayTimer < m_DelayToFirstMove)
+   //~ {
+      //~ return;
+   //~ }
+
+   //m_DelayTimer = m_DelayToFirstMove - 100;
+
    // There should only be one move in the vector. Pull it out and move towards
    // it.
-   sOptimalPosition l_Destination = m_OptimalMoves[0];
+   sOptimalPosition l_Destination;
+   l_Destination.m_Column = 2;
+   l_Destination.m_Rotation = kRotationStateUp;
+   if (m_OptimalMoves.size() != 0)
+   {
+      l_Destination = m_OptimalMoves[0];
+   }
 
    // If our rotation isn't right, rotate the beans.
    if (GetRotationState() != l_Destination.m_Rotation)
@@ -157,19 +83,35 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    // Get the pivot bean's location
    sf::Vector2<uint32_t> l_BeanPos = GetBeanGridPosition(l_BeansInPlay.x);
 
+   bool l_Success = true;
 
    if (l_BeanPos.x < l_Destination.m_Column)
    {
-      ShiftControlledBeansColumn(1);
+      l_Success = ShiftControlledBeansColumn(1);
    }
    else if (l_BeanPos.x > l_Destination.m_Column)
    {
-      ShiftControlledBeansColumn(-1);
+      l_Success = ShiftControlledBeansColumn(-1);
    }
    else
    {
       // The rotation and position are good, so just fall
       SetFastFall(true);
+   }
+
+   if (!l_Success)
+   {
+      m_OptimalMoves.clear();
+      std::cout << "AHHHHH START OVER" << l_Destination.m_Column << " " << l_Destination.m_Rotation << std::endl;
+      // AI can't go where it wants because wall of beans. Start thinking again
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField =
+         ClonePlayingField();
+
+      // TODO: This is a little weird because the l_Positions is only used as
+      // internal book-keeping during the function's recursion. I could make a
+      // small wrapper to hide this detail.
+      sOptimalPosition l_Positions;
+      _AnalyzeAllMoves(l_PlayingField, 0, l_Positions);
    }
 
 }
@@ -224,43 +166,338 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cAiPlayer::DeepCopyGivenPla
    return l_PlayingField;
 }
 
+void cAiPlayer::_AnalyzeAllMoves(
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> & a_PlayingField,
+   uint32_t a_Depth,
+   sOptimalPosition a_InitialMove
+   )
+{
+   m_DoneThinking = false;
+
+   if (a_Depth > m_AIThoughtLevel)
+   {
+      return;
+   }
+
+   std::shared_ptr<cBeanInfo> l_PivotBean;
+   sf::Vector2<uint32_t> l_PivotPosition;
+   std::shared_ptr<cBeanInfo> l_SwingBean;
+   sf::Vector2<uint32_t> l_SwingPosition;
+
+   if (a_Depth == 0)
+   {
+       // Copy the current beans in play
+      sf::Vector2<cBean*> l_BeansInPlay = GetBeansInPlay();
+
+      l_PivotBean =
+         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_BeansInPlay.x->GetColor()));
+      l_SwingBean =
+         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_BeansInPlay.y->GetColor()));
+
+      l_PivotPosition =
+         GetBeanGridPosition(l_BeansInPlay.x);
+
+      // Start the beans in the up position
+      l_SwingPosition.x = l_PivotPosition.x;
+      l_SwingPosition.y = l_PivotPosition.y - 1;
+   }
+   else
+   {
+      eBeanColor l_Color = m_Staging.InspectNextBeanColor(a_Depth * 2 - 2);
+      eBeanColor l_Color2 = m_Staging.InspectNextBeanColor(a_Depth * 2 + 1 - 2);
+      //std::cout << "AI color: " << l_Color << "," << l_Color2 << std::endl;
+
+      l_PivotBean =
+         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_Color));
+      l_SwingBean =
+         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_Color2));
+
+      l_PivotPosition.x = 2;
+      l_PivotPosition.y = 4;
+
+      l_SwingPosition.x = 2;
+      l_SwingPosition.y = 3;
+   }
+
+   std::vector<eRotationState> l_RotationStates;
+   l_RotationStates.push_back(kRotationStateUp);
+   l_RotationStates.push_back(kRotationStateDown);
+   l_RotationStates.push_back(kRotationStateLeft);
+   l_RotationStates.push_back(kRotationStateRight);
+
+   for (eRotationState l_RotationState : l_RotationStates)
+   {
+      l_PivotBean->SetGridPosition(l_PivotPosition);
+      l_SwingBean->SetGridPosition(l_SwingPosition);
+      // Adjust the swing bean for each rotation state
+      uint32_t l_MinRow = 0;
+      uint32_t l_MaxRow = 5;
+
+      if (l_RotationState == kRotationStateLeft)
+      {
+         if (l_SwingBean->GetGridPosition().x > l_MinRow && a_PlayingField[l_SwingBean->GetGridPosition().x - 1][l_SwingBean->GetGridPosition().y] == NULL)
+         {
+            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
+         }
+         else
+         {
+            // we can't rotate left easily.
+            continue;
+         }
+
+         l_MinRow = 1;
+      }
+      else if (l_RotationState == kRotationStateRight)
+      {
+         if (l_SwingBean->GetGridPosition().x < l_MaxRow && a_PlayingField[l_SwingBean->GetGridPosition().x + 1][l_SwingBean->GetGridPosition().y] == NULL)
+         {
+            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
+         }
+         else
+         {
+            // we can't rotate right easily.
+            continue;
+         }
+         l_MaxRow = 4;
+
+      }
+      else if (l_RotationState == kRotationStateDown)
+      {
+         if (l_PivotBean->GetColor() == l_SwingBean->GetColor())
+         {
+            // This is same state as up if both beans have same color.
+            continue;
+         }
+         if (a_PlayingField[l_SwingBean->GetGridPosition().x][l_SwingBean->GetGridPosition().y + 1] == NULL)
+         {
+            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
+         }
+         else
+         {
+            // we can't rotate down easily.
+            continue;
+         }
+      }
+
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
+         DeepCopyGivenPlayingField(a_PlayingField);
+      _AnalyzeMove(
+         l_PivotBean,
+         l_SwingBean,
+         l_RotationState,
+         l_CopyPlayingField,
+         a_InitialMove,
+         a_Depth
+         );
+
+      // Simulate to the left.
+      while (l_PivotBean->GetGridPosition().x > l_MinRow)
+      {
+         std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
+            DeepCopyGivenPlayingField(a_PlayingField);
+
+         // See if we can even go left
+         if (  l_CopyPlayingField[l_PivotBean->GetGridPosition().x - 1][l_PivotBean->GetGridPosition().y] != NULL
+            || l_CopyPlayingField[l_SwingBean->GetGridPosition().x - 1][l_SwingBean->GetGridPosition().y] != NULL
+            )
+         {
+            break;
+         }
+
+         l_PivotBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
+         l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
+
+         _AnalyzeMove(
+            l_PivotBean,
+            l_SwingBean,
+            l_RotationState,
+            l_CopyPlayingField,
+            a_InitialMove,
+            a_Depth
+            );
+      }
+
+      // Reset to middle to prepare for going right
+      l_PivotBean->SetGridPosition(l_PivotPosition);
+      l_SwingBean->SetGridPosition(l_SwingPosition);
+      if (l_RotationState == kRotationStateLeft)
+      {
+         if (l_SwingBean->GetGridPosition().x > l_MinRow && a_PlayingField[l_SwingBean->GetGridPosition().x - 1][l_SwingBean->GetGridPosition().y] == NULL)
+         {
+            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
+         }
+         else
+         {
+            // we can't rotate left easily.
+            continue;
+         }
+
+         l_MinRow = 1;
+      }
+      else if (l_RotationState == kRotationStateRight)
+      {
+         if (l_SwingBean->GetGridPosition().x < l_MaxRow && a_PlayingField[l_SwingBean->GetGridPosition().x + 1][l_SwingBean->GetGridPosition().y] == NULL)
+         {
+            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
+         }
+         else
+         {
+            // we can't rotate right easily.
+            continue;
+         }
+         l_MaxRow = 4;
+
+      }
+      else if (l_RotationState == kRotationStateDown)
+      {
+         if (l_PivotBean->GetColor() == l_SwingBean->GetColor())
+         {
+            // This is same state as up if both beans have same color.
+            continue;
+         }
+         if (a_PlayingField[l_SwingBean->GetGridPosition().x][l_SwingBean->GetGridPosition().y + 1] == NULL)
+         {
+            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
+         }
+         else
+         {
+            // we can't rotate down easily.
+            continue;
+         }
+      }
+
+      // Simulate to the right
+      while (l_PivotBean->GetGridPosition().x < l_MaxRow)
+      {
+         std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
+            DeepCopyGivenPlayingField(a_PlayingField);
+
+         // See if we can even go right
+         if (  l_CopyPlayingField[l_PivotBean->GetGridPosition().x + 1][l_PivotBean->GetGridPosition().y] != NULL
+            || l_CopyPlayingField[l_SwingBean->GetGridPosition().x + 1][l_SwingBean->GetGridPosition().y] != NULL
+            )
+         {
+            break;
+         }
+
+         l_PivotBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
+         l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
+
+         _AnalyzeMove(
+            l_PivotBean,
+            l_SwingBean,
+            l_RotationState,
+            l_CopyPlayingField,
+            a_InitialMove,
+            a_Depth
+            );
+      }
+   }
+
+   if (a_Depth == 0)
+   {
+      // We now have a list of potential moves. Pick one at random to work
+      // towards.
+      if (m_OptimalMoves.size() != 0)
+      {
+         std::random_device l_Generator;
+         std::uniform_int_distribution<int> l_Distribution(0, m_OptimalMoves.size() - 1);
+
+         int l_Number = l_Distribution(l_Generator);
+         l_Number = l_Distribution(l_Generator);
+
+         sOptimalPosition l_Final = m_OptimalMoves[l_Number];
+         m_OptimalMoves.clear();
+         m_OptimalMoves.push_back(l_Final);
+
+         if (GetType() == "Player1")
+         {
+            std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
+            std::cout << l_Final.m_Column << " " << l_Final.m_Rotation << std::endl;
+         }
+      }
+
+      m_DoneThinking = true;
+      //~ std::uniform_int_distribution<int> l_Distribution2(200, 2000);
+      //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
+      //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
+      //~ m_DelayTimer = 0;
+   }
+}
+
 void cAiPlayer::_AnalyzeMove(
    std::shared_ptr<cBeanInfo> a_pBean1,
    std::shared_ptr<cBeanInfo> a_pBean2,
    eRotationState a_RotationState,
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   sOptimalPosition a_InitialMove,
+   uint32_t a_Depth
    )
 {
    sf::Vector2<uint32_t> l_PivotPosition = a_pBean1->GetGridPosition();
    sf::Vector2<uint32_t> l_SwingPosition = a_pBean2->GetGridPosition();
 
-   sOptimalPosition l_NewMove;
-   l_NewMove.m_Column = a_pBean1->GetGridPosition().x;
-   l_NewMove.m_Rotation = a_RotationState;
-   l_NewMove.m_Score =
-      _SimulatePlay(a_pBean1, a_pBean2, a_rPlayingField);
+   if (a_Depth == 0)
+   {
+      a_InitialMove.m_Column = a_pBean1->GetGridPosition().x;
+      a_InitialMove.m_Rotation = a_RotationState;
+   }
 
-   if (m_OptimalMoves.size() == 0)
+   a_InitialMove.m_Score =
+      _SimulatePlay(a_pBean1, a_pBean2, a_rPlayingField) + a_InitialMove.m_Score;
+
+   if (a_InitialMove.m_Score != 0 && a_Depth == 0)
    {
-      m_OptimalMoves.push_back(l_NewMove);
+      // Add a bonus to doing things ealier
+      a_InitialMove.m_Score *= 2;
    }
-   else if (m_OptimalMoves.begin()->m_Score == l_NewMove.m_Score)
+
+   // See if we have lost. If so, don't bother continuing on.
+   if (a_rPlayingField[2][5] != NULL)
    {
-      m_OptimalMoves.push_back(l_NewMove);
+      // SimulatePlay dirtys up the Beans. Restore the bean's position and
+      // connections for the next simulation.
+      a_pBean1->SetGridPosition(l_PivotPosition);
+      a_pBean2->SetGridPosition(l_SwingPosition);
+
+      a_pBean1->RemoveAllConnections();
+      a_pBean2->RemoveAllConnections();
+
+      return;
    }
-   else if (m_OptimalMoves.begin()->m_Score < l_NewMove.m_Score)
+
+
+   if (a_Depth == m_AIThoughtLevel)
    {
-      m_OptimalMoves.clear();
-      m_OptimalMoves.push_back(l_NewMove);
+      if (m_OptimalMoves.size() == 0)
+      {
+         m_OptimalMoves.push_back(a_InitialMove);
+      }
+      else if (m_OptimalMoves.begin()->m_Score == a_InitialMove.m_Score)
+      {
+         m_OptimalMoves.push_back(a_InitialMove);
+      }
+      else if (m_OptimalMoves.begin()->m_Score < a_InitialMove.m_Score)
+      {
+         m_OptimalMoves.clear();
+         m_OptimalMoves.push_back(a_InitialMove);
+      }
+   }
+   else
+   {
+      // Recursively call this function again
+      _AnalyzeAllMoves(a_rPlayingField, ++a_Depth, a_InitialMove);
    }
 
    // SimulatePlay dirtys up the Beans. Restore the bean's position and
-   // connectins for the next simulation.
+   // connections for the next simulation.
    a_pBean1->SetGridPosition(l_PivotPosition);
    a_pBean2->SetGridPosition(l_SwingPosition);
 
    a_pBean1->RemoveAllConnections();
    a_pBean2->RemoveAllConnections();
+
+
 }
 
 uint32_t cAiPlayer::_SimulatePlay(
@@ -305,7 +542,6 @@ uint32_t cAiPlayer::_SimulatePlay(
          uint32_t l_BeansExploded = 0;
          uint32_t l_Multiplier = 0;
          uint32_t l_DifferentGroups = 0;
-
 
          _SearchColumnAndExplodeConnections(
             l_Column,

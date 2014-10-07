@@ -120,7 +120,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          m_ChainCount = 0;
          m_GarbageDropped = false;
 
-
          m_pPivotBean = m_Staging.GetNextBean();
          RegisterObject(m_pPivotBean);
          sf::Vector3<double> l_Position = GetPosition();
@@ -940,9 +939,10 @@ sf::Vector2<uint32_t> cPlayer::GetBeanGridPosition(cBean* a_pBean)
    l_ReturnPosition.x =
       (a_pBean->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
 
-   // Subtract 5 because the top 5 is above the player is is just buffer for garbage
+   // Add 5 because the top 5 above the player is just buffer for garbage. Add .5 so that we round up
    l_ReturnPosition.y =
-      ((a_pBean->GetPosition().y - GetPosition().y) / GetResources()->GetGridCellSize().y) + 5;
+      ((a_pBean->GetPosition().y - GetPosition().y)/ static_cast<double>(GetResources()->GetGridCellSize().y))
+      + 5.5;
 
    return l_ReturnPosition;
 }
