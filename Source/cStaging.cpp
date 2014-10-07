@@ -23,12 +23,9 @@ cStaging::~cStaging()
 cBean* cStaging::GetNextBean()
 {
    // Advance the random number engine
-   m_RandomNumberEngine();
    std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 1);
-   //std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 4);
 
    int l_Number = l_Distribution(m_RandomNumberEngine);
-   l_Number = l_Distribution(m_RandomNumberEngine);
    eBeanColor l_Color = _NumberToColor(l_Number);
 
    cBean * a_pBean = new cBean(l_Color, m_pResources, m_PlayerId);
@@ -41,16 +38,14 @@ eBeanColor cStaging::InspectNextBeanColor(uint32_t a_Position)
    // Copy the number engine so we don't advance the real thing
    std::minstd_rand l_Engine = m_RandomNumberEngine;
 
-   for (int32_t i = 0; i < a_Position - 1; ++i)
+   for (int32_t i = 0; i < a_Position; ++i)
    {
       l_Engine();
    }
 
    std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 1);
-   //std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 4);
 
    int l_Number = l_Distribution(l_Engine);
-   l_Number = l_Distribution(l_Engine);
 
    return _NumberToColor(l_Number);
 }
