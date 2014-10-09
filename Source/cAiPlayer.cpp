@@ -10,8 +10,11 @@ cAiPlayer::cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEn
      m_OptimalMoves(),
      m_DoneThinking(false),
      m_DelayToFirstMove(0),
+     m_FirstMoveMade(false),
+     m_DelayToAdditionalMoves(0),
      m_DelayTimer(0),
-     m_AIThoughtLevel(1)
+     m_AIThoughtLevel(1),
+     m_MaxAIThoughtLevel(1)
 {
 
 }
@@ -52,13 +55,22 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       return;
    }
 
-   //~ m_DelayTimer += a_ElapsedMiliSec;
-   //~ if (m_DelayTimer < m_DelayToFirstMove)
-   //~ {
-      //~ return;
-   //~ }
-
-   //m_DelayTimer = m_DelayToFirstMove - 100;
+   m_DelayTimer += a_ElapsedMiliSec;
+   if (m_FirstMoveMade)
+   {
+      if (m_DelayTimer < m_DelayToAdditionalMoves)
+      {
+         return;
+      }
+   }
+   else
+   {
+      if (m_DelayTimer < m_DelayToFirstMove)
+      {
+         return;
+      }
+   }
+   m_FirstMoveMade = true;
 
    // There should only be one move in the vector. Pull it out and move towards
    // it.
@@ -101,9 +113,11 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
 
    if (!l_Success)
    {
+      // AI couldn't move where it wanted due to a wall of beans. Start the
+      // search over.
       m_OptimalMoves.clear();
       std::cout << "AHHHHH START OVER" << l_Destination.m_Column << " " << l_Destination.m_Rotation << std::endl;
-      // AI can't go where it wants because wall of beans. Start thinking again
+
       std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField =
          ClonePlayingField();
 
@@ -200,6 +214,9 @@ void cAiPlayer::_AnalyzeAllMoves(
       // Start the beans in the up position
       l_SwingPosition.x = l_PivotPosition.x;
       l_SwingPosition.y = l_PivotPosition.y - 1;
+
+      // Determine what kind of pressure the AI is under
+      _CalculatePressure(a_PlayingField, l_PivotPosition, l_SwingPosition);
    }
    else
    {
@@ -235,9 +252,10 @@ void cAiPlayer::_AnalyzeAllMoves(
 
       if (l_RotationState == kRotationStateLeft)
       {
-         if (l_SwingBean->GetGridPosition().x > l_MinRow && a_PlayingField[l_SwingBean->GetGridPosition().x - 1][l_SwingBean->GetGridPosition().y] == NULL)
+         if (l_SwingBean->GetGridPosition().x > l_MinRow && a_PlayingField[l_PivotBean->GetGridPosition().x - 1][l_PivotBean->GetGridPosition().y] == NULL)
          {
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
+            l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
+            l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
          }
          else
          {
@@ -249,9 +267,10 @@ void cAiPlayer::_AnalyzeAllMoves(
       }
       else if (l_RotationState == kRotationStateRight)
       {
-         if (l_SwingBean->GetGridPosition().x < l_MaxRow && a_PlayingField[l_SwingBean->GetGridPosition().x + 1][l_SwingBean->GetGridPosition().y] == NULL)
+         if (l_SwingBean->GetGridPosition().x < l_MaxRow && a_PlayingField[l_PivotBean->GetGridPosition().x + 1][l_PivotBean->GetGridPosition().y] == NULL)
          {
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
+            l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
+            l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
          }
          else
          {
@@ -268,9 +287,9 @@ void cAiPlayer::_AnalyzeAllMoves(
             // This is same state as up if both beans have same color.
             continue;
          }
-         if (a_PlayingField[l_SwingBean->GetGridPosition().x][l_SwingBean->GetGridPosition().y + 1] == NULL)
+         if (a_PlayingField[l_PivotBean->GetGridPosition().x][l_PivotBean->GetGridPosition().y + 1] == NULL)
          {
-            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
+            l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y + 1);
          }
          else
          {
@@ -322,48 +341,22 @@ void cAiPlayer::_AnalyzeAllMoves(
       l_SwingBean->SetGridPosition(l_SwingPosition);
       if (l_RotationState == kRotationStateLeft)
       {
-         if (l_SwingBean->GetGridPosition().x > l_MinRow && a_PlayingField[l_SwingBean->GetGridPosition().x - 1][l_SwingBean->GetGridPosition().y] == NULL)
-         {
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
-         }
-         else
-         {
-            // we can't rotate left easily.
-            continue;
-         }
+         l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
+         l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
 
          l_MinRow = 1;
       }
       else if (l_RotationState == kRotationStateRight)
       {
-         if (l_SwingBean->GetGridPosition().x < l_MaxRow && a_PlayingField[l_SwingBean->GetGridPosition().x + 1][l_SwingBean->GetGridPosition().y] == NULL)
-         {
-            l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
-         }
-         else
-         {
-            // we can't rotate right easily.
-            continue;
-         }
-         l_MaxRow = 4;
+         l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
+         l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
 
+         l_MaxRow = 4;
       }
       else if (l_RotationState == kRotationStateDown)
       {
-         if (l_PivotBean->GetColor() == l_SwingBean->GetColor())
-         {
-            // This is same state as up if both beans have same color.
-            continue;
-         }
-         if (a_PlayingField[l_SwingBean->GetGridPosition().x][l_SwingBean->GetGridPosition().y + 1] == NULL)
-         {
-            l_SwingBean->SetRowPosition(l_SwingBean->GetGridPosition().y + 2);
-         }
-         else
-         {
-            // we can't rotate down easily.
-            continue;
-         }
+         l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x);
+         l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y + 1);
       }
 
       // Simulate to the right
@@ -418,10 +411,12 @@ void cAiPlayer::_AnalyzeAllMoves(
       }
 
       m_DoneThinking = true;
+      m_FirstMoveMade = false;
+
       //~ std::uniform_int_distribution<int> l_Distribution2(200, 2000);
       //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
       //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
-      //~ m_DelayTimer = 0;
+      m_DelayTimer = 0;
    }
 }
 
@@ -496,8 +491,6 @@ void cAiPlayer::_AnalyzeMove(
 
    a_pBean1->RemoveAllConnections();
    a_pBean2->RemoveAllConnections();
-
-
 }
 
 uint32_t cAiPlayer::_SimulatePlay(
@@ -766,3 +759,127 @@ void cAiPlayer::_SearchColumnAndExplodeConnections(
    }
 }
 
+bool cAiPlayer::_IsColumnUrgencyHigh(
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   sf::Vector2<uint32_t> a_FallingBean1,
+   sf::Vector2<uint32_t> a_FallingBean2
+   )
+{
+   // If the nearest bean in our column is within 2 then the pressure is
+   // automatically high.
+   uint32_t l_Column1 = a_FallingBean1.x;
+
+   uint32_t i;
+   for (i = 0; i < a_rPlayingField[l_Column1].size(); ++i)
+   {
+      if (a_rPlayingField[l_Column1][i] != NULL)
+      {
+         break;
+      }
+   }
+
+   if (i != a_rPlayingField[l_Column1].size())
+   {
+      if (
+         (static_cast<int32_t>(a_rPlayingField[l_Column1][i]->GetGridPosition().y)
+         - static_cast<int32_t>(a_FallingBean1.y))
+         < 2
+         )
+      {
+         return true;
+      }
+   }
+
+   // If the nearest bean in our column is within 2 then the pressure is
+   // automatically high.
+   uint32_t l_Column2 = a_FallingBean2.x;
+
+   for (i = 0; i < a_rPlayingField[l_Column2].size(); ++i)
+   {
+      if (a_rPlayingField[l_Column2][i] != NULL)
+      {
+         break;
+      }
+   }
+
+   if (i != a_rPlayingField[l_Column1].size())
+   {
+      if (
+         (static_cast<int32_t>(a_rPlayingField[l_Column2][i]->GetGridPosition().y)
+         - static_cast<int32_t>(a_FallingBean1.y))
+         < 2
+         )
+      {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+void cAiPlayer::_CalculatePressure(
+   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   sf::Vector2<uint32_t> a_FallingBean1,
+   sf::Vector2<uint32_t> a_FallingBean2
+   )
+{
+   if (_IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
+   {
+      std::cout << "Very high pressure" << std::endl;
+      m_DelayToFirstMove = 0;
+      m_DelayToAdditionalMoves = 0;
+      m_AIThoughtLevel = 0;
+      return;
+   }
+
+   // No beans right under us, so base the pressure off of average height of the
+   // columns. This average is actually the average number of empty spaces per
+   // column.
+   uint32_t l_Average = 0;
+   for (int32_t l_Column = 0; l_Column < a_rPlayingField.size(); ++l_Column)
+   {
+      int32_t l_Row;
+      for (l_Row = a_rPlayingField[l_Column].size() - 1; l_Row >= 0; --l_Row)
+      {
+         if (a_rPlayingField[l_Column][l_Row] == NULL)
+         {
+            break;
+         }
+      }
+
+      l_Average += l_Row;
+   }
+
+   l_Average /= 6;
+
+   // If bean level is high then the pressure is high. Add 5 to account for
+   // garbage rows
+   if (l_Average < (3 + 5))
+   {
+      // wait up to 1 bean falls before making the first move
+      std::cout << "High Pressure" << std::endl;
+      m_DelayToFirstMove = m_MiliSecPerFall / 4;
+      m_DelayToAdditionalMoves = m_MiliSecPerFall / 6;
+      m_AIThoughtLevel = 0;
+   }
+   // If bean level is midway then the pressure is up a just a bit. Add 5 to
+   // account for garbage rows
+   else if (l_Average < (4 + 5))
+   {
+      std::cout << "Med Pressure" << std::endl;
+      // wait up to 1 bean falls before making the first move
+      m_DelayToFirstMove = m_MiliSecPerFall;
+      m_DelayToAdditionalMoves = m_MiliSecPerFall / 4;
+      if (m_MaxAIThoughtLevel > 0)
+      {
+         m_AIThoughtLevel = m_MaxAIThoughtLevel - 1;
+      }
+   }
+   else
+   {
+      // wait up to 2 bean falls before making the first move
+      m_DelayToFirstMove = m_MiliSecPerFall * 2;
+      m_DelayToAdditionalMoves = m_MiliSecPerFall / 4;
+      m_AIThoughtLevel = m_MaxAIThoughtLevel;
+   }
+}

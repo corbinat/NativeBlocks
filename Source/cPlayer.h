@@ -91,6 +91,9 @@ public:
 protected:
    cStaging m_Staging;
 
+   // How long to wait before moving the bean down one
+   uint32_t m_MiliSecPerFall;
+
 private:
 
    // Create initial playing surface for this object
@@ -123,7 +126,6 @@ private:
    std::vector<std::vector<cBean*>> m_Beans;
 
    // How long to wait before moving the bean down one
-   uint32_t m_MiliSecPerFall;
    uint32_t m_MiliSecSinceLastFall;
 
    // Count how long a bean has been resting. Lock bean in when this hits max

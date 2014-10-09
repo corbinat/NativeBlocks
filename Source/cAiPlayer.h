@@ -79,6 +79,20 @@ private:
       uint32_t* a_DifferentGroups
       );
 
+   // This function returns true if beans are getting close to landing.
+   bool _IsColumnUrgencyHigh(
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
+
+   // This function modifies m_DelayToFirstMove and m_AIThoughtLevel depending
+   // on how close the AI is to losing. More pressure makes both values go down.
+   void _CalculatePressure(
+      std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
 
    bool m_DoneThinking;
 
@@ -86,9 +100,12 @@ private:
    std::vector<sOptimalPosition> m_OptimalMoves;
 
    uint32_t m_DelayToFirstMove;
+   bool m_FirstMoveMade;
+   uint32_t m_DelayToAdditionalMoves;
    uint32_t m_DelayTimer;
 
    uint32_t m_AIThoughtLevel;
+   uint32_t m_MaxAIThoughtLevel;
 };
 
 #endif
