@@ -42,6 +42,7 @@ cObject* cBeanLevel::PixelToObject(
    if (a_Color.r == 0 && a_Color.g == 0 && a_Color.b == 0)
    {
       cHumanPlayer* l_pPlayer = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1");
+      //cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1");
       return l_pPlayer;
       //return NULL;
    }
