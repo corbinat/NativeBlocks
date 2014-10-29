@@ -13,7 +13,7 @@ EngineINC = ${EngineDIR}
 CFLAGS = -I${SFMLINC}
 CFLAGS += -I${EngineINC}
 CFLAGS += ${DEBUG} -std=c++11
-LDFLAGS = -L${SFMLLIB} -lsfml-system -lsfml-window -lsfml-graphics
+LDFLAGS = -L${SFMLLIB} -lsfml-system -lsfml-window -lsfml-graphics -lpthread
 
 SourceDir = Source
 

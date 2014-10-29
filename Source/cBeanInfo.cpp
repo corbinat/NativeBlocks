@@ -4,49 +4,10 @@
 #include <iostream>
 
 cBeanInfo::cBeanInfo()
-   : m_Color(kBeanColorBlue),
-   m_ConnectedBeans(),
-   m_GridPosition()
+   : m_Color(kBeanColorEmpty),
+     m_ConnectedBeans(),
+     m_GridPosition()
 {
-   std::random_device l_Generator;
-   std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 1);
-   //std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 4);
-
-   int l_Number = l_Distribution(l_Generator);
-   l_Number = l_Distribution(l_Generator);
-   switch(l_Number)
-   {
-      case 0:
-      {
-         m_Color = kBeanColorBlue;
-         break;
-      }
-      case 1:
-      {
-         m_Color = kBeanColorGreen;
-         break;
-      }
-      case 2:
-      {
-         m_Color = kBeanColorYellow;
-         break;
-      }
-      case 3:
-      {
-         m_Color = kBeanColorOrange;
-         break;
-      }
-      case 4:
-      {
-         m_Color = kBeanColorPink;
-         break;
-      }
-      default:
-      {
-         m_Color = kBeanColorGarbage;
-      }
-   }
-
 }
 
 cBeanInfo::cBeanInfo(eBeanColor a_Color)
@@ -65,23 +26,39 @@ eBeanColor cBeanInfo::GetColor()
    return m_Color;
 }
 
-bool cBeanInfo::AddConnection(cBeanInfo* a_pOtherBean)
+void cBeanInfo::SetColor(eBeanColor a_NewColor)
 {
-   auto l_Insert = m_ConnectedBeans.insert(a_pOtherBean);
-   a_pOtherBean->m_ConnectedBeans.insert(this);
-
-   return l_Insert.second;
+   m_Color = a_NewColor;
 }
 
-std::unordered_set<cBeanInfo*> cBeanInfo::CountConnections()
+bool cBeanInfo::AddConnection(cBeanInfo* a_pOtherBean)
+{
+   for (auto l_BeanPos : m_ConnectedBeans)
+   {
+      if (a_pOtherBean->GetGridPosition() == l_BeanPos)
+      {
+         // Bean is already in list, so return false.
+         return false;
+      }
+   }
+
+   m_ConnectedBeans.push_back(a_pOtherBean->GetGridPosition());
+   a_pOtherBean->m_ConnectedBeans.push_back(GetGridPosition());
+
+   return true;
+}
+
+std::unordered_set<cBeanInfo*> cBeanInfo::CountConnections(
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
+   )
 {
    std::unordered_set<cBeanInfo*> a_ExcludeList;
 
    a_ExcludeList.insert(this);
 
-   for (cBeanInfo* l_pBean : m_ConnectedBeans)
+   for (sf::Vector2<uint32_t> l_BeanPosition : m_ConnectedBeans)
    {
-      l_pBean->_CountConnections(&a_ExcludeList);
+      a_rPlayingField[l_BeanPosition.x][l_BeanPosition.y]._CountConnections(a_rPlayingField, &a_ExcludeList);
    }
    //~ for (cBeanInfo* l_pBean : a_ExcludeList)
    //~ {
@@ -93,23 +70,40 @@ std::unordered_set<cBeanInfo*> cBeanInfo::CountConnections()
 
 
 
-void cBeanInfo::_CountConnections(std::unordered_set<cBeanInfo*>* a_ExcludeList)
+void cBeanInfo::_CountConnections(
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+   std::unordered_set<cBeanInfo*>* a_ExcludeList
+   )
 {
    a_ExcludeList->insert(this);
-   for (cBeanInfo* l_pBean : m_ConnectedBeans)
+   for (sf::Vector2<uint32_t> l_BeanPosition : m_ConnectedBeans)
    {
-      if (a_ExcludeList->find(l_pBean) == a_ExcludeList->end())
+      if (a_ExcludeList->find(&a_rPlayingField[l_BeanPosition.x][l_BeanPosition.y]) == a_ExcludeList->end())
       {
-         l_pBean->_CountConnections(a_ExcludeList);
+         a_rPlayingField[l_BeanPosition.x][l_BeanPosition.y]._CountConnections(a_rPlayingField, a_ExcludeList);
       }
    }
 }
 
-void cBeanInfo::RemoveAllConnections()
+void cBeanInfo::RemoveAllConnections(
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
+   )
 {
-   for (cBeanInfo* l_pBean : m_ConnectedBeans)
+   // Iterate through all connections
+   for (sf::Vector2<uint32_t> l_BeanPosition : m_ConnectedBeans)
    {
-      l_pBean->m_ConnectedBeans.erase(this);
+      // For each connection, find this bean and remove it from their connection
+      for (auto l_Other = a_rPlayingField[l_BeanPosition.x][l_BeanPosition.y].m_ConnectedBeans.begin();
+         l_Other != a_rPlayingField[l_BeanPosition.x][l_BeanPosition.y].m_ConnectedBeans.end();
+         ++ l_Other
+         )
+      {
+         if (*l_Other == GetGridPosition())
+         {
+            a_rPlayingField[l_BeanPosition.x][l_BeanPosition.y].m_ConnectedBeans.erase(l_Other);
+            break;
+         }
+      }
    }
    m_ConnectedBeans.clear();
 }
@@ -132,9 +126,4 @@ void cBeanInfo::SetColumnPosition(uint32_t a_Column)
 sf::Vector2<uint32_t> cBeanInfo::GetGridPosition()
 {
    return m_GridPosition;
-}
-
-std::unordered_set<cBeanInfo*> cBeanInfo::GetImmediateConnections()
-{
-   return m_ConnectedBeans;
 }

@@ -30,7 +30,8 @@ enum eRotationState
    kRotationStateUp,
    kRotationStateDown,
    kRotationStateLeft,
-   kRotationStateRight
+   kRotationStateRight,
+   kRotationStateSize
 };
 
 enum eRotationDirection
@@ -78,7 +79,7 @@ public:
    ePlayerState GetPlayerState();
 
 
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> ClonePlayingField();
+   std::vector<std::vector<cBeanInfo>> ClonePlayingField();
 
    // TODO: This doesn't need to be a member function
    uint32_t CalculateScore(

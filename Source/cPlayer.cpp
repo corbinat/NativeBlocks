@@ -751,11 +751,11 @@ ePlayerState cPlayer::GetPlayerState()
    return m_CurrentState;
 }
 
-std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField()
+std::vector<std::vector<cBeanInfo>> cPlayer::ClonePlayingField()
 {
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField(
+   std::vector<std::vector<cBeanInfo>> l_PlayingField(
       6,
-      std::vector<std::shared_ptr<cBeanInfo>>(g_kTotalRows, NULL)
+      std::vector<cBeanInfo>(g_kTotalRows)
       );
 
    for (
@@ -772,9 +772,8 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField(
       {
          if (m_Beans[i][j] != NULL)
          {
-            std::shared_ptr<cBeanInfo> l_NewBeanInfo =
-               std::shared_ptr<cBeanInfo>(new cBeanInfo(m_Beans[i][j]->GetColor()));
-            l_NewBeanInfo->SetGridPosition({i,j});
+            cBeanInfo l_NewBeanInfo(m_Beans[i][j]->GetColor());
+            l_NewBeanInfo.SetGridPosition({i,j});
             l_PlayingField[i][j] = l_NewBeanInfo;
 
             std::unordered_set<cBean*> l_NewBeanConnections =
@@ -788,9 +787,9 @@ std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cPlayer::ClonePlayingField(
                int32_t l_Y =
                   GetBeanGridPosition(l_Bean).y;
 
-               if (l_PlayingField[l_X][l_Y] != NULL)
+               if (l_PlayingField[l_X][l_Y].GetColor() != kBeanColorEmpty)
                {
-                  l_PlayingField[l_X][l_Y]->AddConnection(l_NewBeanInfo.get());
+                  l_PlayingField[l_X][l_Y].AddConnection(&l_PlayingField[i][j]);
                }
             }
 

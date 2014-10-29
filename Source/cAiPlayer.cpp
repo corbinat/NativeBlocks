@@ -9,12 +9,16 @@ cAiPlayer::cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEn
    : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
      m_OptimalMoves(),
      m_DoneThinking(false),
+     m_StartThinking(false),
      m_DelayToFirstMove(0),
      m_FirstMoveMade(false),
      m_DelayToAdditionalMoves(0),
      m_DelayTimer(0),
      m_AIThoughtLevel(1),
-     m_MaxAIThoughtLevel(1)
+     m_MaxAIThoughtLevel(1),
+     m_AIPass(0),
+     m_Multithreaded(true),
+     m_AIThinkingThread(NULL)
 {
 
 }
@@ -29,18 +33,22 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
    // about where to put the beans
    if (a_New == kStateControlBeans)
    {
-      // Start simulating
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField =
-         ClonePlayingField();
+      m_StartThinking = true;
 
-      // TODO: This is a little weird because the l_Positions is only used as
-      // internal book-keeping during the function's recursion. I could make a
-      // small wrapper to hide this detail.
-      sOptimalPosition l_Positions;
-      _AnalyzeAllMoves(l_PlayingField, 0, l_Positions);
+      if (!m_Multithreaded)
+      {
+         _AnalyzeAllMoves();
+      }
+      else
+      {
+         m_AIThinkingThread.reset(
+            new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
+         );
+      }
    }
    else
    {
+      m_StartThinking = false;
       m_OptimalMoves.clear();
       m_DoneThinking = false;
       SetFastFall(false);
@@ -50,11 +58,44 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
 void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
 {
    // Move to where we settle
-   if (!m_DoneThinking)
+   if (!m_StartThinking)
    {
       return;
    }
 
+   if (!m_DoneThinking && !m_Multithreaded)
+   {
+      _AnalyzeAllMoves();
+      return;
+   }
+
+   if (!m_DoneThinking && m_Multithreaded)
+   {
+      // wait for the AI to finish thinking if urgency is getting high
+      if (_IsCurrentColumnUrgencyHigh())
+      {
+         std::cout << "JOIN 1" << std::endl;
+         if (!m_AIThinkingThread->joinable())
+         {
+            std::cout << "WHY NOT JOINABLE??????? CRASHHHH" << std::endl;
+         }
+         m_AIThinkingThread->join();
+         std::cout << "JOIN 1 Done" << std::endl;
+      }
+      else
+      {
+         return;
+      }
+   }
+   else if (m_DoneThinking && m_Multithreaded && m_AIThinkingThread->joinable())
+   {
+      //std::cout << "JOIN 2" << std::endl;
+      m_AIThinkingThread->join();
+      //std::cout << "JOIN 2 Done" << std::endl;
+   }
+
+
+   // If I get here then the AI is done thinking.
    m_DelayTimer += a_ElapsedMiliSec;
    if (m_FirstMoveMade)
    {
@@ -111,151 +152,82 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       SetFastFall(true);
    }
 
-   if (!l_Success)
+   if (!l_Success && !_IsCurrentColumnUrgencyHigh())
    {
       // AI couldn't move where it wanted due to a wall of beans. Start the
-      // search over.
+      // search over. _IsCurrentColumnUrgencyHigh returned false so we know we
+      // have time to search again.
       m_OptimalMoves.clear();
       std::cout << "AHHHHH START OVER" << l_Destination.m_Column << " " << l_Destination.m_Rotation << std::endl;
 
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField =
-         ClonePlayingField();
-
-      // TODO: This is a little weird because the l_Positions is only used as
-      // internal book-keeping during the function's recursion. I could make a
-      // small wrapper to hide this detail.
-      sOptimalPosition l_Positions;
-      _AnalyzeAllMoves(l_PlayingField, 0, l_Positions);
-   }
-
-}
-
-std::vector<std::vector<std::shared_ptr<cBeanInfo>>> cAiPlayer::DeepCopyGivenPlayingField(
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
-   )
-{
-    std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_PlayingField(
-      6,
-      std::vector<std::shared_ptr<cBeanInfo>>(g_kTotalRows, NULL)
-      );
-
-   for (
-      uint32_t i = 0;
-      i < a_rPlayingField.size();
-      ++i
-      )
-   {
-      for (
-         uint32_t j = 0;
-         j < a_rPlayingField[i].size();
-         ++j
-         )
+       if (!m_Multithreaded)
       {
-         if (a_rPlayingField[i][j] != NULL)
-         {
-            std::shared_ptr<cBeanInfo> l_NewBeanInfo =
-               std::shared_ptr<cBeanInfo>(new cBeanInfo(a_rPlayingField[i][j]->GetColor()));
-            l_NewBeanInfo->SetGridPosition({i,j});
-            l_PlayingField[i][j] = l_NewBeanInfo;
-
-            std::unordered_set<cBeanInfo*> l_NewBeanConnections =
-               a_rPlayingField[i][j]->GetImmediateConnections();
-
-            for (auto l_Bean : l_NewBeanConnections)
-            {
-               double l_X = l_Bean->GetGridPosition().x;
-               double l_Y = l_Bean->GetGridPosition().y;
-
-               if (l_PlayingField[l_X][l_Y] != NULL)
-               {
-                  l_PlayingField[l_X][l_Y]->AddConnection(l_NewBeanInfo.get());
-               }
-            }
-
-         }
+         _AnalyzeAllMoves();
       }
-
+      else
+      {
+         if (m_AIThinkingThread->joinable())
+         {
+            std::cout << "WHAT THE HECKKKKKK" << std::endl;
+         }
+         m_AIThinkingThread.reset(
+            new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
+         );
+      }
    }
 
-   return l_PlayingField;
 }
 
-void cAiPlayer::_AnalyzeAllMoves(
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>> & a_PlayingField,
-   uint32_t a_Depth,
-   sOptimalPosition a_InitialMove
-   )
+void cAiPlayer::_AnalyzeAllMoves()
 {
+
+   std::vector<std::vector<cBeanInfo>> l_PlayingField =
+      ClonePlayingField();
+
    m_DoneThinking = false;
 
-   if (a_Depth > m_AIThoughtLevel)
-   {
-      return;
-   }
-
-   std::shared_ptr<cBeanInfo> l_PivotBean;
+   cBeanInfo l_PivotBean;
    sf::Vector2<uint32_t> l_PivotPosition;
-   std::shared_ptr<cBeanInfo> l_SwingBean;
+   cBeanInfo l_SwingBean;
    sf::Vector2<uint32_t> l_SwingPosition;
 
-   if (a_Depth == 0)
+    // Copy the current beans in play
+   sf::Vector2<cBean*> l_BeansInPlay = GetBeansInPlay();
+
+   l_PivotBean.SetColor(l_BeansInPlay.x->GetColor());
+   l_SwingBean.SetColor(l_BeansInPlay.y->GetColor());
+
+   l_PivotPosition =
+      GetBeanGridPosition(l_BeansInPlay.x);
+
+   // Start the beans in the up position
+   l_SwingPosition.x = l_PivotPosition.x;
+   l_SwingPosition.y = l_PivotPosition.y - 1;
+
+   // Determine what kind of pressure the AI is under
+   _CalculatePressure(l_PlayingField, l_PivotPosition, l_SwingPosition);
+
+   std::vector <eRotationState> l_RotationsToTest;
+   l_RotationsToTest.push_back(kRotationStateUp);
+   l_RotationsToTest.push_back(kRotationStateDown);
+   l_RotationsToTest.push_back(kRotationStateLeft);
+   l_RotationsToTest.push_back(kRotationStateRight);
+
+   for (eRotationState l_RotationState : l_RotationsToTest)
    {
-       // Copy the current beans in play
-      sf::Vector2<cBean*> l_BeansInPlay = GetBeansInPlay();
+      l_PivotBean.SetGridPosition(l_PivotPosition);
+      l_SwingBean.SetGridPosition(l_SwingPosition);
 
-      l_PivotBean =
-         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_BeansInPlay.x->GetColor()));
-      l_SwingBean =
-         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_BeansInPlay.y->GetColor()));
-
-      l_PivotPosition =
-         GetBeanGridPosition(l_BeansInPlay.x);
-
-      // Start the beans in the up position
-      l_SwingPosition.x = l_PivotPosition.x;
-      l_SwingPosition.y = l_PivotPosition.y - 1;
-
-      // Determine what kind of pressure the AI is under
-      _CalculatePressure(a_PlayingField, l_PivotPosition, l_SwingPosition);
-   }
-   else
-   {
-      eBeanColor l_Color = m_Staging.InspectNextBeanColor(a_Depth * 2 - 2);
-      eBeanColor l_Color2 = m_Staging.InspectNextBeanColor(a_Depth * 2 + 1 - 2);
-      //std::cout << "AI color: " << l_Color << "," << l_Color2 << std::endl;
-
-      l_PivotBean =
-         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_Color));
-      l_SwingBean =
-         std::shared_ptr<cBeanInfo>(new cBeanInfo(l_Color2));
-
-      l_PivotPosition.x = 2;
-      l_PivotPosition.y = 4;
-
-      l_SwingPosition.x = 2;
-      l_SwingPosition.y = 3;
-   }
-
-   std::vector<eRotationState> l_RotationStates;
-   l_RotationStates.push_back(kRotationStateUp);
-   l_RotationStates.push_back(kRotationStateDown);
-   l_RotationStates.push_back(kRotationStateLeft);
-   l_RotationStates.push_back(kRotationStateRight);
-
-   for (eRotationState l_RotationState : l_RotationStates)
-   {
-      l_PivotBean->SetGridPosition(l_PivotPosition);
-      l_SwingBean->SetGridPosition(l_SwingPosition);
       // Adjust the swing bean for each rotation state
       uint32_t l_MinRow = 0;
       uint32_t l_MaxRow = 5;
 
       if (l_RotationState == kRotationStateLeft)
       {
-         if (l_SwingBean->GetGridPosition().x > l_MinRow && a_PlayingField[l_PivotBean->GetGridPosition().x - 1][l_PivotBean->GetGridPosition().y] == NULL)
+         if (l_SwingBean.GetGridPosition().x > l_MinRow && l_PlayingField[l_PivotBean.GetGridPosition().x - 1][l_PivotBean.GetGridPosition().y].GetColor() == kBeanColorEmpty)
          {
-            l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
-            l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
+            l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x - 1);
+            l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
          }
          else
          {
@@ -267,10 +239,10 @@ void cAiPlayer::_AnalyzeAllMoves(
       }
       else if (l_RotationState == kRotationStateRight)
       {
-         if (l_SwingBean->GetGridPosition().x < l_MaxRow && a_PlayingField[l_PivotBean->GetGridPosition().x + 1][l_PivotBean->GetGridPosition().y] == NULL)
+         if (l_SwingBean.GetGridPosition().x < l_MaxRow && l_PlayingField[l_PivotBean.GetGridPosition().x + 1][l_PivotBean.GetGridPosition().y].GetColor() == kBeanColorEmpty)
          {
-            l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
-            l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
+            l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x + 1);
+            l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
          }
          else
          {
@@ -282,14 +254,14 @@ void cAiPlayer::_AnalyzeAllMoves(
       }
       else if (l_RotationState == kRotationStateDown)
       {
-         if (l_PivotBean->GetColor() == l_SwingBean->GetColor())
+         if (l_PivotBean.GetColor() == l_SwingBean.GetColor())
          {
             // This is same state as up if both beans have same color.
             continue;
          }
-         if (a_PlayingField[l_PivotBean->GetGridPosition().x][l_PivotBean->GetGridPosition().y + 1] == NULL)
+         if (l_PlayingField[l_PivotBean.GetGridPosition().x][l_PivotBean.GetGridPosition().y + 1].GetColor() == kBeanColorEmpty)
          {
-            l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y + 1);
+            l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y + 1);
          }
          else
          {
@@ -298,169 +270,342 @@ void cAiPlayer::_AnalyzeAllMoves(
          }
       }
 
-      std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
-         DeepCopyGivenPlayingField(a_PlayingField);
+      uint32_t l_Depth = 0;
+      sOptimalPosition l_InitialMove;
+
       _AnalyzeMove(
          l_PivotBean,
          l_SwingBean,
          l_RotationState,
-         l_CopyPlayingField,
-         a_InitialMove,
-         a_Depth
+         l_PlayingField,
+         l_InitialMove,
+         l_Depth
          );
 
       // Simulate to the left.
-      while (l_PivotBean->GetGridPosition().x > l_MinRow)
+      while (l_PivotBean.GetGridPosition().x > l_MinRow)
       {
-         std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
-            DeepCopyGivenPlayingField(a_PlayingField);
-
          // See if we can even go left
-         if (  l_CopyPlayingField[l_PivotBean->GetGridPosition().x - 1][l_PivotBean->GetGridPosition().y] != NULL
-            || l_CopyPlayingField[l_SwingBean->GetGridPosition().x - 1][l_SwingBean->GetGridPosition().y] != NULL
+         if (  l_PlayingField[l_PivotBean.GetGridPosition().x - 1][l_PivotBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
+            || l_PlayingField[l_SwingBean.GetGridPosition().x - 1][l_SwingBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
             )
          {
             break;
          }
 
-         l_PivotBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
-         l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x - 1);
+         l_PivotBean.SetColumnPosition(l_PivotBean.GetGridPosition().x - 1);
+         l_SwingBean.SetColumnPosition(l_SwingBean.GetGridPosition().x - 1);
 
          _AnalyzeMove(
             l_PivotBean,
             l_SwingBean,
             l_RotationState,
-            l_CopyPlayingField,
+            l_PlayingField,
+            l_InitialMove,
+            l_Depth
+            );
+      }
+
+      // Reset to middle to prepare for going right
+      l_PivotBean.SetGridPosition(l_PivotPosition);
+      l_SwingBean.SetGridPosition(l_SwingPosition);
+      if (l_RotationState == kRotationStateLeft)
+      {
+         l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x - 1);
+         l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
+
+         l_MinRow = 1;
+      }
+      else if (l_RotationState == kRotationStateRight)
+      {
+         l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x + 1);
+         l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
+
+         l_MaxRow = 4;
+      }
+      else if (l_RotationState == kRotationStateDown)
+      {
+         l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x);
+         l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y + 1);
+      }
+
+      // Simulate to the right
+      while (l_PivotBean.GetGridPosition().x < l_MaxRow)
+      {
+         // See if we can even go right
+         if (  l_PlayingField[l_PivotBean.GetGridPosition().x + 1][l_PivotBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
+            || l_PlayingField[l_SwingBean.GetGridPosition().x + 1][l_SwingBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
+            )
+         {
+            break;
+         }
+
+         l_PivotBean.SetColumnPosition(l_PivotBean.GetGridPosition().x + 1);
+         l_SwingBean.SetColumnPosition(l_SwingBean.GetGridPosition().x + 1);
+
+         _AnalyzeMove(
+            l_PivotBean,
+            l_SwingBean,
+            l_RotationState,
+            l_PlayingField,
+            l_InitialMove,
+            l_Depth
+            );
+      }
+
+   }
+
+   // We now have a list of potential moves. Pick one at random to work
+   // towards.
+   if (m_OptimalMoves.size() != 0)
+   {
+      std::random_device l_Generator;
+      std::uniform_int_distribution<int> l_Distribution(0, m_OptimalMoves.size() - 1);
+
+      int l_Number = l_Distribution(l_Generator);
+      l_Number = l_Distribution(l_Generator);
+
+      sOptimalPosition l_Final = m_OptimalMoves[l_Number];
+      m_OptimalMoves.clear();
+      m_OptimalMoves.push_back(l_Final);
+
+      if (GetType() == "Player1")
+      {
+         std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
+         //~ std::cout << "Upcoming Beans: ";
+         //~ for (int i = 0; i < 3 ; ++ i)
+         //~ {
+            //~ std::cout << m_Staging.InspectNextBeanColor(i * 2);
+            //~ std::cout << m_Staging.InspectNextBeanColor(i * 2 + 1);
+         //~ }
+
+         std::cout << std::endl;
+         std::cout << l_Final.m_Column << " " << l_Final.m_Rotation << std::endl;
+      }
+   }
+
+   m_DoneThinking = true;
+   std::cout << "Done thinking" << std::endl;
+   m_FirstMoveMade = false;
+
+   //~ std::uniform_int_distribution<int> l_Distribution2(200, 2000);
+   //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
+   //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
+   m_DelayTimer = 0;
+}
+
+
+void cAiPlayer::_AnalyzeAllSecondayMoves(
+   std::vector<std::vector<cBeanInfo>> & a_PlayingField,
+   uint32_t a_Depth,
+   sOptimalPosition a_InitialMove
+   )
+{
+   if (a_Depth > m_AIThoughtLevel)
+   {
+      return;
+   }
+
+   cBeanInfo l_PivotBean;
+   sf::Vector2<uint32_t> l_PivotPosition;
+   cBeanInfo l_SwingBean;
+   sf::Vector2<uint32_t> l_SwingPosition;
+
+   eBeanColor l_Color = m_Staging.InspectNextBeanColor(a_Depth * 2 - 2);
+   eBeanColor l_Color2 = m_Staging.InspectNextBeanColor(a_Depth * 2 + 1 - 2);
+   //std::cout << "AI color: " << l_Color << "," << l_Color2 << std::endl;
+
+   l_PivotBean.SetColor(l_Color);
+   l_SwingBean.SetColor(l_Color2);
+
+   l_PivotPosition.x = 2;
+   l_PivotPosition.y = 4;
+
+   l_SwingPosition.x = 2;
+   l_SwingPosition.y = 3;
+
+   l_PivotBean.SetGridPosition(l_PivotPosition);
+   l_SwingBean.SetGridPosition(l_SwingPosition);
+
+   // Adjust the swing bean for each rotation state
+   uint32_t l_MinRow = 0;
+   uint32_t l_MaxRow = 5;
+
+   bool l_SkipThisRotation = false;
+
+   std::vector<eRotationState>l_RotationStates;
+   l_RotationStates.push_back(kRotationStateDown);
+   l_RotationStates.push_back(kRotationStateUp);
+   l_RotationStates.push_back(kRotationStateRight);
+   l_RotationStates.push_back(kRotationStateLeft);
+
+   for (eRotationState l_RotationState : l_RotationStates)
+   {
+
+      if (l_RotationState == kRotationStateLeft)
+      {
+         if (l_SwingBean.GetGridPosition().x > l_MinRow && a_PlayingField[l_PivotBean.GetGridPosition().x - 1][l_PivotBean.GetGridPosition().y].GetColor() == kBeanColorEmpty)
+         {
+            l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x - 1);
+            l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
+         }
+         else
+         {
+            // we can't rotate left easily.
+            continue;
+         }
+
+         l_MinRow = 1;
+      }
+      else if (l_RotationState == kRotationStateRight)
+      {
+         if (l_SwingBean.GetGridPosition().x < l_MaxRow && a_PlayingField[l_PivotBean.GetGridPosition().x + 1][l_PivotBean.GetGridPosition().y].GetColor() == kBeanColorEmpty)
+         {
+            l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x + 1);
+            l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
+         }
+         else
+         {
+            // we can't rotate right easily.
+            continue;
+         }
+         l_MaxRow = 4;
+
+      }
+      else if (l_RotationState == kRotationStateDown)
+      {
+         if (l_PivotBean.GetColor() == l_SwingBean.GetColor())
+         {
+            // This is same state as up if both beans have same color.
+            continue;
+         }
+         if (a_PlayingField[l_PivotBean.GetGridPosition().x][l_PivotBean.GetGridPosition().y + 1].GetColor() == kBeanColorEmpty)
+         {
+            l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y + 1);
+         }
+         else
+         {
+            // we can't rotate down easily.
+            continue;
+         }
+      }
+
+      _AnalyzeMove(
+         l_PivotBean,
+         l_SwingBean,
+         l_RotationState,
+         a_PlayingField,
+         a_InitialMove,
+         a_Depth
+         );
+
+      // Simulate to the left.
+      while (l_PivotBean.GetGridPosition().x > l_MinRow)
+      {
+         // See if we can even go left
+         if (  a_PlayingField[l_PivotBean.GetGridPosition().x - 1][l_PivotBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
+            || a_PlayingField[l_SwingBean.GetGridPosition().x - 1][l_SwingBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
+            )
+         {
+            break;
+         }
+
+         l_PivotBean.SetColumnPosition(l_PivotBean.GetGridPosition().x - 1);
+         l_SwingBean.SetColumnPosition(l_SwingBean.GetGridPosition().x - 1);
+
+         _AnalyzeMove(
+            l_PivotBean,
+            l_SwingBean,
+            l_RotationState,
+            a_PlayingField,
             a_InitialMove,
             a_Depth
             );
       }
 
       // Reset to middle to prepare for going right
-      l_PivotBean->SetGridPosition(l_PivotPosition);
-      l_SwingBean->SetGridPosition(l_SwingPosition);
+      l_PivotBean.SetGridPosition(l_PivotPosition);
+      l_SwingBean.SetGridPosition(l_SwingPosition);
       if (l_RotationState == kRotationStateLeft)
       {
-         l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x - 1);
-         l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
+         l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x - 1);
+         l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
 
          l_MinRow = 1;
       }
       else if (l_RotationState == kRotationStateRight)
       {
-         l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
-         l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y);
+         l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x + 1);
+         l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y);
 
          l_MaxRow = 4;
       }
       else if (l_RotationState == kRotationStateDown)
       {
-         l_SwingBean->SetColumnPosition(l_PivotBean->GetGridPosition().x);
-         l_SwingBean->SetRowPosition(l_PivotBean->GetGridPosition().y + 1);
+         l_SwingBean.SetColumnPosition(l_PivotBean.GetGridPosition().x);
+         l_SwingBean.SetRowPosition(l_PivotBean.GetGridPosition().y + 1);
       }
 
       // Simulate to the right
-      while (l_PivotBean->GetGridPosition().x < l_MaxRow)
+      while (l_PivotBean.GetGridPosition().x < l_MaxRow)
       {
-         std::vector<std::vector<std::shared_ptr<cBeanInfo>>> l_CopyPlayingField =
-            DeepCopyGivenPlayingField(a_PlayingField);
-
          // See if we can even go right
-         if (  l_CopyPlayingField[l_PivotBean->GetGridPosition().x + 1][l_PivotBean->GetGridPosition().y] != NULL
-            || l_CopyPlayingField[l_SwingBean->GetGridPosition().x + 1][l_SwingBean->GetGridPosition().y] != NULL
+         if (  a_PlayingField[l_PivotBean.GetGridPosition().x + 1][l_PivotBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
+            || a_PlayingField[l_SwingBean.GetGridPosition().x + 1][l_SwingBean.GetGridPosition().y].GetColor() != kBeanColorEmpty
             )
          {
             break;
          }
 
-         l_PivotBean->SetColumnPosition(l_PivotBean->GetGridPosition().x + 1);
-         l_SwingBean->SetColumnPosition(l_SwingBean->GetGridPosition().x + 1);
+         l_PivotBean.SetColumnPosition(l_PivotBean.GetGridPosition().x + 1);
+         l_SwingBean.SetColumnPosition(l_SwingBean.GetGridPosition().x + 1);
 
          _AnalyzeMove(
             l_PivotBean,
             l_SwingBean,
             l_RotationState,
-            l_CopyPlayingField,
+            a_PlayingField,
             a_InitialMove,
             a_Depth
             );
       }
    }
-
-   if (a_Depth == 0)
-   {
-      // We now have a list of potential moves. Pick one at random to work
-      // towards.
-      if (m_OptimalMoves.size() != 0)
-      {
-         std::random_device l_Generator;
-         std::uniform_int_distribution<int> l_Distribution(0, m_OptimalMoves.size() - 1);
-
-         int l_Number = l_Distribution(l_Generator);
-         l_Number = l_Distribution(l_Generator);
-
-         sOptimalPosition l_Final = m_OptimalMoves[l_Number];
-         m_OptimalMoves.clear();
-         m_OptimalMoves.push_back(l_Final);
-
-         if (GetType() == "Player1")
-         {
-            std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
-            std::cout << l_Final.m_Column << " " << l_Final.m_Rotation << std::endl;
-         }
-      }
-
-      m_DoneThinking = true;
-      m_FirstMoveMade = false;
-
-      //~ std::uniform_int_distribution<int> l_Distribution2(200, 2000);
-      //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
-      //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
-      m_DelayTimer = 0;
-   }
 }
 
+
+
 void cAiPlayer::_AnalyzeMove(
-   std::shared_ptr<cBeanInfo> a_pBean1,
-   std::shared_ptr<cBeanInfo> a_pBean2,
+   cBeanInfo & a_rBean1,
+   cBeanInfo & a_rBean2,
    eRotationState a_RotationState,
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   std::vector<std::vector<cBeanInfo>> a_PlayingField,
    sOptimalPosition a_InitialMove,
    uint32_t a_Depth
    )
 {
-   sf::Vector2<uint32_t> l_PivotPosition = a_pBean1->GetGridPosition();
-   sf::Vector2<uint32_t> l_SwingPosition = a_pBean2->GetGridPosition();
+   sf::Vector2<uint32_t> l_PivotPosition = a_rBean1.GetGridPosition();
+   sf::Vector2<uint32_t> l_SwingPosition = a_rBean2.GetGridPosition();
 
    if (a_Depth == 0)
    {
-      a_InitialMove.m_Column = a_pBean1->GetGridPosition().x;
+      a_InitialMove.m_Column = a_rBean1.GetGridPosition().x;
       a_InitialMove.m_Rotation = a_RotationState;
    }
 
    a_InitialMove.m_Score =
-      _SimulatePlay(a_pBean1, a_pBean2, a_rPlayingField) + a_InitialMove.m_Score;
+      _SimulatePlay(a_rBean1, a_rBean2, a_PlayingField) + a_InitialMove.m_Score;
 
-   if (a_InitialMove.m_Score != 0 && a_Depth == 0)
-   {
-      // Add a bonus to doing things ealier
-      a_InitialMove.m_Score *= 2;
-   }
+   //~ if (a_InitialMove.m_Score != 0 && a_Depth == 0)
+   //~ {
+      //~ // Add a bonus to doing things ealier
+      //~ a_InitialMove.m_Score *= 2;
+   //~ }
 
    // See if we have lost. If so, don't bother continuing on.
-   if (a_rPlayingField[2][5] != NULL)
+   if (a_PlayingField[2][5].GetColor() != kBeanColorEmpty)
    {
-      // SimulatePlay dirtys up the Beans. Restore the bean's position and
-      // connections for the next simulation.
-      a_pBean1->SetGridPosition(l_PivotPosition);
-      a_pBean2->SetGridPosition(l_SwingPosition);
-
-      a_pBean1->RemoveAllConnections();
-      a_pBean2->RemoveAllConnections();
-
       return;
    }
-
 
    if (a_Depth == m_AIThoughtLevel)
    {
@@ -481,33 +626,25 @@ void cAiPlayer::_AnalyzeMove(
    else
    {
       // Recursively call this function again
-      _AnalyzeAllMoves(a_rPlayingField, ++a_Depth, a_InitialMove);
+      _AnalyzeAllSecondayMoves(a_PlayingField, ++a_Depth, a_InitialMove);
    }
-
-   // SimulatePlay dirtys up the Beans. Restore the bean's position and
-   // connections for the next simulation.
-   a_pBean1->SetGridPosition(l_PivotPosition);
-   a_pBean2->SetGridPosition(l_SwingPosition);
-
-   a_pBean1->RemoveAllConnections();
-   a_pBean2->RemoveAllConnections();
 }
 
 uint32_t cAiPlayer::_SimulatePlay(
-   std::shared_ptr<cBeanInfo> a_pBean1,
-   std::shared_ptr<cBeanInfo> a_pBean2,
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   cBeanInfo a_Bean1,
+   cBeanInfo a_Bean2,
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
    )
 {
    // Keep track of columns that get modified so that we can check them for
    // matches and things
    std::unordered_set<uint32_t> l_ColumnsOfInterest;
 
-   l_ColumnsOfInterest.insert(a_pBean1->GetGridPosition().x);
-   l_ColumnsOfInterest.insert(a_pBean2->GetGridPosition().x);
+   l_ColumnsOfInterest.insert(a_Bean1.GetGridPosition().x);
+   l_ColumnsOfInterest.insert(a_Bean2.GetGridPosition().x);
 
-   a_rPlayingField[a_pBean1->GetGridPosition().x][a_pBean1->GetGridPosition().y] = a_pBean1;
-   a_rPlayingField[a_pBean2->GetGridPosition().x][a_pBean2->GetGridPosition().y] = a_pBean2;
+   a_rPlayingField[a_Bean1.GetGridPosition().x][a_Bean1.GetGridPosition().y] = a_Bean1;
+   a_rPlayingField[a_Bean2.GetGridPosition().x][a_Bean2.GetGridPosition().y] = a_Bean2;
 
    // Search through the columns and explode any beans with 4 connected
    uint32_t l_ReturnScore = 0;
@@ -518,7 +655,7 @@ uint32_t cAiPlayer::_SimulatePlay(
    {
       for (uint32_t l_Column : l_ColumnsOfInterest)
       {
-         _BubbleBeansDown(a_rPlayingField[l_Column]);
+         _BubbleBeansDown(a_rPlayingField[l_Column], a_rPlayingField);
 
       }
       for (uint32_t l_Column : l_ColumnsOfInterest)
@@ -557,25 +694,25 @@ uint32_t cAiPlayer::_SimulatePlay(
 }
 
 uint32_t cAiPlayer::_ConnectBeanToNeighbors(
-   std::shared_ptr<cBeanInfo> a_pBean,
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   cBeanInfo & a_pBean,
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
    )
 {
    uint32_t l_ReturnConnections = 0;
 
-   if (a_pBean->GetColor() == kBeanColorGarbage)
+   if (a_pBean.GetColor() == kBeanColorGarbage)
    {
       return l_ReturnConnections;
    }
 
-   uint32_t l_X = a_pBean->GetGridPosition().x;
-   uint32_t l_Y = a_pBean->GetGridPosition().y;
+   uint32_t l_X = a_pBean.GetGridPosition().x;
+   uint32_t l_Y = a_pBean.GetGridPosition().y;
    if (l_X > 0)
    {
-      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X - 1][l_Y];
-      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      cBeanInfo & l_pNeighbor = a_rPlayingField[l_X - 1][l_Y];
+      if (l_pNeighbor.GetColor() == a_pBean.GetColor())
       {
-         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         if (a_pBean.AddConnection(&l_pNeighbor))
          {
             ++l_ReturnConnections;
          }
@@ -583,10 +720,10 @@ uint32_t cAiPlayer::_ConnectBeanToNeighbors(
    }
    if (l_X < 5)
    {
-      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X + 1][l_Y];
-      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      cBeanInfo & l_pNeighbor = a_rPlayingField[l_X + 1][l_Y];
+      if (l_pNeighbor.GetColor() == a_pBean.GetColor())
       {
-         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         if (a_pBean.AddConnection(&l_pNeighbor))
          {
             ++l_ReturnConnections;
          }
@@ -594,10 +731,10 @@ uint32_t cAiPlayer::_ConnectBeanToNeighbors(
    }
    if (l_Y > 0)
    {
-      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y - 1];
-      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      cBeanInfo & l_pNeighbor = a_rPlayingField[l_X][l_Y - 1];
+      if (l_pNeighbor.GetColor() == a_pBean.GetColor())
       {
-         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         if (a_pBean.AddConnection(&l_pNeighbor))
          {
             ++l_ReturnConnections;
          }
@@ -605,10 +742,10 @@ uint32_t cAiPlayer::_ConnectBeanToNeighbors(
    }
    if (l_Y < g_kTotalRows - 1)
    {
-      std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_X][l_Y + 1];
-      if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == a_pBean->GetColor())
+      cBeanInfo & l_pNeighbor = a_rPlayingField[l_X][l_Y + 1];
+      if (l_pNeighbor.GetColor() == a_pBean.GetColor())
       {
-         if (a_pBean->AddConnection(l_pNeighbor.get()))
+         if (a_pBean.AddConnection(&l_pNeighbor))
          {
             ++l_ReturnConnections;
          }
@@ -620,14 +757,14 @@ uint32_t cAiPlayer::_ConnectBeanToNeighbors(
 
 uint32_t cAiPlayer::_ConnectColumnNeighbors(
    uint32_t a_Column,
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
    )
 {
    uint32_t l_ReturnConnections = 0;
 
    for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
    {
-      if (a_rPlayingField[a_Column][l_Row] != NULL)
+      if (a_rPlayingField[a_Column][l_Row].GetColor() != kBeanColorEmpty)
       {
          l_ReturnConnections +=
             _ConnectBeanToNeighbors(
@@ -640,7 +777,10 @@ uint32_t cAiPlayer::_ConnectColumnNeighbors(
    return l_ReturnConnections;
 }
 
-bool cAiPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rColumn)
+bool cAiPlayer::_BubbleBeansDown(
+   std::vector<cBeanInfo>& a_rColumn,
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
+   )
 {
    bool l_SawNull = false;
    bool l_RowUpdated = false;
@@ -651,7 +791,7 @@ bool cAiPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rCol
       --i
       )
    {
-      if (a_rColumn[i] == NULL)
+      if (a_rColumn[i].GetColor() == kBeanColorEmpty)
       {
          if (l_SawNull == false && i < l_FirstNull)
          {
@@ -661,11 +801,12 @@ bool cAiPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rCol
       }
       else if (l_SawNull)
       {
-         std::shared_ptr<cBeanInfo> l_Element = a_rColumn[i];
-         l_Element->RemoveAllConnections();
+         a_rColumn[i].RemoveAllConnections(a_rPlayingField);
+         cBeanInfo l_Element = a_rColumn[i];
+
          a_rColumn[i] = a_rColumn[i + 1];
          a_rColumn[i + 1] = l_Element;
-         l_Element->SetRowPosition(i + 1);
+         a_rColumn[i + 1].SetRowPosition(i + 1);
          l_SawNull = false;
          l_RowUpdated = true;
 
@@ -678,7 +819,7 @@ bool cAiPlayer::_BubbleBeansDown(std::vector<std::shared_ptr<cBeanInfo>>& a_rCol
 
 void cAiPlayer::_SearchColumnAndExplodeConnections(
    uint32_t a_Column,
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    std::unordered_set<uint32_t>* a_pNewColumnsOfInterest,
    uint32_t* a_BeansExploded,
    uint32_t* a_Multiplier,
@@ -691,11 +832,10 @@ void cAiPlayer::_SearchColumnAndExplodeConnections(
 
    for (uint32_t l_Row = 0; l_Row < a_rPlayingField[a_Column].size(); ++l_Row)
    {
-      if (a_rPlayingField[a_Column][l_Row] != NULL)
+      if (a_rPlayingField[a_Column][l_Row].GetColor() != kBeanColorEmpty)
       {
          std::unordered_set<cBeanInfo*> l_Connections =
-            a_rPlayingField[a_Column][l_Row]->CountConnections();
-
+            a_rPlayingField[a_Column][l_Row].CountConnections(a_rPlayingField);
 
          if (l_Connections.size() > 3)
          {
@@ -714,43 +854,47 @@ void cAiPlayer::_SearchColumnAndExplodeConnections(
                uint32_t l_DeleteX = l_pConnection->GetGridPosition().x;
                uint32_t l_DeleteY = l_pConnection->GetGridPosition().y;
 
-               l_pConnection->RemoveAllConnections();
-               a_rPlayingField[l_DeleteX][l_DeleteY] = NULL;
+               l_pConnection->RemoveAllConnections(a_rPlayingField);
+               a_rPlayingField[l_DeleteX][l_DeleteY] = kBeanColorEmpty;
                a_pNewColumnsOfInterest->insert(l_DeleteX);
 
                // Delete garbage beans that are touching
                if (l_DeleteX > 0)
                {
-                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX - 1][l_DeleteY];
-                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  cBeanInfo & l_pNeighbor = a_rPlayingField[l_DeleteX - 1][l_DeleteY];
+                  if (l_pNeighbor.GetColor() == kBeanColorGarbage)
                   {
-                     a_rPlayingField[l_DeleteX - 1][l_DeleteY] = NULL;
+                     a_rPlayingField[l_DeleteX - 1][l_DeleteY].SetColor(kBeanColorEmpty);
+                     a_rPlayingField[l_DeleteX - 1][l_DeleteY].RemoveAllConnections(a_rPlayingField);
                      a_pNewColumnsOfInterest->insert(l_DeleteX - 1);
                   }
                }
                if (l_DeleteX < 5)
                {
-                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX + 1][l_DeleteY];
-                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  cBeanInfo & l_pNeighbor = a_rPlayingField[l_DeleteX + 1][l_DeleteY];
+                  if (l_pNeighbor.GetColor() == kBeanColorGarbage)
                   {
-                     a_rPlayingField[l_DeleteX + 1][l_DeleteY] = NULL;
+                     a_rPlayingField[l_DeleteX + 1][l_DeleteY].SetColor(kBeanColorEmpty);
+                     a_rPlayingField[l_DeleteX + 1][l_DeleteY].RemoveAllConnections(a_rPlayingField);
                      a_pNewColumnsOfInterest->insert(l_DeleteX + 1);
                   }
                }
                if (l_DeleteY > 0)
                {
-                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY - 1];
-                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  cBeanInfo & l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY - 1];
+                  if (l_pNeighbor.GetColor() == kBeanColorGarbage)
                   {
-                     a_rPlayingField[l_DeleteX][l_DeleteY - 1] = NULL;
+                     a_rPlayingField[l_DeleteX][l_DeleteY - 1].SetColor(kBeanColorEmpty);
+                     a_rPlayingField[l_DeleteX][l_DeleteY - 1].RemoveAllConnections(a_rPlayingField);
                   }
                }
                if (l_DeleteY < g_kTotalRows - 1)
                {
-                  std::shared_ptr<cBeanInfo> l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY + 1];
-                  if (l_pNeighbor != NULL && l_pNeighbor->GetColor() == kBeanColorGarbage)
+                  cBeanInfo & l_pNeighbor = a_rPlayingField[l_DeleteX][l_DeleteY + 1];
+                  if (l_pNeighbor.GetColor() == kBeanColorGarbage)
                   {
-                     a_rPlayingField[l_DeleteX][l_DeleteY + 1] = NULL;
+                     a_rPlayingField[l_DeleteX][l_DeleteY + 1].SetColor(kBeanColorEmpty);
+                     a_rPlayingField[l_DeleteX][l_DeleteY + 1].RemoveAllConnections(a_rPlayingField);
                   }
                }
             }
@@ -760,7 +904,7 @@ void cAiPlayer::_SearchColumnAndExplodeConnections(
 }
 
 bool cAiPlayer::_IsColumnUrgencyHigh(
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    sf::Vector2<uint32_t> a_FallingBean1,
    sf::Vector2<uint32_t> a_FallingBean2
    )
@@ -772,7 +916,7 @@ bool cAiPlayer::_IsColumnUrgencyHigh(
    uint32_t i;
    for (i = 0; i < a_rPlayingField[l_Column1].size(); ++i)
    {
-      if (a_rPlayingField[l_Column1][i] != NULL)
+      if (a_rPlayingField[l_Column1][i].GetColor() != kBeanColorEmpty)
       {
          break;
       }
@@ -781,7 +925,7 @@ bool cAiPlayer::_IsColumnUrgencyHigh(
    if (i != a_rPlayingField[l_Column1].size())
    {
       if (
-         (static_cast<int32_t>(a_rPlayingField[l_Column1][i]->GetGridPosition().y)
+         (static_cast<int32_t>(a_rPlayingField[l_Column1][i].GetGridPosition().y)
          - static_cast<int32_t>(a_FallingBean1.y))
          < 2
          )
@@ -796,7 +940,7 @@ bool cAiPlayer::_IsColumnUrgencyHigh(
 
    for (i = 0; i < a_rPlayingField[l_Column2].size(); ++i)
    {
-      if (a_rPlayingField[l_Column2][i] != NULL)
+      if (a_rPlayingField[l_Column2][i].GetColor() != kBeanColorEmpty)
       {
          break;
       }
@@ -805,7 +949,7 @@ bool cAiPlayer::_IsColumnUrgencyHigh(
    if (i != a_rPlayingField[l_Column1].size())
    {
       if (
-         (static_cast<int32_t>(a_rPlayingField[l_Column2][i]->GetGridPosition().y)
+         (static_cast<int32_t>(a_rPlayingField[l_Column2][i].GetGridPosition().y)
          - static_cast<int32_t>(a_FallingBean1.y))
          < 2
          )
@@ -817,8 +961,27 @@ bool cAiPlayer::_IsColumnUrgencyHigh(
    return false;
 }
 
+bool cAiPlayer::_IsCurrentColumnUrgencyHigh()
+{
+   std::vector<std::vector<cBeanInfo>> l_PlayingField =
+      ClonePlayingField();
+
+   sf::Vector2<uint32_t> l_PivotPosition;
+   sf::Vector2<uint32_t> l_SwingPosition;
+
+    // Copy the current beans in play
+   sf::Vector2<cBean*> l_BeansInPlay = GetBeansInPlay();
+
+   l_PivotPosition =
+      GetBeanGridPosition(l_BeansInPlay.x);
+   l_SwingPosition =
+      GetBeanGridPosition(l_BeansInPlay.y);
+
+   return _IsColumnUrgencyHigh(l_PlayingField, l_PivotPosition, l_SwingPosition);
+}
+
 void cAiPlayer::_CalculatePressure(
-   std::vector<std::vector<std::shared_ptr<cBeanInfo>>>& a_rPlayingField,
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    sf::Vector2<uint32_t> a_FallingBean1,
    sf::Vector2<uint32_t> a_FallingBean2
    )
@@ -841,7 +1004,7 @@ void cAiPlayer::_CalculatePressure(
       int32_t l_Row;
       for (l_Row = a_rPlayingField[l_Column].size() - 1; l_Row >= 0; --l_Row)
       {
-         if (a_rPlayingField[l_Column][l_Row] == NULL)
+         if (a_rPlayingField[l_Column][l_Row].GetColor() == kBeanColorEmpty)
          {
             break;
          }

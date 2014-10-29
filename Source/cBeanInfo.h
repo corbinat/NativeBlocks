@@ -3,6 +3,7 @@
 #ifndef ___cBeanInfo_h___
 #define ___cBeanInfo_h___
 
+#include <list>
 #include <unordered_set>
 
 // sf::Vector2
@@ -16,14 +17,14 @@ enum eBeanColor
    kBeanColorOrange,
    kBeanColorPink,
    kBeanColorNumber, // Used to identify how many colors are possible
-   kBeanColorGarbage
+   kBeanColorGarbage,
+   kBeanColorEmpty    // placeholder for empty space
 };
 
 class cBeanInfo
 {
 public:
 
-   // This constructor creates a random bean color
    cBeanInfo();
 
    // This constructor sets the bean color
@@ -33,11 +34,18 @@ public:
 
    eBeanColor GetColor();
 
+   void SetColor(eBeanColor a_NewColor);
+
+   // Returns true if connection was actually made. Used for scoring.
    bool AddConnection(cBeanInfo* a_pOtherBean);
 
-   std::unordered_set<cBeanInfo*> CountConnections();
+   std::unordered_set<cBeanInfo*> CountConnections(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField
+      );
 
-   void RemoveAllConnections();
+   void RemoveAllConnections(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField
+      );
 
    void SetGridPosition(sf::Vector2<uint32_t> a_GridPosition);
    void SetRowPosition(uint32_t a_Row);
@@ -45,16 +53,16 @@ public:
 
    sf::Vector2<uint32_t> GetGridPosition();
 
-   std::unordered_set<cBeanInfo*> GetImmediateConnections();
-
-
 private:
 
-   void _CountConnections(std::unordered_set<cBeanInfo*>* a_ExcludeList);
+   void _CountConnections(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+      std::unordered_set<cBeanInfo*>* a_ExcludeList
+      );
 
    eBeanColor m_Color;
 
-   std::unordered_set<cBeanInfo*> m_ConnectedBeans;
+   std::list<sf::Vector2<uint32_t>> m_ConnectedBeans;
 
    sf::Vector2<uint32_t> m_GridPosition;
 
