@@ -121,17 +121,15 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          m_GarbageDropped = false;
 
          m_pPivotBean = m_Staging.GetNextBean();
-         RegisterObject(m_pPivotBean);
          sf::Vector3<double> l_Position = GetPosition();
-         l_Position.x += GetResources()->GetGridCellSize().x * 2;
-         l_Position.y -= GetResources()->GetGridCellSize().y;
+         l_Position.x += GetResources()->GetActiveLevelData()->GetGridCellSize()->x * 2;
+         l_Position.y -= GetResources()->GetActiveLevelData()->GetGridCellSize()->y;
          m_pPivotBean->SetPosition(l_Position, kNormal, false);
 
          m_pSwingBean = m_Staging.GetNextBean();
-         RegisterObject(m_pSwingBean);
          l_Position = GetPosition();
-         l_Position.x += GetResources()->GetGridCellSize().x * 2;
-         l_Position.y -= GetResources()->GetGridCellSize().y * 2;
+         l_Position.x += GetResources()->GetActiveLevelData()->GetGridCellSize()->x * 2;
+         l_Position.y -= GetResources()->GetActiveLevelData()->GetGridCellSize()->y * 2;
          m_pSwingBean->SetPosition(l_Position, kNormal, false);
 
          // See if beans are already resting
@@ -187,8 +185,12 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                m_MiliSecSinceLastFall = 0;
 
                sf::Vector3<double> l_RelativePosition;
+
+               sf::Vector2<uint32_t>* l_pGridCellSize =
+                  GetResources()->GetActiveLevelData()->GetGridCellSize();
+
                l_RelativePosition.y +=
-                  static_cast<double>(GetResources()->GetGridCellSize().y) / 2;
+                  static_cast<double>(l_pGridCellSize->y) / 2;
                bool l_MoveSuccess = MoveControlledBeans(l_RelativePosition);
 
                if (l_MoveSuccess)
@@ -545,7 +547,8 @@ void cPlayer::MessageReceived(sMessage a_Message)
 {
    if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))
    {
-      cObject* l_pObject = GetObjectWithId(a_Message.m_From);
+      cObject* l_pObject =
+         GetResources()->GetActiveLevelData()->GetObjectWithId(a_Message.m_From);
       if (l_pObject != NULL)
       {
          for (
@@ -637,8 +640,12 @@ bool cPlayer::MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition)
 bool cPlayer::ShiftControlledBeansColumn(int32_t a_RelativeColumn)
 {
    sf::Vector3<double> l_RelativePosition;
+
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
+
    l_RelativePosition.x +=
-      static_cast<double>(GetResources()->GetGridCellSize().x) * a_RelativeColumn;
+      static_cast<double>(l_pGridCellSize->x) * a_RelativeColumn;
    return MoveControlledBeans(l_RelativePosition);
 }
 
@@ -653,13 +660,16 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
    sf::Vector3<double> l_OppositePosition = m_pPivotBean->GetPosition();
    eRotationState l_NewState;
 
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
+
    if (  m_RotationState == kRotationStateUp && a_Rotation == kRotateClockwise
       || m_RotationState == kRotationStateDown && a_Rotation == kRotateCounterClockwise
       )
    {
       // Check for collisions to the right of the pivot point
-      l_Position.x += GetResources()->GetGridCellSize().x;
-      l_OppositePosition.x -= GetResources()->GetGridCellSize().x;
+      l_Position.x += l_pGridCellSize->x;
+      l_OppositePosition.x -= l_pGridCellSize->x;
       l_NewState = kRotationStateRight;
    }
    else if (  m_RotationState == kRotationStateRight && a_Rotation == kRotateClockwise
@@ -667,8 +677,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
            )
    {
       // Check for collisions under the pivot point
-      l_Position.y += GetResources()->GetGridCellSize().y;
-      l_OppositePosition.y -= GetResources()->GetGridCellSize().y;
+      l_Position.y += l_pGridCellSize->y;
+      l_OppositePosition.y -= l_pGridCellSize->y;
       l_NewState = kRotationStateDown;
    }
    else if (  m_RotationState == kRotationStateDown && a_Rotation == kRotateClockwise
@@ -676,8 +686,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
            )
    {
       // Check for collisions left of the pivot point
-      l_Position.x -= GetResources()->GetGridCellSize().x;
-      l_OppositePosition.x += GetResources()->GetGridCellSize().x;
+      l_Position.x -= l_pGridCellSize->x;
+      l_OppositePosition.x += l_pGridCellSize->x;
       l_NewState = kRotationStateLeft;
    }
    else if (  m_RotationState == kRotationStateLeft && a_Rotation == kRotateClockwise
@@ -685,8 +695,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
            )
    {
       // Check for collisions above the pivot point
-      l_Position.y -= GetResources()->GetGridCellSize().y;
-      l_OppositePosition.y += GetResources()->GetGridCellSize().y;
+      l_Position.y -= l_pGridCellSize->y;
+      l_OppositePosition.y += l_pGridCellSize->y;
       l_NewState = kRotationStateUp;
    }
 
@@ -705,13 +715,13 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
       sf::Vector3<double> l_NewSwingPosition = m_pPivotBean->GetPosition();
       if (
            (static_cast<uint32_t>(m_pPivotBean->GetPosition().y)
-           % GetResources()->GetGridCellSize().y
+           % l_pGridCellSize->y
            )
            != 0
          )
       {
-         l_OppositePosition.y += GetResources()->GetGridCellSize().y / 2;
-         l_NewSwingPosition.y += GetResources()->GetGridCellSize().y / 2;
+         l_OppositePosition.y += l_pGridCellSize->y / 2;
+         l_NewSwingPosition.y += l_pGridCellSize->y / 2;
       }
 
 
@@ -836,43 +846,41 @@ void cPlayer::_Initialize()
    m_Initialized = true;
 
    cFloor* l_NewFloor = new cFloor(GetResources());
-   RegisterObject(l_NewFloor);
    sf::Vector3<double> l_Position = GetPosition();
-   l_Position.y += GetResources()->GetGridCellSize().y * 12;
+
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
+
+   l_Position.y += l_pGridCellSize->y * 12;
    l_NewFloor->SetPosition(l_Position, kNormal, false);
 
    cWall* l_NewWall = new cWall(GetResources());
-   RegisterObject(l_NewWall);
    l_Position = GetPosition();
-   l_Position.x -= GetResources()->GetGridCellSize().x;
-   l_Position.y -= GetResources()->GetGridCellSize().y;
+   l_Position.x -= l_pGridCellSize->x;
+   l_Position.y -= l_pGridCellSize->y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
-   RegisterObject(l_NewWall);
    l_Position = GetPosition();
-   l_Position.x += GetResources()->GetGridCellSize().x * 6;
-   l_Position.y -= GetResources()->GetGridCellSize().y;
+   l_Position.x += l_pGridCellSize->x * 6;
+   l_Position.y -= l_pGridCellSize->y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
-   RegisterObject(l_NewWall);
    l_Position = GetPosition();
-   l_Position.x -= GetResources()->GetGridCellSize().x;
-   l_Position.y += l_NewWall->GetBoundingBox().height - GetResources()->GetGridCellSize().y;
+   l_Position.x -= l_pGridCellSize->x;
+   l_Position.y += l_NewWall->GetBoundingBox().height - l_pGridCellSize->y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
-   RegisterObject(l_NewWall);
    l_Position = GetPosition();
-   l_Position.y += l_NewWall->GetBoundingBox().height - GetResources()->GetGridCellSize().y;
-   l_Position.x += GetResources()->GetGridCellSize().x * 6;
+   l_Position.y += l_NewWall->GetBoundingBox().height - l_pGridCellSize->y;
+   l_Position.x += l_pGridCellSize->x * 6;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    cRoof * l_NewRoof = new cRoof(GetResources());
-   RegisterObject(l_NewRoof);
    l_Position = GetPosition();
-   l_Position.y -= GetResources()->GetGridCellSize().y;
+   l_Position.y -= l_pGridCellSize->y;
    l_NewRoof->SetPosition(l_Position, kNormal, false);
 
 }
@@ -884,13 +892,16 @@ void cPlayer::_StartGame()
 
 bool cPlayer::_BeansAreResting()
 {
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
+
    if (  m_RotationState == kRotationStateUp
       || m_RotationState == kRotationStateLeft
       || m_RotationState == kRotationStateRight
       )
    {
       sf::Vector3<double> l_Position = m_pPivotBean->GetPosition();
-      l_Position.y += GetResources()->GetGridCellSize().y / 2;
+      l_Position.y += l_pGridCellSize->y / 2;
       std::list<cObject*> l_Collisions =
          GetCollisions(m_pPivotBean, l_Position);
 
@@ -912,7 +923,7 @@ bool cPlayer::_BeansAreResting()
       )
    {
       sf::Vector3<double> l_Position = m_pSwingBean->GetPosition();
-      l_Position.y += GetResources()->GetGridCellSize().y / 2;
+      l_Position.y += l_pGridCellSize->y / 2;
       std::list<cObject*> l_Collisions =
          GetCollisions(m_pSwingBean, l_Position);
 
@@ -934,13 +945,15 @@ bool cPlayer::_BeansAreResting()
 sf::Vector2<uint32_t> cPlayer::GetBeanGridPosition(cBean* a_pBean)
 {
    sf::Vector2<uint32_t> l_ReturnPosition;
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
 
    l_ReturnPosition.x =
-      (a_pBean->GetPosition().x - GetPosition().x) / GetResources()->GetGridCellSize().x;
+      (a_pBean->GetPosition().x - GetPosition().x) / l_pGridCellSize->x;
 
    // Add 5 because the top 5 above the player is just buffer for garbage. Add .5 so that we round up
    l_ReturnPosition.y =
-      ((a_pBean->GetPosition().y - GetPosition().y)/ static_cast<double>(GetResources()->GetGridCellSize().y))
+      ((a_pBean->GetPosition().y - GetPosition().y)/ static_cast<double>(l_pGridCellSize->y))
       + 5.5;
 
    return l_ReturnPosition;
@@ -949,10 +962,13 @@ sf::Vector2<uint32_t> cPlayer::GetBeanGridPosition(cBean* a_pBean)
 void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
 {
    cBean* l_pGarbageBean = new cBean(kBeanColorGarbage, GetResources(), GetUniqueId());
-   RegisterObject(l_pGarbageBean);
    sf::Vector3<double> l_Position = GetPosition();
-   l_Position.x += GetResources()->GetGridCellSize().x * a_Column;
-   l_Position.y -= GetResources()->GetGridCellSize().y * (5 - a_Row);
+
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
+
+   l_Position.x += l_pGridCellSize->x * a_Column;
+   l_Position.y -= l_pGridCellSize->y * (5 - a_Row);
    l_pGarbageBean->SetPosition(l_Position, kNormal, false);
    l_pGarbageBean->Fall();
    m_FallingBeans.push_back(l_pGarbageBean);

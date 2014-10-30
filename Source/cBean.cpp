@@ -234,7 +234,7 @@ void cBean::Explode()
       l_pBean->m_ConnectedBeans.erase(this);
    }
 
-   UnregisterObject(this, true);
+   UnregisterObject(true);
 }
 
 bool cBean::IsExploding()

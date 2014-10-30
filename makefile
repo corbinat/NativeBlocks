@@ -18,9 +18,9 @@ LDFLAGS = -L${SFMLLIB} -lsfml-system -lsfml-window -lsfml-graphics -lpthread
 SourceDir = Source
 
 
-all: Blast
+all: Beans
 
-Blast: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o
+Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o
 	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
@@ -60,5 +60,5 @@ cBeanLevel.o: ${SourceDir}/cBeanLevel.cpp ${SourceDir}/cBeanLevel.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBeanLevel.cpp ${LDFLAGS}
 
 clean:
-	rm -f *.o *.a
+	rm -f *.o *.a main
 

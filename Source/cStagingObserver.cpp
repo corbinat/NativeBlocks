@@ -56,7 +56,6 @@ void cStagingObserver::MessageReceived(sMessage a_Message)
    {
       _GetNewBeans();
    }
-
 }
 
 
@@ -64,22 +63,23 @@ void cStagingObserver::_GetNewBeans()
 {
    if (a_pPivotBean != NULL)
    {
-      UnregisterObject(a_pPivotBean, true);
+      a_pPivotBean->UnregisterObject(true);
    }
    if (a_pSwingBean != NULL)
    {
-      UnregisterObject(a_pSwingBean, true);
+      a_pSwingBean->UnregisterObject(true);
    }
 
    a_pPivotBean = m_Staging.GetNextBean();
-   RegisterObject(a_pPivotBean);
 
    a_pSwingBean = m_Staging.GetNextBean();
-   RegisterObject(a_pSwingBean);
+
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
 
    sf::Vector3<double> l_Position = GetPosition();
    a_pSwingBean->SetPosition(l_Position, kNormal, false);
-   l_Position.y += GetResources()->GetGridCellSize().y;
+   l_Position.y += l_pGridCellSize->y;
    a_pPivotBean->SetPosition(l_Position, kNormal, false);
 
 

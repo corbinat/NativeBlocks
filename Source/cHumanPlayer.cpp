@@ -23,11 +23,14 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
       {
          case sf::Event::KeyPressed:
          {
+            sf::Vector2<uint32_t>* l_pGridCellSize =
+               GetResources()->GetActiveLevelData()->GetGridCellSize();
+
             if ((*i).key.code == sf::Keyboard::Right)
             {
                sf::Vector3<double> l_RelativePosition;
                l_RelativePosition.x +=
-                  static_cast<double>(GetResources()->GetGridCellSize().x);
+                  static_cast<double>(l_pGridCellSize->x);
                MoveControlledBeans(l_RelativePosition);
                m_RightKeyDown = true;
             }
@@ -35,7 +38,7 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
             {
                sf::Vector3<double> l_RelativePosition;
                l_RelativePosition.x -=
-                  static_cast<double>(GetResources()->GetGridCellSize().x);
+                  static_cast<double>(l_pGridCellSize->x);
                MoveControlledBeans(l_RelativePosition);
                m_LeftKeyDown = true;
             }
@@ -97,18 +100,22 @@ void cHumanPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       if (m_KeyRepeatTime > m_KeyRepeatLimit)
       {
          m_KeyRepeatTime = 80;
+
+         sf::Vector2<uint32_t>* l_pGridCellSize =
+            GetResources()->GetActiveLevelData()->GetGridCellSize();
+
          if (m_LeftKeyDown && !m_RightKeyDown)
          {
             sf::Vector3<double> l_RelativePosition;
             l_RelativePosition.x -=
-               static_cast<double>(GetResources()->GetGridCellSize().x);
+               static_cast<double>(l_pGridCellSize->x);
             MoveControlledBeans(l_RelativePosition);
          }
          else if (!m_LeftKeyDown && m_RightKeyDown)
          {
             sf::Vector3<double> l_RelativePosition;
             l_RelativePosition.x +=
-               static_cast<double>(GetResources()->GetGridCellSize().x);
+               static_cast<double>(l_pGridCellSize->x);
             MoveControlledBeans(l_RelativePosition);
          }
       }
