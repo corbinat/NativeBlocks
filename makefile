@@ -20,8 +20,8 @@ SourceDir = Source
 
 all: Beans
 
-Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
+Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
@@ -32,8 +32,11 @@ cPlayer.o: ${SourceDir}/cPlayer.cpp ${SourceDir}/cPlayer.h cStaging.o
 cHumanPlayer.o: ${SourceDir}/cHumanPlayer.cpp ${SourceDir}/cHumanPlayer.h cPlayer.o
 	g++ ${CFLAGS} -c ${SourceDir}/cHumanPlayer.cpp ${LDFLAGS}
 
-cAiPlayer.o: ${SourceDir}/cAiPlayer.cpp ${SourceDir}/cAiPlayer.h cPlayer.o
+cAiPlayer.o: ${SourceDir}/cAiPlayer.cpp ${SourceDir}/cAiPlayer.h cPlayer.o cAiPersonality.o
 	g++ ${CFLAGS} -c ${SourceDir}/cAiPlayer.cpp ${LDFLAGS}
+
+cAiPersonality.o: ${SourceDir}/cAiPersonality.cpp ${SourceDir}/cAiPersonality.h cPlayer.o
+	g++ ${CFLAGS} -c ${SourceDir}/cAiPersonality.cpp ${LDFLAGS}
 
 cBean.o: ${SourceDir}/cBean.cpp ${SourceDir}/cBean.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBean.cpp ${LDFLAGS}

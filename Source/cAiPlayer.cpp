@@ -5,20 +5,19 @@
 
 #include <iostream>
 
-cAiPlayer::cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
-   : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
-     m_OptimalMoves(),
-     m_DoneThinking(false),
-     m_StartThinking(false),
-     m_DelayToFirstMove(0),
-     m_FirstMoveMade(false),
-     m_DelayToAdditionalMoves(0),
-     m_DelayTimer(0),
-     m_AIThoughtLevel(1),
-     m_MaxAIThoughtLevel(1),
-     m_AIPass(0),
-     m_Multithreaded(true),
-     m_AIThinkingThread(NULL)
+cAiPlayer::cAiPlayer(
+   cResources* a_pResources,
+   std::minstd_rand a_RandomNumberEngine,
+   std::string a_Identifier,
+   eAiPersonality a_Personality
+   ): cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
+      m_OptimalMoves(),
+      m_DoneThinking(false),
+      m_StartThinking(false),
+      m_FirstMoveMade(false),
+      m_DelayTimer(0),
+      m_AIThinkingThread(NULL),
+      m_Personality(a_Personality)
 {
 
 }
@@ -35,16 +34,15 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
    {
       m_StartThinking = true;
 
-      if (!m_Multithreaded)
-      {
-         _AnalyzeAllMoves();
-      }
-      else
-      {
-         m_AIThinkingThread.reset(
-            new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
-         );
-      }
+      m_AIThinkingThread.reset(
+         new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
+      );
+
+   }
+   else if (a_New == kStateDropGarbage)
+   {
+      // Let the AI Personality know in case it wants to adjust its strategy
+      m_Personality.GarbageAdded();
    }
    else
    {
@@ -63,17 +61,12 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       return;
    }
 
-   if (!m_DoneThinking && !m_Multithreaded)
-   {
-      _AnalyzeAllMoves();
-      return;
-   }
-
-   if (!m_DoneThinking && m_Multithreaded)
+   if (!m_DoneThinking)
    {
       // wait for the AI to finish thinking if urgency is getting high
       if (_IsCurrentColumnUrgencyHigh())
       {
+         std::cout << "AI out of time" << std::endl;
          std::cout << "JOIN 1" << std::endl;
          if (!m_AIThinkingThread->joinable())
          {
@@ -87,31 +80,31 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
          return;
       }
    }
-   else if (m_DoneThinking && m_Multithreaded && m_AIThinkingThread->joinable())
+   else if (m_DoneThinking && m_AIThinkingThread->joinable())
    {
       //std::cout << "JOIN 2" << std::endl;
       m_AIThinkingThread->join();
       //std::cout << "JOIN 2 Done" << std::endl;
    }
 
-
    // If I get here then the AI is done thinking.
    m_DelayTimer += a_ElapsedMiliSec;
    if (m_FirstMoveMade)
    {
-      if (m_DelayTimer < m_DelayToAdditionalMoves)
+      if (m_DelayTimer < m_Personality.GetDelayToAdditionalMoves())
       {
          return;
       }
    }
    else
    {
-      if (m_DelayTimer < m_DelayToFirstMove)
+      if (m_DelayTimer < m_Personality.GetDelayToFirstMove())
       {
          return;
       }
    }
    m_FirstMoveMade = true;
+   m_DelayTimer = 0;
 
    // There should only be one move in the vector. Pull it out and move towards
    // it.
@@ -126,6 +119,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    // If our rotation isn't right, rotate the beans.
    if (GetRotationState() != l_Destination.m_Rotation)
    {
+      // TODO: We'll be stuck here if we can't rotate
       RotateBeans(kRotateClockwise);
       return;
    }
@@ -160,27 +154,20 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       m_OptimalMoves.clear();
       std::cout << "AHHHHH START OVER" << l_Destination.m_Column << " " << l_Destination.m_Rotation << std::endl;
 
-       if (!m_Multithreaded)
+      if (m_AIThinkingThread->joinable())
       {
-         _AnalyzeAllMoves();
+         std::cout << "WHAT THE HECKKKKKK" << std::endl;
       }
-      else
-      {
-         if (m_AIThinkingThread->joinable())
-         {
-            std::cout << "WHAT THE HECKKKKKK" << std::endl;
-         }
-         m_AIThinkingThread.reset(
-            new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
-         );
-      }
+      m_AIThinkingThread.reset(
+         new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
+      );
+
    }
 
 }
 
 void cAiPlayer::_AnalyzeAllMoves()
 {
-
    std::vector<std::vector<cBeanInfo>> l_PlayingField =
       ClonePlayingField();
 
@@ -205,7 +192,12 @@ void cAiPlayer::_AnalyzeAllMoves()
    l_SwingPosition.y = l_PivotPosition.y - 1;
 
    // Determine what kind of pressure the AI is under
-   _CalculatePressure(l_PlayingField, l_PivotPosition, l_SwingPosition);
+   m_Personality.AdjustPersonalityToState(
+      l_PlayingField,
+      l_PivotPosition,
+      l_SwingPosition,
+      m_MiliSecPerFall
+      );
 
    std::vector <eRotationState> l_RotationsToTest;
    l_RotationsToTest.push_back(kRotationStateUp);
@@ -388,9 +380,6 @@ void cAiPlayer::_AnalyzeAllMoves()
    std::cout << "Done thinking" << std::endl;
    m_FirstMoveMade = false;
 
-   //~ std::uniform_int_distribution<int> l_Distribution2(200, 2000);
-   //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
-   //~ m_DelayToFirstMove = l_Distribution2(l_Generator);
    m_DelayTimer = 0;
 }
 
@@ -401,7 +390,7 @@ void cAiPlayer::_AnalyzeAllSecondayMoves(
    sOptimalPosition a_InitialMove
    )
 {
-   if (a_Depth > m_AIThoughtLevel)
+   if (a_Depth > m_Personality.GetAIThoughtLevel())
    {
       return;
    }
@@ -604,10 +593,11 @@ void cAiPlayer::_AnalyzeMove(
    // See if we have lost. If so, don't bother continuing on.
    if (a_PlayingField[2][5].GetColor() != kBeanColorEmpty)
    {
+      std::cout << "THIS IS TRUE!!!!!!!!!!!!!!!!!!!!!!!!" << a_PlayingField[2][5].GetColor() << std::endl;
       return;
    }
 
-   if (a_Depth == m_AIThoughtLevel)
+   if (a_Depth == m_Personality.GetAIThoughtLevel())
    {
       if (m_OptimalMoves.size() == 0)
       {
@@ -903,64 +893,6 @@ void cAiPlayer::_SearchColumnAndExplodeConnections(
    }
 }
 
-bool cAiPlayer::_IsColumnUrgencyHigh(
-   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
-   sf::Vector2<uint32_t> a_FallingBean1,
-   sf::Vector2<uint32_t> a_FallingBean2
-   )
-{
-   // If the nearest bean in our column is within 2 then the pressure is
-   // automatically high.
-   uint32_t l_Column1 = a_FallingBean1.x;
-
-   uint32_t i;
-   for (i = 0; i < a_rPlayingField[l_Column1].size(); ++i)
-   {
-      if (a_rPlayingField[l_Column1][i].GetColor() != kBeanColorEmpty)
-      {
-         break;
-      }
-   }
-
-   if (i != a_rPlayingField[l_Column1].size())
-   {
-      if (
-         (static_cast<int32_t>(a_rPlayingField[l_Column1][i].GetGridPosition().y)
-         - static_cast<int32_t>(a_FallingBean1.y))
-         < 2
-         )
-      {
-         return true;
-      }
-   }
-
-   // If the nearest bean in our column is within 2 then the pressure is
-   // automatically high.
-   uint32_t l_Column2 = a_FallingBean2.x;
-
-   for (i = 0; i < a_rPlayingField[l_Column2].size(); ++i)
-   {
-      if (a_rPlayingField[l_Column2][i].GetColor() != kBeanColorEmpty)
-      {
-         break;
-      }
-   }
-
-   if (i != a_rPlayingField[l_Column1].size())
-   {
-      if (
-         (static_cast<int32_t>(a_rPlayingField[l_Column2][i].GetGridPosition().y)
-         - static_cast<int32_t>(a_FallingBean1.y))
-         < 2
-         )
-      {
-         return true;
-      }
-   }
-
-   return false;
-}
-
 bool cAiPlayer::_IsCurrentColumnUrgencyHigh()
 {
    std::vector<std::vector<cBeanInfo>> l_PlayingField =
@@ -977,72 +909,5 @@ bool cAiPlayer::_IsCurrentColumnUrgencyHigh()
    l_SwingPosition =
       GetBeanGridPosition(l_BeansInPlay.y);
 
-   return _IsColumnUrgencyHigh(l_PlayingField, l_PivotPosition, l_SwingPosition);
-}
-
-void cAiPlayer::_CalculatePressure(
-   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
-   sf::Vector2<uint32_t> a_FallingBean1,
-   sf::Vector2<uint32_t> a_FallingBean2
-   )
-{
-   if (_IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
-   {
-      std::cout << "Very high pressure" << std::endl;
-      m_DelayToFirstMove = 0;
-      m_DelayToAdditionalMoves = 0;
-      m_AIThoughtLevel = 0;
-      return;
-   }
-
-   // No beans right under us, so base the pressure off of average height of the
-   // columns. This average is actually the average number of empty spaces per
-   // column.
-   uint32_t l_Average = 0;
-   for (int32_t l_Column = 0; l_Column < a_rPlayingField.size(); ++l_Column)
-   {
-      int32_t l_Row;
-      for (l_Row = a_rPlayingField[l_Column].size() - 1; l_Row >= 0; --l_Row)
-      {
-         if (a_rPlayingField[l_Column][l_Row].GetColor() == kBeanColorEmpty)
-         {
-            break;
-         }
-      }
-
-      l_Average += l_Row;
-   }
-
-   l_Average /= 6;
-
-   // If bean level is high then the pressure is high. Add 5 to account for
-   // garbage rows
-   if (l_Average < (3 + 5))
-   {
-      // wait up to 1 bean falls before making the first move
-      std::cout << "High Pressure" << std::endl;
-      m_DelayToFirstMove = m_MiliSecPerFall / 4;
-      m_DelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      m_AIThoughtLevel = 0;
-   }
-   // If bean level is midway then the pressure is up a just a bit. Add 5 to
-   // account for garbage rows
-   else if (l_Average < (4 + 5))
-   {
-      std::cout << "Med Pressure" << std::endl;
-      // wait up to 1 bean falls before making the first move
-      m_DelayToFirstMove = m_MiliSecPerFall;
-      m_DelayToAdditionalMoves = m_MiliSecPerFall / 4;
-      if (m_MaxAIThoughtLevel > 0)
-      {
-         m_AIThoughtLevel = m_MaxAIThoughtLevel - 1;
-      }
-   }
-   else
-   {
-      // wait up to 2 bean falls before making the first move
-      m_DelayToFirstMove = m_MiliSecPerFall * 2;
-      m_DelayToAdditionalMoves = m_MiliSecPerFall / 4;
-      m_AIThoughtLevel = m_MaxAIThoughtLevel;
-   }
+   return IsColumnUrgencyHigh(l_PlayingField, l_PivotPosition, l_SwingPosition);
 }

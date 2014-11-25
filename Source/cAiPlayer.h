@@ -1,6 +1,7 @@
 #ifndef ___cAiPlayer_h___
 #define ___cAiPlayer_h___
 
+#include "cAiPersonality.h"
 #include "cPlayer.h"
 
 #include <thread>
@@ -19,10 +20,18 @@ struct sOptimalPosition
    eRotationState m_Rotation;
 };
 
+
+
 class cAiPlayer : public cPlayer
 {
 public:
-   cAiPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier);
+   cAiPlayer(
+      cResources* a_pResources,
+      std::minstd_rand a_RandomNumberEngine,
+      std::string a_Identifier,
+      eAiPersonality a_Personality
+      );
+
    ~cAiPlayer();
 
    void StateChange(ePlayerState a_Old, ePlayerState a_New);
@@ -82,23 +91,8 @@ private:
       uint32_t* a_DifferentGroups
       );
 
-   // This function returns true if beans are getting close to landing.
-   bool _IsColumnUrgencyHigh(
-      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
-      sf::Vector2<uint32_t> a_FallingBean1,
-      sf::Vector2<uint32_t> a_FallingBean2
-      );
-
    // This function returns true if beans are getting close to landing at depth 0.
    bool _IsCurrentColumnUrgencyHigh();
-
-   // This function modifies m_DelayToFirstMove and m_AIThoughtLevel depending
-   // on how close the AI is to losing. More pressure makes both values go down.
-   void _CalculatePressure(
-      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
-      sf::Vector2<uint32_t> a_FallingBean1,
-      sf::Vector2<uint32_t> a_FallingBean2
-      );
 
    bool m_DoneThinking;
    bool m_StartThinking;
@@ -107,22 +101,15 @@ private:
    // Vector keeps a list of optimal moves
    std::vector<sOptimalPosition> m_OptimalMoves;
 
-   uint32_t m_DelayToFirstMove;
    bool m_FirstMoveMade;
-   uint32_t m_DelayToAdditionalMoves;
    uint32_t m_DelayTimer;
-
-   uint32_t m_AIThoughtLevel;
-   uint32_t m_MaxAIThoughtLevel;
 
    // This has to be a pointer because threads can't be reused. I have to
    // reconstruct them after join.
    std::shared_ptr<std::thread> m_AIThinkingThread;
 
-   // This allows the AI to use several steps to think. Ignored if multithreaded
-   uint32_t m_AIPass;
+   cAiPersonality m_Personality;
 
-   bool m_Multithreaded;
 };
 
 #endif
