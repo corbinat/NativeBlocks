@@ -4,28 +4,10 @@ Levels:
    ObjectMap: Media/Level1.bmp
    TileMap: Media/room1tile.bmp
    TileSource: Media/room1tilesource.bmp
-   GridWidth: 32
-   GridHeight: 32
-   ClearColor:
-   {
-      R: 150
-      G: 150
-      B: 150
-   }
-   Views:
-   {
-      MinX: 0
-      MinY: 0
-      MaxX: 800
-      MaxY: 600
-      PaddingX: 32
-      PaddingY: 32
-      ObjectFollowX: 1
-      ObjectFollowY: 1
-   }
-   Data:
-   {
-      LevelXCellCount: 20
-      LevelYCellCount: 20
-   }
+}
+{
+   Name: MainMenu
+   ObjectMap: Media/MainMenu.bmp
+   TileMap: Media/MainMenu.bmp
+   TileSource: Media/MainMenu.bmp
 }

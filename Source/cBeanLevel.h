@@ -10,8 +10,6 @@ class cBeanLevel: public cLevel
 {
 public:
    cBeanLevel(
-      std::string a_FileName,
-      std::string a_LevelName,
       cResources* a_pResources
       );
 
@@ -20,8 +18,10 @@ public:
    void Initialize();
    void Step (uint32_t a_ElapsedMiliSec);
 
+   std::string GetLevelName();
+   std::string GetObjectMapPath();
+
    cObject* PixelToObject(
-      std::string a_LevelName,
       sf::Vector2<uint32_t> a_position,
       sf::Color a_Color,
       cResources* a_pResources
