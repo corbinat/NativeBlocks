@@ -50,35 +50,34 @@ cObject* cBeanLevel::PixelToObject(
    cResources* a_pResources
    )
 {
+   cObject * l_pNewObject = NULL;
+
    if (a_Color.r == 0 && a_Color.g == 0 && a_Color.b == 0)
    {
       //cHumanPlayer* l_pPlayer = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1");
-      cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", kAiPersonalityHard);
-      return l_pPlayer;
-      //return NULL;
+      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", kAiPersonalityHard);
    }
    else if (a_Color.r == 100 && a_Color.g == 100 && a_Color.b == 100)
    {
-      cStagingObserver* l_pPlayer1Staging = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player1");
-      return l_pPlayer1Staging;
-      //return NULL;
+      l_pNewObject = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player1");
    }
 
    else if (a_Color.r == 255 && a_Color.g == 0 && a_Color.b == 0)
    {
       //cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", kAiPersonalityHard);
-      cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", kAiPersonalityMedium);
-      return l_pPlayer;
+      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", kAiPersonalityMedium);
    }
    else if (a_Color.r == 100 && a_Color.g == 0 && a_Color.b == 0)
    {
-      cStagingObserver* l_pPlayer2Staging = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player2");
-      return l_pPlayer2Staging;
-      //return NULL;
+      l_pNewObject = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player2");
    }
-   else
+
+   if (l_pNewObject != NULL)
    {
-      return NULL;
+      sf::Vector3<double> l_NewPosition(a_position.x * 32, a_position.y * 32, 0);
+
+      // Set position but don't bother checking for collisions
+      l_pNewObject->SetPosition(l_NewPosition, kNormal, false);
    }
 }
 

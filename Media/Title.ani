@@ -1,0 +1,66 @@
+Animations:
+{
+   Name: TitleBanner
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 0
+      Y: 0
+      Height: 49
+      Width: 470
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 49
+         Width: 470
+      }
+   }
+}
+{
+   Name: Grass
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 0
+      Y: 312
+      Height: 200
+      Width: 400
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 200
+         Width: 400
+      }
+   }
+}
+{
+   Name: Cloud1
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 12
+      Y: 60
+      Height: 90
+      Width: 240
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 90
+         Width: 240
+      }
+   }
+
+}
+

@@ -20,8 +20,8 @@ SourceDir = Source
 
 all: Beans
 
-Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o ${EngineOBJ} ${LDFLAGS}
+Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cMainMenuLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cMainMenuLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
@@ -61,6 +61,18 @@ cRoof.o: ${SourceDir}/cRoof.cpp ${SourceDir}/cRoof.h
 
 cBeanLevel.o: ${SourceDir}/cBeanLevel.cpp ${SourceDir}/cBeanLevel.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBeanLevel.cpp ${LDFLAGS}
+
+cTitle.o: ${SourceDir}/MainMenu/cTitle.cpp ${SourceDir}/MainMenu/cTitle.h
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cTitle.cpp ${LDFLAGS}
+
+cGrass.o: ${SourceDir}/MainMenu/cGrass.cpp ${SourceDir}/MainMenu/cGrass.h
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cGrass.cpp ${LDFLAGS}
+
+cCloud.o: ${SourceDir}/MainMenu/cCloud.cpp ${SourceDir}/MainMenu/cCloud.h
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cCloud.cpp ${LDFLAGS}
+
+cMainMenuLevel.o: ${SourceDir}/cMainMenuLevel.cpp ${SourceDir}/cMainMenuLevel.h
+	g++ ${CFLAGS} -c ${SourceDir}/cMainMenuLevel.cpp ${LDFLAGS}
 
 clean:
 	rm -f *.o *.a main
