@@ -11,6 +11,7 @@ cCloud::cCloud(cResources* a_pResources)
    LoadAnimations("Media/Title.ani");
    PlayAnimationLoop("Cloud1");
    SetDepth(1, kNormal);
+   SetCollidable(false);
 }
 
 cCloud::~cCloud()
