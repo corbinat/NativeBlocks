@@ -227,6 +227,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                StateChange(kStateWaitForBeansToSettle, kStateCheckForMatches);
             }
          }
+
          break;
       }
 
@@ -520,7 +521,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
       }
       case kStateCheckForLosingState:
       {
-         // If a bean exists at (4,2) then game over.
+         // If a bean exists at (2,4) then game over.
          if (m_Beans[2][4] != NULL)
          {
             m_CurrentState = kStateIdle;
@@ -969,6 +970,8 @@ void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
 
    l_Position.x += l_pGridCellSize->x * a_Column;
    l_Position.y -= l_pGridCellSize->y * (5 - a_Row);
+   // Set visible to false because it starts above the playing area.
+   // l_pGarbageBean->SetVisible(false);
    l_pGarbageBean->SetPosition(l_Position, kNormal, false);
    l_pGarbageBean->Fall();
    m_FallingBeans.push_back(l_pGarbageBean);

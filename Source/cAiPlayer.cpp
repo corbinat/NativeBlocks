@@ -24,6 +24,11 @@ cAiPlayer::cAiPlayer(
 
 cAiPlayer::~cAiPlayer()
 {
+   if (m_AIThinkingThread->joinable())
+   {
+      m_AIThinkingThread->join();
+   }
+
 }
 
 void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
