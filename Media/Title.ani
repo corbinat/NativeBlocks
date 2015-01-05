@@ -63,4 +63,88 @@ Animations:
    }
 
 }
+{
+   Name: ButtonLeft
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 1
+      Y: 263
+      Height: 18
+      Width: 10
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 18
+         Width: 10
+      }
+   }
+}
+{
+   Name: ButtonLeftPressed
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 1
+      Y: 282
+      Height: 18
+      Width: 10
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 18
+         Width: 10
+      }
+   }
+}
+{
+   Name: ButtonRight
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 11
+      Y: 263
+      Height: 18
+      Width: 10
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 18
+         Width: 10
+      }
+   }
+}
+{
+   Name: ButtonRightPressed
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 11
+      Y: 282
+      Height: 18
+      Width: 10
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 18
+         Width: 10
+      }
+   }
+}
 

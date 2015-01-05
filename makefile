@@ -20,8 +20,8 @@ SourceDir = Source
 
 all: Beans
 
-Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cMainMenuLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cMainMenuLevel.o ${EngineOBJ} ${LDFLAGS}
+Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cTextBox.o cButton.o cSelectionBox.o cMainMenu.o cMainMenuLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cTextBox.o cButton.o cSelectionBox.o cMainMenu.o cMainMenuLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
@@ -70,6 +70,18 @@ cGrass.o: ${SourceDir}/MainMenu/cGrass.cpp ${SourceDir}/MainMenu/cGrass.h
 
 cCloud.o: ${SourceDir}/MainMenu/cCloud.cpp ${SourceDir}/MainMenu/cCloud.h
 	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cCloud.cpp ${LDFLAGS}
+
+cTextBox.o: ${SourceDir}/MainMenu/cTextBox.cpp ${SourceDir}/MainMenu/cTextBox.h
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cTextBox.cpp ${LDFLAGS}
+
+cButton.o: ${SourceDir}/MainMenu/cButton.cpp ${SourceDir}/MainMenu/cButton.h
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cButton.cpp ${LDFLAGS}
+
+cSelectionBox.o: ${SourceDir}/MainMenu/cSelectionBox.cpp ${SourceDir}/MainMenu/cSelectionBox.h cButton.o cTextBox.o
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cSelectionBox.cpp ${LDFLAGS}
+
+cMainMenu.o: ${SourceDir}/MainMenu/cMainMenu.cpp ${SourceDir}/MainMenu/cMainMenu.h cSelectionBox.o
+	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cMainMenu.cpp ${LDFLAGS}
 
 cMainMenuLevel.o: ${SourceDir}/cMainMenuLevel.cpp ${SourceDir}/cMainMenuLevel.h
 	g++ ${CFLAGS} -c ${SourceDir}/cMainMenuLevel.cpp ${LDFLAGS}
