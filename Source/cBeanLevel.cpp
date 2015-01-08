@@ -2,6 +2,7 @@
 #include "cHumanPlayer.h"
 #include "cAiPlayer.h"
 #include "cStagingObserver.h"
+#include "Props/cGrass.h"
 
 #include "cResources.h"
 
@@ -26,7 +27,7 @@ void cBeanLevel::Initialize()
 
    // Change default level settings
    SetGridCellSize(sf::Vector2<uint32_t>(32,32));
-   SetBackgroundColor(sf::Color(150,150,150,255));
+   SetBackgroundColor(sf::Color(153,204,204,255));
 }
 
 void cBeanLevel::Step(uint32_t a_ElapsedMiliSec)
@@ -54,8 +55,32 @@ cObject* cBeanLevel::PixelToObject(
 
    if (a_Color.r == 0 && a_Color.g == 0 && a_Color.b == 0)
    {
-      //cHumanPlayer* l_pPlayer = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1");
-      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", kAiPersonalityHard);
+      std::string l_Player1Option = GetResources()->GetGameConfigData()->GetProperty("Player1");
+
+      if (l_Player1Option == "Human")
+      {
+         l_pNewObject = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1");
+      }
+      else
+      {
+         eAiPersonality l_Personality = kAiPersonalityEasy;
+
+         if (l_Player1Option == "Easy AI")
+         {
+            l_Personality = kAiPersonalityEasy;
+         }
+         else if (l_Player1Option == "Medium AI")
+         {
+            l_Personality = kAiPersonalityMedium;
+         }
+         else if (l_Player1Option == "Hard AI")
+         {
+            l_Personality = kAiPersonalityHard;
+         }
+         l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", l_Personality);
+      }
+
+
    }
    else if (a_Color.r == 100 && a_Color.g == 100 && a_Color.b == 100)
    {
@@ -64,12 +89,30 @@ cObject* cBeanLevel::PixelToObject(
 
    else if (a_Color.r == 255 && a_Color.g == 0 && a_Color.b == 0)
    {
-      //cAiPlayer* l_pPlayer = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", kAiPersonalityHard);
-      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", kAiPersonalityMedium);
+      std::string l_Player2Option = GetResources()->GetGameConfigData()->GetProperty("Player2");
+      eAiPersonality l_Personality = kAiPersonalityEasy;
+
+      if (l_Player2Option == "Easy AI")
+      {
+         l_Personality = kAiPersonalityEasy;
+      }
+      else if (l_Player2Option == "Medium AI")
+      {
+         l_Personality = kAiPersonalityMedium;
+      }
+      else if (l_Player2Option == "Hard AI")
+      {
+         l_Personality = kAiPersonalityHard;
+      }
+      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", l_Personality);
    }
    else if (a_Color.r == 100 && a_Color.g == 0 && a_Color.b == 0)
    {
       l_pNewObject = new cStagingObserver(a_pResources, m_RandomNumberEngine, "Player2");
+   }
+   else if (a_Color.r == 0 && a_Color.g == 255 && a_Color.b == 0)
+   {
+      l_pNewObject = new cGrass(a_pResources);
    }
 
    if (l_pNewObject != NULL)
