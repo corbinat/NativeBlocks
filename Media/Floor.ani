@@ -1,14 +1,35 @@
 Animations:
 {
-   Name: Floor
+   Name: Roof
    Speed: 8
    Frames:
    {
       Image: Media/Textures.png
       X: 0
       Y: 0
+      Height: 128
+      Width: 256
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 128
+         Width: 256
+      }
+   }
+}
+{
+   Name: Floor
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 320
       Height: 32
-      Width: 192
+      Width: 256
       Origin: 0
       BoundingBoxes:
       {
@@ -16,7 +37,7 @@ Animations:
          X: 0
          Y: 0
          Height: 32
-         Width: 192
+         Width: 256
       }
    }
 }
@@ -26,9 +47,9 @@ Animations:
    Frames:
    {
       Image: Media/Textures.png
-      X: 192
-      Y: 0
-      Height: 224
+      X: 224
+      Y: 128
+      Height: 192
       Width: 32
       Origin: 0
       BoundingBoxes:
@@ -36,7 +57,7 @@ Animations:
          Name: Full Box
          X: 0
          Y: 0
-         Height: 224
+         Height: 192
          Width: 32
       }
    }

@@ -29,7 +29,7 @@ Animations:
       X: 0
       Y: 312
       Height: 200
-      Width: 400
+      Width: 480
       Origin: 0
       BoundingBoxes:
       {
@@ -37,7 +37,7 @@ Animations:
          X: 0
          Y: 0
          Height: 200
-         Width: 400
+         Width: 480
       }
    }
 }
@@ -69,18 +69,18 @@ Animations:
    Frames:
    {
       Image: Media/MainMenu.png
-      X: 1
-      Y: 263
-      Height: 18
-      Width: 10
+      X: 21
+      Y: 248
+      Height: 32
+      Width: 18
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
          X: 0
          Y: 0
-         Height: 18
-         Width: 10
+         Height: 32
+         Width: 18
       }
    }
 }
@@ -90,18 +90,18 @@ Animations:
    Frames:
    {
       Image: Media/MainMenu.png
-      X: 1
-      Y: 282
-      Height: 18
-      Width: 10
+      X: 21
+      Y: 280
+      Height: 32
+      Width: 18
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
          X: 0
          Y: 0
-         Height: 18
-         Width: 10
+         Height: 32
+         Width: 18
       }
    }
 }
@@ -111,18 +111,18 @@ Animations:
    Frames:
    {
       Image: Media/MainMenu.png
-      X: 11
-      Y: 263
-      Height: 18
-      Width: 10
+      X: 39
+      Y: 248
+      Height: 32
+      Width: 18
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
          X: 0
          Y: 0
-         Height: 18
-         Width: 10
+         Height: 32
+         Width: 18
       }
    }
 }
@@ -132,18 +132,60 @@ Animations:
    Frames:
    {
       Image: Media/MainMenu.png
-      X: 11
-      Y: 282
-      Height: 18
-      Width: 10
+      X: 39
+      Y: 280
+      Height: 32
+      Width: 18
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
          X: 0
          Y: 0
-         Height: 18
-         Width: 10
+         Height: 32
+         Width: 18
+      }
+   }
+}
+{
+   Name: TextBox
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 57
+      Y: 248
+      Height: 32
+      Width: 100
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 100
+      }
+   }
+}
+{
+   Name: BeginButton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 57
+      Y: 280
+      Height: 32
+      Width: 64
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 64
       }
    }
 }

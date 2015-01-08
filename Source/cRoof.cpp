@@ -5,8 +5,9 @@ cRoof::cRoof(cResources* a_pResources)
 {
    SetType("Roof");
    SetSolid(false);
+   SetCollidable(false);
    LoadAnimations("Media/Floor.ani");
-   PlayAnimationLoop("Floor");
+   PlayAnimationLoop("Roof");
    SetDepth(-2);
 }
 
