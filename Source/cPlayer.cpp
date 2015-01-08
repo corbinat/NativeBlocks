@@ -710,21 +710,31 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
    }
    else
    {
-      // There is something in the rotation space, see if we can scootch over.
-      // See if we have to scootch a full space or half space when dealing with
-      // y.
-      sf::Vector3<double> l_NewSwingPosition = m_pPivotBean->GetPosition();
-      if (
-           (static_cast<uint32_t>(m_pPivotBean->GetPosition().y)
-           % l_pGridCellSize->y
-           )
-           != 0
+      // There is something in the rotation space. If we're trying to rotate up
+      // then just quit because we don't want to be pushed down.
+      if (  m_RotationState == kRotationStateLeft && a_Rotation == kRotateClockwise
+         || m_RotationState == kRotationStateRight && a_Rotation == kRotateCounterClockwise
          )
       {
-         l_OppositePosition.y += l_pGridCellSize->y / 2;
-         l_NewSwingPosition.y += l_pGridCellSize->y / 2;
+         return;
       }
 
+      // See if we can scootch over.
+      sf::Vector3<double> l_NewSwingPosition = m_pPivotBean->GetPosition();
+
+      if (  m_RotationState == kRotationStateRight && a_Rotation == kRotateClockwise
+         || m_RotationState == kRotationStateLeft && a_Rotation == kRotateCounterClockwise
+         )
+      {
+         // If trying to rotate down see if we have to scootch a full space or
+         // half space. This allows us to rotate beans under the pivit point
+         // nicely when the pivot is half a space from the ground.
+         if ((static_cast<uint32_t>(m_pPivotBean->GetPosition().y) % l_pGridCellSize->y) != 0)
+         {
+            l_OppositePosition.y += l_pGridCellSize->y / 2;
+            l_NewSwingPosition.y += l_pGridCellSize->y / 2;
+         }
+      }
 
       l_Collisions =
          GetCollisions(m_pPivotBean, l_OppositePosition);
@@ -853,35 +863,35 @@ void cPlayer::_Initialize()
       GetResources()->GetActiveLevelData()->GetGridCellSize();
 
    l_Position.y += l_pGridCellSize->y * 12;
+   l_Position.x -= l_pGridCellSize->y;
    l_NewFloor->SetPosition(l_Position, kNormal, false);
 
    cWall* l_NewWall = new cWall(GetResources());
    l_Position = GetPosition();
    l_Position.x -= l_pGridCellSize->x;
-   l_Position.y -= l_pGridCellSize->y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    l_Position = GetPosition();
    l_Position.x += l_pGridCellSize->x * 6;
-   l_Position.y -= l_pGridCellSize->y;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    l_Position = GetPosition();
    l_Position.x -= l_pGridCellSize->x;
-   l_Position.y += l_NewWall->GetBoundingBox().height - l_pGridCellSize->y;
+   l_Position.y += l_NewWall->GetBoundingBox().height;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    l_NewWall = new cWall(GetResources());
    l_Position = GetPosition();
-   l_Position.y += l_NewWall->GetBoundingBox().height - l_pGridCellSize->y;
+   l_Position.y += l_NewWall->GetBoundingBox().height;
    l_Position.x += l_pGridCellSize->x * 6;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
    cRoof * l_NewRoof = new cRoof(GetResources());
    l_Position = GetPosition();
-   l_Position.y -= l_pGridCellSize->y;
+   l_Position.y -= l_pGridCellSize->y * 4;
+   l_Position.x -= l_pGridCellSize->x;
    l_NewRoof->SetPosition(l_Position, kNormal, false);
 
 }

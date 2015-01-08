@@ -34,7 +34,7 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
                MoveControlledBeans(l_RelativePosition);
                m_RightKeyDown = true;
             }
-            if ((*i).key.code == sf::Keyboard::Left)
+            else if ((*i).key.code == sf::Keyboard::Left)
             {
                sf::Vector3<double> l_RelativePosition;
                l_RelativePosition.x -=
@@ -42,14 +42,19 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
                MoveControlledBeans(l_RelativePosition);
                m_LeftKeyDown = true;
             }
-            if ((*i).key.code == sf::Keyboard::Down)
+            else if ((*i).key.code == sf::Keyboard::Down)
             {
                SetFastFall(true);
             }
-            if ((*i).key.code == sf::Keyboard::Space)
+            else if ((*i).key.code == sf::Keyboard::Z)
+            {
+               RotateBeans(kRotateCounterClockwise);
+            }
+            else if ((*i).key.code == sf::Keyboard::X)
             {
                RotateBeans(kRotateClockwise);
             }
+
 
             break;
          }
