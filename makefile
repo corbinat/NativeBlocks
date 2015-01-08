@@ -65,11 +65,11 @@ cBeanLevel.o: ${SourceDir}/cBeanLevel.cpp ${SourceDir}/cBeanLevel.h
 cTitle.o: ${SourceDir}/MainMenu/cTitle.cpp ${SourceDir}/MainMenu/cTitle.h
 	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cTitle.cpp ${LDFLAGS}
 
-cGrass.o: ${SourceDir}/MainMenu/cGrass.cpp ${SourceDir}/MainMenu/cGrass.h
-	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cGrass.cpp ${LDFLAGS}
+cGrass.o: ${SourceDir}/Props/cGrass.cpp ${SourceDir}/Props/cGrass.h
+	g++ ${CFLAGS} -c ${SourceDir}/Props/cGrass.cpp ${LDFLAGS}
 
-cCloud.o: ${SourceDir}/MainMenu/cCloud.cpp ${SourceDir}/MainMenu/cCloud.h
-	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cCloud.cpp ${LDFLAGS}
+cCloud.o: ${SourceDir}/Props/cCloud.cpp ${SourceDir}/Props/cCloud.h
+	g++ ${CFLAGS} -c ${SourceDir}/Props/cCloud.cpp ${LDFLAGS}
 
 cTextBox.o: ${SourceDir}/MainMenu/cTextBox.cpp ${SourceDir}/MainMenu/cTextBox.h
 	g++ ${CFLAGS} -c ${SourceDir}/MainMenu/cTextBox.cpp ${LDFLAGS}
