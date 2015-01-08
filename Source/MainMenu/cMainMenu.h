@@ -26,6 +26,11 @@ public:
 private:
 
    bool m_Initialized;
+
+   sf::Text m_Player1Label;
+   sf::Text m_Player2Label;
+   sf::Text m_GameSpeedLabel;
+
    cSelectionBox * m_pPlayer1Option;
    cSelectionBox * m_pPlayer2Option;
    cSelectionBox * m_pGameSpeedOption;

@@ -18,8 +18,9 @@ cSelectionBox::cSelectionBox(cResources* a_pResources)
 
    m_CurrentOption = m_Options.begin();
 
-   m_pLeftArrowButton = new cButton(GetResources());
+   // TextBox is created first so that it is under the buttons
    m_pTextBox = new cTextBox(GetResources());
+   m_pLeftArrowButton = new cButton(GetResources());
    m_pRightArrowButton = new cButton(GetResources());
    m_pRightArrowButton->SetSprite("ButtonRight", "ButtonRightPressed");
 
@@ -56,10 +57,10 @@ void cSelectionBox::Step (uint32_t a_ElapsedMiliSec)
       sf::Vector3<double> l_Position = GetPosition();
       m_pLeftArrowButton->SetPosition(l_Position, kNormal, false);
 
-      l_Position.x += m_pLeftArrowButton->GetBoundingBox().width + 1;
+      l_Position.x += m_pLeftArrowButton->GetBoundingBox().width;
       m_pTextBox->SetPosition(l_Position, kNormal, false);
 
-      l_Position.x += m_pTextBox->GetBoundingBox().width + 1;
+      l_Position.x += m_pTextBox->GetBoundingBox().width;
       m_pRightArrowButton->SetPosition(l_Position, kNormal, false);
 
       m_Initialized = true;
@@ -99,7 +100,6 @@ void cSelectionBox::MessageReceived(sMessage a_Message)
 {
    if (a_Message.m_From == m_pLeftArrowButton->GetUniqueId())
    {
-      std::cout << "Left button pressed" << std::endl;
       if (m_CurrentOption == m_Options.begin())
       {
          m_CurrentOption = m_Options.end() - 1;
@@ -112,7 +112,6 @@ void cSelectionBox::MessageReceived(sMessage a_Message)
    }
    else if (a_Message.m_From == m_pRightArrowButton->GetUniqueId())
    {
-      std::cout << "Right button pressed" << std::endl;
       ++m_CurrentOption;
       if (m_CurrentOption == m_Options.end())
       {
@@ -145,4 +144,14 @@ void cSelectionBox::AddOption(const std::string & a_rkOption)
    {
       m_pTextBox->ReplaceString(*m_CurrentOption);
    }
+}
+
+std::string cSelectionBox::GetSelectedOption()
+{
+   if (m_Options.size() > 0)
+   {
+      return *m_CurrentOption;
+   }
+
+   return "";
 }

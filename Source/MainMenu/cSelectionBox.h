@@ -25,6 +25,7 @@ public:
 
    void SetOptions(std::vector<std::string> & a_rOptions);
    void AddOption(const std::string & a_rkOption);
+   std::string GetSelectedOption();
 
 private:
 

@@ -23,7 +23,6 @@ private:
 
    std::string m_String;
    sf::Text m_Data;
-   sf::RectangleShape m_BackGround;
 
    bool m_Initialized;
 
