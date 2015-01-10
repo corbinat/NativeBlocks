@@ -1,0 +1,70 @@
+Animations:
+{
+   Name: Countdown
+   Speed: 2
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 288
+      Y: 7
+      Height: 85
+      Width: 224
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 85
+         Width: 224
+      }
+   }
+   {
+      Image: Media/Textures.png
+      X: 288
+      Y: 112
+      Height: 85
+      Width: 224
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 85
+         Width: 224
+      }
+   }
+   {
+      Image: Media/Textures.png
+      X: 288
+      Y: 217
+      Height: 85
+      Width: 224
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 85
+         Width: 224
+      }
+   }
+   {
+      Image: Media/Textures.png
+      X: 288
+      Y: 321
+      Height: 85
+      Width: 224
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 85
+         Width: 224
+      }
+   }
+}

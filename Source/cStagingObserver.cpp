@@ -30,6 +30,7 @@ cStagingObserver::cStagingObserver(cResources* a_pResources, std::minstd_rand a_
 
 cStagingObserver::~cStagingObserver()
 {
+   GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
 }
 
 // These functions are overloaded from cObject

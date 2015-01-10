@@ -1,0 +1,43 @@
+Animations:
+{
+   Name: PlayAgainButton
+   Speed: 2
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 352
+      Height: 32
+      Width: 96
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 96
+      }
+   }
+}
+{
+   Name: MainMenuButton
+   Speed: 2
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 384
+      Height: 32
+      Width: 96
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 96
+      }
+   }
+}

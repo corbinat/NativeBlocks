@@ -3,6 +3,8 @@
 #include "cAiPlayer.h"
 #include "cStagingObserver.h"
 #include "Props/cGrass.h"
+#include "cCountdownStart.h"
+#include "cFinalMenu.h"
 
 #include "cResources.h"
 
@@ -113,6 +115,14 @@ cObject* cBeanLevel::PixelToObject(
    else if (a_Color.r == 0 && a_Color.g == 255 && a_Color.b == 0)
    {
       l_pNewObject = new cGrass(a_pResources);
+   }
+   else if (a_Color.r == 0 && a_Color.g ==0 && a_Color.b == 255)
+   {
+      l_pNewObject = new cCountdownStart(a_pResources);
+   }
+   else if (a_Color.r == 255 && a_Color.g ==0 && a_Color.b == 255)
+   {
+      l_pNewObject = new cFinalMenu(a_pResources);
    }
 
    if (l_pNewObject != NULL)

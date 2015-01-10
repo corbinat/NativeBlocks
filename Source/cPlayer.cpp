@@ -46,13 +46,11 @@ cPlayer::cPlayer(
    SetType(a_Identifier);
    SetSolid(false);
 
-   // Receive messages when beans finish falling. That way we can know when to
-   // stop waiting for them to settle.
    sMessage l_Request;
    l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
-   l_Request.m_Category = std::to_string(GetUniqueId());
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
    l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
-   l_Request.m_Value = "BeanSettled";
+   l_Request.m_Value = "StartGame";
 
    std::function<void(sMessage)> l_MessageCallback =
       std::bind(&cPlayer::MessageReceived, this, std::placeholders::_1);
@@ -62,21 +60,6 @@ cPlayer::cPlayer(
       l_MessageCallback,
       l_Request
       );
-
-   // Receive messages when garbage beans are sent our way
-   sMessage l_GarbageRequest;
-   l_GarbageRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
-   l_GarbageRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
-   l_GarbageRequest.m_Key = "SendingGarbage";
-   l_GarbageRequest.m_Value = GetResources()->GetMessageDispatcher()->Any();
-
-   GetResources()->GetMessageDispatcher()->RegisterForMessages(
-      GetUniqueId(),
-      l_MessageCallback,
-      l_GarbageRequest
-      );
-
-   _StartGame();
 }
 
 cPlayer::~cPlayer()
@@ -524,15 +507,29 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          // If a bean exists at (2,4) then game over.
          if (m_Beans[2][4] != NULL)
          {
-            m_CurrentState = kStateIdle;
-            StateChange(kStateCheckForLosingState, kStateIdle);
-            std::cout << GetType() << " Lost" << std::endl;
+            m_CurrentState = kStateGameLost;
+            StateChange(kStateCheckForLosingState, kStateGameLost);
          }
          else
          {
             m_CurrentState = kStateCreateBeans;
             StateChange(kStateCheckForLosingState, kStateCreateBeans);
          }
+         break;
+      }
+      case kStateGameLost:
+      {
+         sMessage l_Message;
+         l_Message.m_From = GetUniqueId();
+         l_Message.m_Category = GetType();
+         l_Message.m_Key = GetResources()->GetMessageDispatcher()->Any();
+         l_Message.m_Value = "Player Lost";
+         GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+
+         m_CurrentState = kStateIdle;
+         StateChange(kStateGameLost, kStateIdle);
+         std::cout << GetType() << " Lost" << std::endl;
+         break;
       }
       default:
       {
@@ -546,7 +543,11 @@ void cPlayer::Collision(cObject* a_pOther)
 
 void cPlayer::MessageReceived(sMessage a_Message)
 {
-   if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))
+   if (a_Message.m_Value == "StartGame")
+   {
+      _StartGame();
+   }
+   else if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))
    {
       cObject* l_pObject =
          GetResources()->GetActiveLevelData()->GetObjectWithId(a_Message.m_From);
@@ -888,7 +889,7 @@ void cPlayer::_Initialize()
    l_Position.x += l_pGridCellSize->x * 6;
    l_NewWall->SetPosition(l_Position, kNormal, false);
 
-   cRoof * l_NewRoof = new cRoof(GetResources());
+   cRoof * l_NewRoof = new cRoof(GetResources(), GetResources()->GetGameConfigData()->GetProperty(GetType()));
    l_Position = GetPosition();
    l_Position.y -= l_pGridCellSize->y * 4;
    l_Position.x -= l_pGridCellSize->x;
@@ -898,6 +899,38 @@ void cPlayer::_Initialize()
 
 void cPlayer::_StartGame()
 {
+   GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
+
+   // Receive messages when beans finish falling. That way we can know when to
+   // stop waiting for them to settle.
+   sMessage l_Request;
+   l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_Request.m_Category = std::to_string(GetUniqueId());
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = "BeanSettled";
+
+   std::function<void(sMessage)> l_MessageCallback =
+      std::bind(&cPlayer::MessageReceived, this, std::placeholders::_1);
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+
+   // Receive messages when garbage beans are sent our way
+   sMessage l_GarbageRequest;
+   l_GarbageRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_GarbageRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_GarbageRequest.m_Key = "SendingGarbage";
+   l_GarbageRequest.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_GarbageRequest
+      );
+
    m_CurrentState = kStateCreateBeans;
 }
 

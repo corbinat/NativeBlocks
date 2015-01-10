@@ -20,8 +20,8 @@ SourceDir = Source
 
 all: Beans
 
-Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cTextBox.o cButton.o cSelectionBox.o cMainMenu.o cMainMenuLevel.o
-	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cTextBox.o cButton.o cSelectionBox.o cMainMenu.o cMainMenuLevel.o ${EngineOBJ} ${LDFLAGS}
+Beans: main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cCountdownStart.o cFinalMenu.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cTextBox.o cButton.o cSelectionBox.o cMainMenu.o cMainMenuLevel.o
+	g++ ${CFLAGS} -o main main.o cPlayer.o cHumanPlayer.o cAiPlayer.o cAiPersonality.o cBean.o cBeanInfo.o cStaging.o cStagingObserver.o cFloor.o cWall.o cRoof.o cCountdownStart.o cFinalMenu.o cBeanLevel.o cTitle.o cGrass.o cCloud.o cTextBox.o cButton.o cSelectionBox.o cMainMenu.o cMainMenuLevel.o ${EngineOBJ} ${LDFLAGS}
 
 main.o: ${SourceDir}/main.cpp
 	g++ ${CFLAGS} -c ${SourceDir}/main.cpp ${LDFLAGS}
@@ -58,6 +58,12 @@ cWall.o: ${SourceDir}/cWall.cpp ${SourceDir}/cWall.h
 
 cRoof.o: ${SourceDir}/cRoof.cpp ${SourceDir}/cRoof.h
 	g++ ${CFLAGS} -c ${SourceDir}/cRoof.cpp ${LDFLAGS}
+
+cCountdownStart.o: ${SourceDir}/cCountdownStart.cpp ${SourceDir}/cCountdownStart.h
+	g++ ${CFLAGS} -c ${SourceDir}/cCountdownStart.cpp ${LDFLAGS}
+
+cFinalMenu.o: ${SourceDir}/cFinalMenu.cpp ${SourceDir}/cFinalMenu.h cButton.o
+	g++ ${CFLAGS} -c ${SourceDir}/cFinalMenu.cpp ${LDFLAGS}
 
 cBeanLevel.o: ${SourceDir}/cBeanLevel.cpp ${SourceDir}/cBeanLevel.h
 	g++ ${CFLAGS} -c ${SourceDir}/cBeanLevel.cpp ${LDFLAGS}
