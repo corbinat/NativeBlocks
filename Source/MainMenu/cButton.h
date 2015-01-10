@@ -18,11 +18,14 @@ public:
    void Step (uint32_t a_ElapsedMiliSec);
    void Draw();
 
-   void SetSprite(std::string a_Sprite, std::string a_SpritePressed);
+   void SetImage(std::string a_AniFile, std::string a_Sprite);
+   void SetPressedImage(std::string a_AniFile, std::string a_Sprite);
 
 private:
-   std::string m_SpriteImage;
-   std::string m_SpritePressedImage;
+
+   // Pairs contain ani file and ani name
+   std::pair<std::string, std::string> m_SpriteImage;
+   std::pair<std::string, std::string> m_SpritePressedImage;
 
 };
 

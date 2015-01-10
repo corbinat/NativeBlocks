@@ -3,13 +3,15 @@
 
 cButton::cButton(cResources* a_pResources)
    : cObject(a_pResources),
-     m_SpriteImage("ButtonLeft"),
-     m_SpritePressedImage("ButtonLeftPressed")
+     m_SpriteImage("Media/Title.ani", "ButtonLeft"),
+     m_SpritePressedImage("Media/Title.ani", "ButtonLeftPressed")
 {
    SetType("Button");
    SetSolid(true);
-   LoadAnimations("Media/Title.ani");
-   PlayAnimationLoop(m_SpriteImage);
+
+   // Set default animations
+   LoadAnimations(m_SpriteImage.first);
+   PlayAnimationLoop(m_SpriteImage.second);
 }
 
 cButton::~cButton()
@@ -39,7 +41,7 @@ void cButton::Event(std::list<sf::Event> * a_pEventList)
 
          if (l_PositionBox.contains(i->mouseButton.x, i->mouseButton.y))
          {
-            PlayAnimationLoop(m_SpritePressedImage);
+            PlayAnimationLoop(m_SpritePressedImage.second);
             sMessage l_Message;
             l_Message.m_From = GetUniqueId();
             l_Message.m_Category = "Button";
@@ -50,12 +52,12 @@ void cButton::Event(std::list<sf::Event> * a_pEventList)
       }
       else if (i->type == sf::Event::MouseButtonReleased)
       {
-         PlayAnimationLoop(m_SpriteImage);
+         PlayAnimationLoop(m_SpriteImage.second);
       }
    }
 }
 
-void cButton::Step (uint32_t a_ElapsedMiliSec)
+void cButton::Step(uint32_t a_ElapsedMiliSec)
 {
 
 }
@@ -65,9 +67,21 @@ void cButton::Draw()
 
 }
 
-void cButton::SetSprite(std::string a_Sprite, std::string a_SpritePressed)
+void cButton::SetImage(std::string a_AniFile, std::string a_Sprite)
 {
-   m_SpriteImage = a_Sprite;
-   m_SpritePressedImage = a_SpritePressed;
-   PlayAnimationLoop(m_SpriteImage);
+   m_SpriteImage.first = a_AniFile;
+   m_SpriteImage.second = a_Sprite;
+   m_SpritePressedImage.first = a_AniFile;
+   m_SpritePressedImage.second = a_Sprite;
+
+   LoadAnimations(m_SpriteImage.first);
+   PlayAnimationLoop(m_SpriteImage.second);
+}
+
+void cButton::SetPressedImage(std::string a_AniFile, std::string a_Sprite)
+{
+   m_SpritePressedImage.first = a_AniFile;
+   m_SpritePressedImage.second = a_Sprite;
+
+   LoadAnimations(m_SpritePressedImage.first);
 }

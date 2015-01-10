@@ -42,6 +42,7 @@ void cTextBox::Step (uint32_t a_ElapsedMiliSec)
    if (!m_Initialized)
    {
       m_Data.setPosition(GetPosition().x + 4, GetPosition().y + 4);
+      m_Initialized = true;
    }
 }
 

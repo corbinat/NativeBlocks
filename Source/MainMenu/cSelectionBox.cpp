@@ -21,8 +21,12 @@ cSelectionBox::cSelectionBox(cResources* a_pResources)
    // TextBox is created first so that it is under the buttons
    m_pTextBox = new cTextBox(GetResources());
    m_pLeftArrowButton = new cButton(GetResources());
+   m_pLeftArrowButton->SetImage("Media/Title.ani", "ButtonLeft");
+   m_pLeftArrowButton->SetPressedImage("Media/Title.ani", "ButtonLeftPressed");
+
    m_pRightArrowButton = new cButton(GetResources());
-   m_pRightArrowButton->SetSprite("ButtonRight", "ButtonRightPressed");
+   m_pRightArrowButton->SetImage("Media/Title.ani", "ButtonRight");
+   m_pRightArrowButton->SetPressedImage("Media/Title.ani", "ButtonRightPressed");
 
    SetBoundingBox(
       sf::Rect<uint32_t>(

@@ -54,12 +54,12 @@ cMainMenu::cMainMenu(cResources* a_pResources)
    m_pGameSpeedOption->AddOption("3");
 
    m_pStartButton = new cButton(GetResources());
-   m_pStartButton->SetSprite("BeginButton", "BeginButton");
+   m_pStartButton->SetImage("Media/Title.ani", "BeginButton");
 }
 
 cMainMenu::~cMainMenu()
 {
-
+   GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
 }
 
 // These functions are overloaded from cObject
