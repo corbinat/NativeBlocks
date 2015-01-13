@@ -8,12 +8,12 @@ Animations:
       X: 0
       Y: 352
       Height: 32
-      Width: 96
+      Width: 224
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
-         X: 0
+         X: 64
          Y: 0
          Height: 32
          Width: 96
@@ -29,15 +29,36 @@ Animations:
       X: 0
       Y: 384
       Height: 32
-      Width: 96
+      Width: 224
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 64
+         Y: 0
+         Height: 32
+         Width: 96
+      }
+   }
+}
+{
+   Name: GameOver
+   Speed: 1
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 192
+      Height: 64
+      Width: 192
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
          X: 0
          Y: 0
-         Height: 32
-         Width: 96
+         Height: 64
+         Width: 192
       }
    }
 }

@@ -4,6 +4,7 @@
 #include "cFloor.h"
 #include "cWall.h"
 #include "cRoof.h"
+#include "cGameOver.h"
 
 #include "cResources.h"
 
@@ -563,14 +564,25 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
       {
          sMessage l_Message;
          l_Message.m_From = GetUniqueId();
-         l_Message.m_Category = GetType();
+         l_Message.m_Category = GetResources()->GetMessageDispatcher()->Any();
          l_Message.m_Key = GetResources()->GetMessageDispatcher()->Any();
          l_Message.m_Value = "Player Lost";
          GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
 
+         //~ std::cout << GetType() << " Lost" << std::endl;
+
+         cGameOver* l_pGameOverBanner = new cGameOver(GetResources());
+         sf::Vector3<double> l_Position = GetPosition();
+
+         sf::Vector2<uint32_t>* l_pGridCellSize =
+            GetResources()->GetActiveLevelData()->GetGridCellSize();
+
+         l_Position.y += l_pGridCellSize->y;
+         l_pGameOverBanner->SetPosition(l_Position, kNormal, false);
+         l_pGameOverBanner->Initialize();
+
          m_CurrentState = kStateIdle;
          StateChange(kStateGameLost, kStateIdle);
-         std::cout << GetType() << " Lost" << std::endl;
          break;
       }
       default:
@@ -588,6 +600,10 @@ void cPlayer::MessageReceived(sMessage a_Message)
    if (a_Message.m_Value == "StartGame")
    {
       _StartGame();
+   }
+   else if (a_Message.m_Value == "Player Lost" && a_Message.m_From != GetUniqueId())
+   {
+      m_CurrentState = kStateIdle;
    }
    else if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))
    {
@@ -927,6 +943,19 @@ void cPlayer::_StartGame()
       GetUniqueId(),
       l_MessageCallback,
       l_GarbageRequest
+      );
+
+   // Look for messages indicating the game is over
+   sMessage l_GameOverRequest;
+   l_GameOverRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_GameOverRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_GameOverRequest.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_GameOverRequest.m_Value = "Player Lost";
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_GameOverRequest
       );
 
    m_CurrentState = kStateCreateBeans;
