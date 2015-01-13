@@ -24,7 +24,7 @@ cAiPlayer::cAiPlayer(
 
 cAiPlayer::~cAiPlayer()
 {
-   if (m_AIThinkingThread->joinable())
+   if (m_AIThinkingThread != NULL && m_AIThinkingThread->joinable())
    {
       m_AIThinkingThread->join();
    }
