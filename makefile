@@ -1,8 +1,9 @@
 Gpp = g++
 DEBUG = -O0 -g -DDEBUG_PRINTS
+#DEBUG = -O3
 
 # SFML library
-SFMLDIR = ../External/SFML-2.0-rc
+SFMLDIR = ../External/SFML-2.2
 SFMLLIB = ${SFMLDIR}/lib
 SFMLINC = ${SFMLDIR}/include
 
