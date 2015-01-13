@@ -18,6 +18,7 @@ public:
 
 private:
 
+   bool m_Started;
    uint32_t m_TimeAlive;
 
 };

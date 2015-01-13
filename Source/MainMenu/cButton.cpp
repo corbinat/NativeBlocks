@@ -36,8 +36,8 @@ void cButton::Event(std::list<sf::Event> * a_pEventList)
       {
          // See if the mouse press was on us
          sf::Rect<uint32_t> l_PositionBox = GetBoundingBox();
-         l_PositionBox.left = GetPosition().x;
-         l_PositionBox.top = GetPosition().y;
+         l_PositionBox.left += GetPosition().x;
+         l_PositionBox.top += GetPosition().y;
 
          if (l_PositionBox.contains(i->mouseButton.x, i->mouseButton.y))
          {
