@@ -140,10 +140,10 @@ void cBean::Collision(cObject* a_pOther)
          cBean* l_pBean = dynamic_cast<cBean*>(a_pOther);
          m_FreeFall = l_pBean->m_FreeFall;
       }
-      else if (a_pOther->GetType() == "Wall")
-      {
-         std::cout << "What??????????" << std::endl;
-      }
+      //~ else if (a_pOther->GetType() == "Wall")
+      //~ {
+         //~ std::cout << "What??????????" << std::endl;
+      //~ }
       else if (a_pOther->GetType() == "Floor")
       {
          SitFlush(a_pOther);
@@ -196,7 +196,7 @@ std::unordered_set<cBean*> cBean::CountConnections()
 
    if (m_Exploding)
    {
-      std::cout << "WHATTTTTTTTT" << std::endl;
+      //~ std::cout << "WHATTTTTTTTT" << std::endl;
       return a_ExcludeList;
    }
 

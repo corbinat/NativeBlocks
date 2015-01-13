@@ -71,14 +71,14 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       // wait for the AI to finish thinking if urgency is getting high
       if (_IsCurrentColumnUrgencyHigh())
       {
-         std::cout << "AI out of time" << std::endl;
-         std::cout << "JOIN 1" << std::endl;
-         if (!m_AIThinkingThread->joinable())
-         {
-            std::cout << "WHY NOT JOINABLE??????? CRASHHHH" << std::endl;
-         }
+         //~ std::cout << "AI out of time" << std::endl;
+         //~ std::cout << "JOIN 1" << std::endl;
+         //~ if (!m_AIThinkingThread->joinable())
+         //~ {
+            //~ std::cout << "WHY NOT JOINABLE??????? CRASHHHH" << std::endl;
+         //~ }
          m_AIThinkingThread->join();
-         std::cout << "JOIN 1 Done" << std::endl;
+         //~ std::cout << "JOIN 1 Done" << std::endl;
       }
       else
       {
@@ -157,12 +157,12 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       // search over. _IsCurrentColumnUrgencyHigh returned false so we know we
       // have time to search again.
       m_OptimalMoves.clear();
-      std::cout << "AHHHHH START OVER" << l_Destination.m_Column << " " << l_Destination.m_Rotation << std::endl;
+      //~ std::cout << "AHHHHH START OVER" << l_Destination.m_Column << " " << l_Destination.m_Rotation << std::endl;
 
-      if (m_AIThinkingThread->joinable())
-      {
-         std::cout << "WHAT THE HECKKKKKK" << std::endl;
-      }
+      //~ if (m_AIThinkingThread->joinable())
+      //~ {
+         //~ std::cout << "WHAT THE HECKKKKKK" << std::endl;
+      //~ }
       m_AIThinkingThread.reset(
          new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
       );
@@ -368,21 +368,20 @@ void cAiPlayer::_AnalyzeAllMoves()
 
       if (GetType() == "Player1")
       {
-         std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
+         //~ std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
          //~ std::cout << "Upcoming Beans: ";
          //~ for (int i = 0; i < 3 ; ++ i)
          //~ {
             //~ std::cout << m_Staging.InspectNextBeanColor(i * 2);
             //~ std::cout << m_Staging.InspectNextBeanColor(i * 2 + 1);
          //~ }
-
-         std::cout << std::endl;
-         std::cout << l_Final.m_Column << " " << l_Final.m_Rotation << std::endl;
+//~
+         //~ std::cout << std::endl;
+         //~ std::cout << l_Final.m_Column << " " << l_Final.m_Rotation << std::endl;
       }
    }
 
    m_DoneThinking = true;
-   std::cout << "Done thinking" << std::endl;
    m_FirstMoveMade = false;
 
    m_DelayTimer = 0;
@@ -598,7 +597,7 @@ void cAiPlayer::_AnalyzeMove(
    // See if we have lost. If so, don't bother continuing on.
    if (a_PlayingField[2][5].GetColor() != kBeanColorEmpty)
    {
-      std::cout << "THIS IS TRUE!!!!!!!!!!!!!!!!!!!!!!!!" << a_PlayingField[2][5].GetColor() << std::endl;
+      //std::cout << "THIS IS TRUE!!!!!!!!!!!!!!!!!!!!!!!!" << a_PlayingField[2][5].GetColor() << std::endl;
       return;
    }
 

@@ -230,7 +230,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                }
                else
                {
-                  std::cout << "Shouldn't ever get here..." << std::endl;
+                  //~ std::cout << "Shouldn't ever get here..." << std::endl;
                   m_BeanIsResting = true;
                }
             }
@@ -531,7 +531,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                      {
                         l_Columns.push_back(i);
                      }
-                     if (l_Row == -1)
+                     if (l_Row < 0)
                      {
                         break;
                      }
@@ -583,6 +583,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 
          m_CurrentState = kStateIdle;
          StateChange(kStateGameLost, kStateIdle);
+
          break;
       }
       default:

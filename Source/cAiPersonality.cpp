@@ -43,7 +43,7 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
       }
       default:
       {
-         std::cout << "Error: AI has unknown personality" << std::endl;
+         //~ std::cout << "Error: AI has unknown personality" << std::endl;
          break;
       }
    }
@@ -102,7 +102,7 @@ void cAiPersonality::AdjustPersonalityToState(
       }
       default:
       {
-         std::cout << "Error: AI has unknown personality" << std::endl;
+         //~ std::cout << "Error: AI has unknown personality" << std::endl;
          _HardPersonalityAdjustment(
             a_rPlayingField,
             a_FallingBean1,
@@ -117,7 +117,7 @@ void cAiPersonality::AdjustPersonalityToState(
    uint32_t l_Seed = l_RandomSeeder();
    std::minstd_rand l_Random(l_Seed);
 
-   std::cout << "RANDOM: " << m_MinDelayToFirstMove << "," << m_CurrentMaxDelayToFirstMove << std::endl;
+   //~ std::cout << "RANDOM: " << m_MinDelayToFirstMove << "," << m_CurrentMaxDelayToFirstMove << std::endl;
 
    std::uniform_int_distribution<uint32_t> l_FirstMoveDistribution(
       m_MinDelayToFirstMove,
@@ -128,7 +128,7 @@ void cAiPersonality::AdjustPersonalityToState(
 
    m_CurrentDelayToFirstMove = l_FirstMoveDistribution(l_Random);
 
-   std::cout << "DELAY TO FIRST MOVE " << m_CurrentDelayToFirstMove << std::endl;
+   //~ std::cout << "DELAY TO FIRST MOVE " << m_CurrentDelayToFirstMove << std::endl;
 
    // Calculate m_CurrentDelayToAdditionalMoves. First make sure
    // m_CurrentMaxDelayToAdditionalMoves isn't too small
@@ -182,7 +182,7 @@ void cAiPersonality::_EasyPersonalityAdjustment(
 
    if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
    {
-      std::cout << "Very high pressure" << std::endl;
+      //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
       m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
    }
@@ -212,7 +212,7 @@ void cAiPersonality::_EasyPersonalityAdjustment(
       // garbage rows
       if (l_Average < (3 + 5))
       {
-         std::cout << "High Pressure" << std::endl;
+         //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
 
@@ -221,7 +221,7 @@ void cAiPersonality::_EasyPersonalityAdjustment(
       // account for garbage rows
       else if (l_Average < (4 + 5))
       {
-         std::cout << "Med Pressure" << std::endl;
+         //~ std::cout << "Med Pressure" << std::endl;
          // wait up to 1 bean falls before making the first move
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
@@ -248,7 +248,7 @@ void cAiPersonality::_MediumPersonalityAdjustment(
 
    if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
    {
-      std::cout << "Very high pressure" << std::endl;
+      //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
       m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
       m_CurrentAIThoughtLevel = 0;
@@ -279,7 +279,7 @@ void cAiPersonality::_MediumPersonalityAdjustment(
       // garbage rows
       if (l_Average < (3 + 5))
       {
-         std::cout << "High Pressure" << std::endl;
+         //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
          m_CurrentAIThoughtLevel = 0;
@@ -289,7 +289,7 @@ void cAiPersonality::_MediumPersonalityAdjustment(
       // account for garbage rows
       else if (l_Average < (4 + 5))
       {
-         std::cout << "Med Pressure" << std::endl;
+         //~ std::cout << "Med Pressure" << std::endl;
          // wait up to 1 bean falls before making the first move
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 4;
@@ -300,7 +300,7 @@ void cAiPersonality::_MediumPersonalityAdjustment(
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 2;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
 
-         std::cout << "WHAT IS TIHS: " << m_CurrentMaxDelayToFirstMove << std::endl;
+         //~ std::cout << "WHAT IS TIHS: " << m_CurrentMaxDelayToFirstMove << std::endl;
       }
    }
 }
@@ -318,7 +318,7 @@ void cAiPersonality::_HardPersonalityAdjustment(
 
    if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
    {
-      std::cout << "Very high pressure" << std::endl;
+      //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
       m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
       m_CurrentAIThoughtLevel = 1;
@@ -349,7 +349,7 @@ void cAiPersonality::_HardPersonalityAdjustment(
       // garbage rows
       if (l_Average < (3 + 5))
       {
-         std::cout << "High Pressure" << std::endl;
+         //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
          m_CurrentAIThoughtLevel = 1;
@@ -359,7 +359,7 @@ void cAiPersonality::_HardPersonalityAdjustment(
       // account for garbage rows
       else if (l_Average < (4 + 5))
       {
-         std::cout << "Med Pressure" << std::endl;
+         //~ std::cout << "Med Pressure" << std::endl;
          // wait up to 1 bean falls before making the first move
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 4;
