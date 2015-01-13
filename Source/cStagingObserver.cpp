@@ -4,7 +4,6 @@
 
 cStagingObserver::cStagingObserver(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
    : cObject(a_pResources),
-     m_Initialized(false),
      m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId()),
      m_Identifier(a_Identifier),
      a_pPivotBean(NULL),
@@ -34,17 +33,18 @@ cStagingObserver::~cStagingObserver()
 }
 
 // These functions are overloaded from cObject
+void cStagingObserver::Initialize()
+{
+   _GetNewBeans();
+}
+
 void cStagingObserver::Event(std::list<sf::Event> * a_pEventList)
 {
 }
 
 void cStagingObserver::Step (uint32_t a_ElapsedMiliSec)
 {
-   if (!m_Initialized)
-   {
-      _GetNewBeans();
-      m_Initialized = true;
-   }
+
 }
 
 void cStagingObserver::Collision(cObject* a_pOther)

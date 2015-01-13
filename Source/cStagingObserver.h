@@ -15,6 +15,7 @@ public:
    virtual ~cStagingObserver();
 
    // These functions are overloaded from cObject
+   virtual void Initialize();
    virtual void Event(std::list<sf::Event> * a_pEventList);
    virtual void Step (uint32_t a_ElapsedMiliSec);
    virtual void Collision(cObject* a_pOther);
@@ -24,8 +25,6 @@ public:
 private:
 
    void _GetNewBeans();
-
-   bool m_Initialized;
 
    cStaging m_Staging;
 

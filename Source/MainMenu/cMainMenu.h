@@ -15,6 +15,7 @@ public:
    ~cMainMenu();
 
    // These functions are overloaded from cObject
+   void Initialize();
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step (uint32_t a_ElapsedMiliSec);
@@ -24,8 +25,6 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
-
-   bool m_Initialized;
 
    sf::Text m_Player1Label;
    sf::Text m_Player2Label;

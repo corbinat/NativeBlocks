@@ -2,7 +2,6 @@
 
 cRoof::cRoof(cResources* a_pResources, std::string a_Label)
    : cObject(a_pResources),
-     m_Initialized(false),
      m_PlayerName()
 {
    SetType("Roof");
@@ -24,17 +23,18 @@ cRoof::~cRoof()
 {
 }
 
+void cRoof::Initialize()
+{
+   m_PlayerName.setPosition(GetPosition().x + 32 + 4, GetPosition().y + 32 * 3);
+}
+
 void cRoof::Event(std::list<sf::Event> * a_pEventList)
 {
 }
 
 void cRoof::Step (uint32_t a_ElapsedMiliSec)
 {
-   if (!m_Initialized)
-   {
-      m_PlayerName.setPosition(GetPosition().x + 32 + 4, GetPosition().y + 32 * 3);
-      m_Initialized = true;
-   }
+
 }
 void cRoof::Draw()
 {

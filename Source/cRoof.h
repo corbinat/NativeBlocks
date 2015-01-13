@@ -14,6 +14,7 @@ public:
    virtual ~cRoof();
 
    // These functions are overloaded from cObject
+   virtual void Initialize();
    virtual void Event(std::list<sf::Event> * a_pEventList);
    virtual void Step (uint32_t a_ElapsedMiliSec);
    virtual void Draw();
@@ -22,7 +23,6 @@ public:
 
 private:
 
-   bool m_Initialized;
    sf::Text m_PlayerName;
 
 };

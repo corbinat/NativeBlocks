@@ -19,7 +19,6 @@ cPlayer::cPlayer(
    std::string a_Identifier
    )
    : cObject(a_pResources),
-     m_Initialized(false),
      m_CurrentState(kStateIdle),
      m_RotationState(kRotationStateUp),
      m_pPivotBean(NULL),
@@ -46,6 +45,7 @@ cPlayer::cPlayer(
    SetType(a_Identifier);
    SetSolid(false);
 
+   // Receive the message for when we should start the game
    sMessage l_Request;
    l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
    l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
@@ -67,6 +67,53 @@ cPlayer::~cPlayer()
    GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
 }
 
+void cPlayer::Initialize()
+{
+   cFloor* l_NewFloor = new cFloor(GetResources());
+   sf::Vector3<double> l_Position = GetPosition();
+
+   sf::Vector2<uint32_t>* l_pGridCellSize =
+      GetResources()->GetActiveLevelData()->GetGridCellSize();
+
+   l_Position.y += l_pGridCellSize->y * 12;
+   l_Position.x -= l_pGridCellSize->y;
+   l_NewFloor->SetPosition(l_Position, kNormal, false);
+   l_NewFloor->Initialize();
+
+   cWall* l_NewWall = new cWall(GetResources());
+   l_Position = GetPosition();
+   l_Position.x -= l_pGridCellSize->x;
+   l_NewWall->SetPosition(l_Position, kNormal, false);
+   l_NewWall->Initialize();
+
+   l_NewWall = new cWall(GetResources());
+   l_Position = GetPosition();
+   l_Position.x += l_pGridCellSize->x * 6;
+   l_NewWall->SetPosition(l_Position, kNormal, false);
+   l_NewWall->Initialize();
+
+   l_NewWall = new cWall(GetResources());
+   l_Position = GetPosition();
+   l_Position.x -= l_pGridCellSize->x;
+   l_Position.y += l_NewWall->GetBoundingBox().height;
+   l_NewWall->SetPosition(l_Position, kNormal, false);
+   l_NewWall->Initialize();
+
+   l_NewWall = new cWall(GetResources());
+   l_Position = GetPosition();
+   l_Position.y += l_NewWall->GetBoundingBox().height;
+   l_Position.x += l_pGridCellSize->x * 6;
+   l_NewWall->SetPosition(l_Position, kNormal, false);
+   l_NewWall->Initialize();
+
+   cRoof * l_NewRoof = new cRoof(GetResources(), GetResources()->GetGameConfigData()->GetProperty(GetType()));
+   l_Position = GetPosition();
+   l_Position.y -= l_pGridCellSize->y * 4;
+   l_Position.x -= l_pGridCellSize->x;
+   l_NewRoof->SetPosition(l_Position, kNormal, false);
+   l_NewRoof->Initialize();
+}
+
 void cPlayer::Event(std::list<sf::Event> * a_pEventList)
 {
 
@@ -74,11 +121,6 @@ void cPlayer::Event(std::list<sf::Event> * a_pEventList)
 
 void cPlayer::Step (uint32_t a_ElapsedMiliSec)
 {
-   if (!m_Initialized)
-   {
-      _Initialize();
-   }
-
    // State Machine:
    // 1. Move staged beans into play
    // 2. Move beans down, wait, repeat
@@ -851,50 +893,6 @@ uint32_t cPlayer::CalculateScore(
    l_Score = a_Matches * 10;
 
    return l_Score * l_Multiplier;
-}
-
-void cPlayer::_Initialize()
-{
-   m_Initialized = true;
-
-   cFloor* l_NewFloor = new cFloor(GetResources());
-   sf::Vector3<double> l_Position = GetPosition();
-
-   sf::Vector2<uint32_t>* l_pGridCellSize =
-      GetResources()->GetActiveLevelData()->GetGridCellSize();
-
-   l_Position.y += l_pGridCellSize->y * 12;
-   l_Position.x -= l_pGridCellSize->y;
-   l_NewFloor->SetPosition(l_Position, kNormal, false);
-
-   cWall* l_NewWall = new cWall(GetResources());
-   l_Position = GetPosition();
-   l_Position.x -= l_pGridCellSize->x;
-   l_NewWall->SetPosition(l_Position, kNormal, false);
-
-   l_NewWall = new cWall(GetResources());
-   l_Position = GetPosition();
-   l_Position.x += l_pGridCellSize->x * 6;
-   l_NewWall->SetPosition(l_Position, kNormal, false);
-
-   l_NewWall = new cWall(GetResources());
-   l_Position = GetPosition();
-   l_Position.x -= l_pGridCellSize->x;
-   l_Position.y += l_NewWall->GetBoundingBox().height;
-   l_NewWall->SetPosition(l_Position, kNormal, false);
-
-   l_NewWall = new cWall(GetResources());
-   l_Position = GetPosition();
-   l_Position.y += l_NewWall->GetBoundingBox().height;
-   l_Position.x += l_pGridCellSize->x * 6;
-   l_NewWall->SetPosition(l_Position, kNormal, false);
-
-   cRoof * l_NewRoof = new cRoof(GetResources(), GetResources()->GetGameConfigData()->GetProperty(GetType()));
-   l_Position = GetPosition();
-   l_Position.y -= l_pGridCellSize->y * 4;
-   l_Position.x -= l_pGridCellSize->x;
-   l_NewRoof->SetPosition(l_Position, kNormal, false);
-
 }
 
 void cPlayer::_StartGame()

@@ -6,7 +6,6 @@
 
 cSelectionBox::cSelectionBox(cResources* a_pResources)
    : cObject(a_pResources),
-     m_Initialized(false),
      m_pLeftArrowButton(NULL),
      m_pRightArrowButton(NULL),
      m_pTextBox(NULL),
@@ -40,10 +39,49 @@ cSelectionBox::cSelectionBox(cResources* a_pResources)
 
 cSelectionBox::~cSelectionBox()
 {
-
+   GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
 }
 
 // These functions are overloaded from cObject
+void cSelectionBox::Initialize()
+{
+   sf::Vector3<double> l_Position = GetPosition();
+   m_pLeftArrowButton->SetPosition(l_Position, kNormal, false);
+   m_pLeftArrowButton->Initialize();
+
+   l_Position.x += m_pLeftArrowButton->GetBoundingBox().width;
+   m_pTextBox->SetPosition(l_Position, kNormal, false);
+   m_pTextBox->Initialize();
+
+   l_Position.x += m_pTextBox->GetBoundingBox().width;
+   m_pRightArrowButton->SetPosition(l_Position, kNormal, false);
+   m_pRightArrowButton->Initialize();
+
+   // Receive messages when buttons are pushed.
+   sMessage l_Request;
+   l_Request.m_From = m_pLeftArrowButton->GetUniqueId();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   std::function<void(sMessage)> l_MessageCallback =
+      std::bind(&cSelectionBox::MessageReceived, this, std::placeholders::_1);
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+
+   l_Request.m_From = m_pRightArrowButton->GetUniqueId();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+}
+
 void cSelectionBox::Collision(cObject* a_pOther)
 {
 
@@ -55,44 +93,6 @@ void cSelectionBox::Event(std::list<sf::Event> * a_pEventList)
 
 void cSelectionBox::Step (uint32_t a_ElapsedMiliSec)
 {
-
-   if (!m_Initialized)
-   {
-      sf::Vector3<double> l_Position = GetPosition();
-      m_pLeftArrowButton->SetPosition(l_Position, kNormal, false);
-
-      l_Position.x += m_pLeftArrowButton->GetBoundingBox().width;
-      m_pTextBox->SetPosition(l_Position, kNormal, false);
-
-      l_Position.x += m_pTextBox->GetBoundingBox().width;
-      m_pRightArrowButton->SetPosition(l_Position, kNormal, false);
-
-      m_Initialized = true;
-
-      // Receive messages when buttons are pushed.
-      sMessage l_Request;
-      l_Request.m_From = m_pLeftArrowButton->GetUniqueId();
-      l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
-      l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
-      l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
-
-      std::function<void(sMessage)> l_MessageCallback =
-         std::bind(&cSelectionBox::MessageReceived, this, std::placeholders::_1);
-
-      GetResources()->GetMessageDispatcher()->RegisterForMessages(
-         GetUniqueId(),
-         l_MessageCallback,
-         l_Request
-         );
-
-      l_Request.m_From = m_pRightArrowButton->GetUniqueId();
-
-      GetResources()->GetMessageDispatcher()->RegisterForMessages(
-         GetUniqueId(),
-         l_MessageCallback,
-         l_Request
-         );
-   }
 
 }
 

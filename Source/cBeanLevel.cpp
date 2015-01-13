@@ -132,6 +132,8 @@ cObject* cBeanLevel::PixelToObject(
       // Set position but don't bother checking for collisions
       l_pNewObject->SetPosition(l_NewPosition, kNormal, false);
    }
+
+   return l_pNewObject;
 }
 
 void cBeanLevel::PixelToTile()

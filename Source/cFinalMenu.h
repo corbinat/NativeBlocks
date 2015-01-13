@@ -27,7 +27,7 @@ private:
 
    void _CreateMenu();
 
-   bool m_Initialized;
+   bool m_NeedToActivateButtons;
 
    cButton * m_pPlayAgainButton;
    cButton * m_pMainMenuButton;

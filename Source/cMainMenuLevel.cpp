@@ -68,6 +68,7 @@ cObject* cMainMenuLevel::PixelToObject(
       l_pNewObject->SetPosition(l_NewPosition, kNormal, false);
    }
 
+   return l_pNewObject;
 }
 
 void cMainMenuLevel::PixelToTile()

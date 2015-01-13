@@ -12,6 +12,7 @@ public:
    ~cTextBox();
 
    // These functions are overloaded from cObject
+   void Initialize();
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step (uint32_t a_ElapsedMiliSec);
@@ -23,9 +24,6 @@ private:
 
    std::string m_String;
    sf::Text m_Data;
-
-   bool m_Initialized;
-
 };
 
 #endif

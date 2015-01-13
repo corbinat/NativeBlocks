@@ -4,8 +4,7 @@
 cTextBox::cTextBox(cResources* a_pResources)
    : cObject(a_pResources),
      m_String("Test"),
-     m_Data(),
-     m_Initialized(false)
+     m_Data()
 {
    SetType("TextBox");
 
@@ -28,6 +27,11 @@ cTextBox::~cTextBox()
 }
 
 // These functions are overloaded from cObject
+void cTextBox::Initialize()
+{
+   m_Data.setPosition(GetPosition().x + 4, GetPosition().y + 4);
+}
+
 void cTextBox::Collision(cObject* a_pOther)
 {
 
@@ -39,11 +43,7 @@ void cTextBox::Event(std::list<sf::Event> * a_pEventList)
 
 void cTextBox::Step (uint32_t a_ElapsedMiliSec)
 {
-   if (!m_Initialized)
-   {
-      m_Data.setPosition(GetPosition().x + 4, GetPosition().y + 4);
-      m_Initialized = true;
-   }
+
 }
 
 void cTextBox::Draw()

@@ -6,7 +6,6 @@
 
 cMainMenu::cMainMenu(cResources* a_pResources)
    : cObject(a_pResources),
-     m_Initialized(false),
      m_Player1Label(),
      m_Player2Label(),
      m_GameSpeedLabel(),
@@ -63,6 +62,44 @@ cMainMenu::~cMainMenu()
 }
 
 // These functions are overloaded from cObject
+void cMainMenu::Initialize()
+{
+   sf::Vector3<double> l_Position = GetPosition();
+   m_Player1Label.setPosition(GetPosition().x, l_Position.y + 4);
+   l_Position.x += 90;
+   m_pPlayer1Option->SetPosition(l_Position, kNormal, false);
+   m_pPlayer1Option->Initialize();
+
+   l_Position.y += m_pPlayer1Option->GetBoundingBox().height + 5;
+   m_Player2Label.setPosition(GetPosition().x, l_Position.y + 4);
+   m_pPlayer2Option->SetPosition(l_Position, kNormal, false);
+   m_pPlayer2Option->Initialize();
+
+   l_Position.y += m_pPlayer2Option->GetBoundingBox().height + 5;
+   m_GameSpeedLabel.setPosition(GetPosition().x, l_Position.y + 4);
+   m_pGameSpeedOption->SetPosition(l_Position, kNormal, false);
+   m_pGameSpeedOption->Initialize();
+
+   l_Position.y += m_pGameSpeedOption->GetBoundingBox().height + 10;
+   m_pStartButton->SetPosition(l_Position, kNormal, false);
+
+   // Receive messages when The start button is pushed.
+   sMessage l_Request;
+   l_Request.m_From = m_pStartButton->GetUniqueId();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   std::function<void(sMessage)> l_MessageCallback =
+      std::bind(&cMainMenu::MessageReceived, this, std::placeholders::_1);
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+         );
+}
+
 void cMainMenu::Collision(cObject* a_pOther)
 {
 
@@ -74,43 +111,6 @@ void cMainMenu::Event(std::list<sf::Event> * a_pEventList)
 
 void cMainMenu::Step (uint32_t a_ElapsedMiliSec)
 {
-
-   if (!m_Initialized)
-   {
-      sf::Vector3<double> l_Position = GetPosition();
-      m_Player1Label.setPosition(GetPosition().x, l_Position.y + 4);
-      l_Position.x += 90;
-      m_pPlayer1Option->SetPosition(l_Position, kNormal, false);
-
-      l_Position.y += m_pPlayer1Option->GetBoundingBox().height + 5;
-      m_Player2Label.setPosition(GetPosition().x, l_Position.y + 4);
-      m_pPlayer2Option->SetPosition(l_Position, kNormal, false);
-
-      l_Position.y += m_pPlayer2Option->GetBoundingBox().height + 5;
-      m_GameSpeedLabel.setPosition(GetPosition().x, l_Position.y + 4);
-      m_pGameSpeedOption->SetPosition(l_Position, kNormal, false);
-
-      l_Position.y += m_pGameSpeedOption->GetBoundingBox().height + 10;
-      m_pStartButton->SetPosition(l_Position, kNormal, false);
-
-      // Receive messages when The start button is pushed.
-      sMessage l_Request;
-      l_Request.m_From = m_pStartButton->GetUniqueId();
-      l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
-      l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
-      l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
-
-      std::function<void(sMessage)> l_MessageCallback =
-         std::bind(&cMainMenu::MessageReceived, this, std::placeholders::_1);
-
-      GetResources()->GetMessageDispatcher()->RegisterForMessages(
-         GetUniqueId(),
-         l_MessageCallback,
-         l_Request
-         );
-
-      m_Initialized = true;
-   }
 
 }
 
@@ -125,7 +125,7 @@ void cMainMenu::MessageReceived(sMessage a_Message)
 {
    if (a_Message.m_From == m_pStartButton->GetUniqueId())
    {
-      std::cout << "Start button pressed" << std::endl;
+      //~ std::cout << "Start button pressed" << std::endl;
       GetResources()->SetActiveLevel("Level1", true);
 
       std::string l_Player1Option = m_pPlayer1Option->GetSelectedOption();
