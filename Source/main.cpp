@@ -1,4 +1,4 @@
-// sudo ldconfig /home/corbin/Documents/c++/projects/External/SFML-2.0-rc/lib/
+// sudo ldconfig /home/corbin/Documents/c++/projects/External/SFML-2.2/lib/
 #include "cBeanLevel.h"
 #include "cMainMenuLevel.h"
 
@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
    cResources l_Resources;
-   l_Resources.CreateWindow(800, 600, "blarg");
+   l_Resources.CreateWindow(800, 600, "Native Blocks");
 
    cMainMenuLevel l_MainMenu(
       &l_Resources
