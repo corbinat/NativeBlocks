@@ -10,6 +10,7 @@ int main(int argc, char* argv[])
 {
    cResources l_Resources;
    l_Resources.CreateWindow(800, 600, "Native Blocks");
+   l_Resources.AddAssetResourcePack("Media/Media.pak");
 
    cMainMenuLevel l_MainMenu(
       &l_Resources

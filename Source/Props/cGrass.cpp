@@ -8,8 +8,6 @@ cGrass::cGrass(cResources* a_pResources)
    SetSolid(true);
    LoadAnimations("Media/Title.ani");
    PlayAnimationLoop("Grass");
-
-
 }
 
 cGrass::~cGrass()

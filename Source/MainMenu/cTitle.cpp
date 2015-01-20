@@ -8,8 +8,6 @@ cTitle::cTitle(cResources* a_pResources)
    SetSolid(true);
    LoadAnimations("Media/Title.ani");
    PlayAnimationLoop("TitleBanner");
-
-
 }
 
 cTitle::~cTitle()
