@@ -22,9 +22,11 @@ void cBeanLevel::Initialize()
 {
    // Generate a new bean order random number generator. This will be passed to
    // all objects such that they generate beans in the same order.
-   std::random_device l_RandomSeeder;
-   uint32_t l_Seed = l_RandomSeeder();
-   std::minstd_rand l_Random(l_Seed);
+   //~ std::random_device l_RandomSeeder;
+   //~ uint32_t l_Seed = l_RandomSeeder();
+   //~ std::minstd_rand l_Random(l_Seed);
+   std::minstd_rand l_Random(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
    m_RandomNumberEngine = l_Random;
 
    // Change default level settings
@@ -139,4 +141,3 @@ cObject* cBeanLevel::PixelToObject(
 void cBeanLevel::PixelToTile()
 {
 }
-

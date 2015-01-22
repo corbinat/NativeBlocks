@@ -1,6 +1,7 @@
 #include "cAiPersonality.h"
 
 #include <iostream>
+#include <chrono>
 
 cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
    : m_MaxAIThoughtLevel(0),
@@ -113,9 +114,10 @@ void cAiPersonality::AdjustPersonalityToState(
    }
 
    // Calculate m_CurrentDelayToFirstMove
-   std::random_device l_RandomSeeder;
-   uint32_t l_Seed = l_RandomSeeder();
-   std::minstd_rand l_Random(l_Seed);
+   //~ std::random_device l_RandomSeeder;
+   //~ uint32_t l_Seed = l_RandomSeeder();
+   //~ std::minstd_rand l_Random(l_Seed);
+   std::minstd_rand l_Random(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
    //~ std::cout << "RANDOM: " << m_MinDelayToFirstMove << "," << m_CurrentMaxDelayToFirstMove << std::endl;
 
@@ -431,4 +433,3 @@ bool IsColumnUrgencyHigh(
 
    return false;
 }
-
