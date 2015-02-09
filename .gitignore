@@ -5,3 +5,6 @@ main
 *.bmp
 *.ttf
 *.d
+Export/*
+*.zip
+Mock Ups/*
