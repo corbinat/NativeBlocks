@@ -1061,7 +1061,7 @@ uint32_t cPlayer::_CalculateGarbageBeanNumber()
    uint32_t l_Garbage =
       ceil(static_cast<double>(l_Score) / 70.0);
 
-   // Add a little randomness into the garbage. 1 in 5 change to remove one
+   // Add a little randomness into the garbage. 1 in 5 chance to remove one
    std::random_device l_Generator;
    std::uniform_int_distribution<int> l_Distribution(0, 4);
    int l_Number = l_Distribution(l_Generator);

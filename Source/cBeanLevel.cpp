@@ -67,7 +67,11 @@ cObject* cBeanLevel::PixelToObject(
       {
          eAiPersonality l_Personality = kAiPersonalityEasy;
 
-         if (l_Player1Option == "Easy AI")
+         if (l_Player1Option == "Beginner AI")
+         {
+            l_Personality = kAiPersonalityBeginner;
+         }
+         else if (l_Player1Option == "Easy AI")
          {
             l_Personality = kAiPersonalityEasy;
          }
@@ -94,6 +98,10 @@ cObject* cBeanLevel::PixelToObject(
       std::string l_Player2Option = GetResources()->GetGameConfigData()->GetProperty("Player2");
       eAiPersonality l_Personality = kAiPersonalityEasy;
 
+      if (l_Player2Option == "Beginner AI")
+      {
+         l_Personality = kAiPersonalityBeginner;
+      }
       if (l_Player2Option == "Easy AI")
       {
          l_Personality = kAiPersonalityEasy;

@@ -66,6 +66,8 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       return;
    }
 
+   m_DelayTimer += a_ElapsedMiliSec;
+
    if (!m_DoneThinking)
    {
       // wait for the AI to finish thinking if urgency is getting high
@@ -93,7 +95,6 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    }
 
    // If I get here then the AI is done thinking.
-   m_DelayTimer += a_ElapsedMiliSec;
    if (m_FirstMoveMade)
    {
       if (m_DelayTimer < m_Personality.GetDelayToAdditionalMoves())
@@ -368,7 +369,7 @@ void cAiPlayer::_AnalyzeAllMoves()
 
       if (GetType() == "Player1")
       {
-         //~ std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
+         std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
          //~ std::cout << "Upcoming Beans: ";
          //~ for (int i = 0; i < 3 ; ++ i)
          //~ {

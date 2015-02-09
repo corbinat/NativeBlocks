@@ -11,6 +11,7 @@
 
 enum eAiPersonality
 {
+   kAiPersonalityBeginner,
    kAiPersonalityEasy,
    kAiPersonalityMedium,
    kAiPersonalityHard,
@@ -21,6 +22,10 @@ bool IsColumnUrgencyHigh(
    std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    sf::Vector2<uint32_t> a_FallingBean1,
    sf::Vector2<uint32_t> a_FallingBean2
+   );
+
+uint32_t GetEmpySpaceAverage(
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField
    );
 
 class cAiPersonality
@@ -47,6 +52,12 @@ public:
    uint32_t GetHighestScore();
 
 private:
+
+   void _BeginnerPersonalityAdjustment(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
 
    void _EasyPersonalityAdjustment(
       std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
@@ -75,15 +86,13 @@ private:
    // something until it loses. The thought level should reset if garbage falls.
    bool m_EnableCountDownThoughtLevels;
 
-   uint32_t m_MinDelayToFirstMove;
-   uint32_t m_MaxDelayToFirstMove;
+   uint32_t m_CurrentMinDelayToFirstMove;
    uint32_t m_CurrentMaxDelayToFirstMove;
    // Gets randomized during AdjustPersonalityToState
    uint32_t m_CurrentDelayToFirstMove;
 
 
-   uint32_t m_MinDelayToAdditionalMoves;
-   uint32_t m_MaxDelayToAdditionalMoves;
+   uint32_t m_CurrentMinDelayToAdditionalMoves;
    uint32_t m_CurrentMaxDelayToAdditionalMoves;
    // Gets randomized during AdjustPersonalityToState
    uint32_t m_CurrentDelayToAdditionalMoves;

@@ -28,6 +28,7 @@ cMainMenu::cMainMenu(cResources* a_pResources)
 
    m_pPlayer1Option = new cSelectionBox(GetResources());
    m_pPlayer1Option->AddOption("Human");
+   m_pPlayer1Option->AddOption("Beginner AI");
    m_pPlayer1Option->AddOption("Easy AI");
    m_pPlayer1Option->AddOption("Medium AI");
    m_pPlayer1Option->AddOption("Hard AI");
@@ -38,6 +39,7 @@ cMainMenu::cMainMenu(cResources* a_pResources)
    m_Player2Label.setColor(sf::Color::Black);
 
    m_pPlayer2Option = new cSelectionBox(GetResources());
+   m_pPlayer2Option->AddOption("Beginner AI");
    m_pPlayer2Option->AddOption("Easy AI");
    m_pPlayer2Option->AddOption("Medium AI");
    m_pPlayer2Option->AddOption("Hard AI");
