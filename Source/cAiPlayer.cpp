@@ -125,7 +125,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    if (GetRotationState() != l_Destination.m_Rotation)
    {
       // TODO: We'll be stuck here if we can't rotate
-      RotateBeans(kRotateClockwise);
+      _RotateBeans(l_Destination.m_Rotation);
       return;
    }
 
@@ -914,4 +914,20 @@ bool cAiPlayer::_IsCurrentColumnUrgencyHigh()
       GetBeanGridPosition(l_BeansInPlay.y);
 
    return IsColumnUrgencyHigh(l_PlayingField, l_PivotPosition, l_SwingPosition);
+}
+
+
+void cAiPlayer::_RotateBeans(eRotationState a_RotationGoal)
+{
+   eRotationDirection l_Direction = kRotateClockwise;
+   if (  GetRotationState() == kRotationStateUp && a_RotationGoal == kRotationStateLeft
+      || GetRotationState() == kRotationStateLeft && a_RotationGoal == kRotationStateDown
+      || GetRotationState() == kRotationStateDown && a_RotationGoal == kRotationStateRight
+      || GetRotationState() == kRotationStateRight && a_RotationGoal == kRotationStateUp
+      )
+   {
+      l_Direction = kRotateCounterClockwise;
+   }
+
+   RotateBeans(l_Direction);
 }

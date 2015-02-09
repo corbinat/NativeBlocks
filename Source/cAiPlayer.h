@@ -94,6 +94,8 @@ private:
    // This function returns true if beans are getting close to landing at depth 0.
    bool _IsCurrentColumnUrgencyHigh();
 
+   void _RotateBeans(eRotationState a_RotationGoal);
+
    bool m_DoneThinking;
    bool m_StartThinking;
    std::vector<eRotationState> m_RotationStatesToTest;
