@@ -613,8 +613,14 @@ void cAiPlayer::_AnalyzeMove(
       }
       else if (m_OptimalMoves.begin()->m_Score < a_InitialMove.m_Score)
       {
-         m_OptimalMoves.clear();
-         m_OptimalMoves.push_back(a_InitialMove);
+         // This is a higher scoring move, but only use it if the personality
+         // allows it. This is used for easier AIs to not do so much damage.
+         if (m_Personality.GetHighestScore() == 0
+            || m_Personality.GetHighestScore() > a_InitialMove.m_Score)
+         {
+            m_OptimalMoves.clear();
+            m_OptimalMoves.push_back(a_InitialMove);
+         }
       }
    }
    else

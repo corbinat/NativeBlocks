@@ -44,6 +44,7 @@ public:
    uint32_t GetDelayToAdditionalMoves();
    uint32_t GetDelayToFirstMove();
    uint32_t GetAIThoughtLevel();
+   uint32_t GetHighestScore();
 
 private:
 
@@ -89,7 +90,7 @@ private:
 
    // The AI will stop searching for moves once this value is reached. Set to 0
    // if it should not apply.
-   uint32_t m_ExpectedScoreToStopSearching;
+   uint32_t m_HighestScore;
 
    eAiPersonality m_Personality;
 

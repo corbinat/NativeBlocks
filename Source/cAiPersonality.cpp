@@ -14,7 +14,7 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
      m_MaxDelayToAdditionalMoves(60),
      m_CurrentMaxDelayToAdditionalMoves(0),
      m_CurrentDelayToAdditionalMoves(0),
-     m_ExpectedScoreToStopSearching(0),
+     m_HighestScore(0),
      m_Personality(a_Personality),
      m_MiliSecPerFall(100)
 {
@@ -24,21 +24,21 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
       {
          m_MaxAIThoughtLevel = 0;
          m_EnableCountDownThoughtLevels = false;
-         m_ExpectedScoreToStopSearching = 0;
+         m_HighestScore = 0;
          break;
       }
       case kAiPersonalityMedium:
       {
          m_MaxAIThoughtLevel = 1;
          m_EnableCountDownThoughtLevels = false;
-         m_ExpectedScoreToStopSearching = 0;
+         m_HighestScore = 0;
          break;
       }
       case kAiPersonalityHard:
       {
          m_MaxAIThoughtLevel = 2;
          m_EnableCountDownThoughtLevels = false;
-         m_ExpectedScoreToStopSearching = 0;
+         m_HighestScore = 0;
          break;
       }
       default:
@@ -167,6 +167,11 @@ uint32_t cAiPersonality::GetDelayToFirstMove()
 uint32_t cAiPersonality::GetAIThoughtLevel()
 {
    return m_CurrentAIThoughtLevel;
+}
+
+uint32_t cAiPersonality::GetHighestScore()
+{
+   return m_HighestScore;
 }
 
 void cAiPersonality::_EasyPersonalityAdjustment(
