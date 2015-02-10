@@ -17,8 +17,9 @@ enum eAiPersonality
    kAiPersonalityHard,
 };
 
-// This function returns true if beans are getting close to landing.
-bool IsColumnUrgencyHigh(
+// This function returns the number of spaces between the falling beans and the
+// resting beans.
+uint32_t ColumnFreeSpace(
    std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    sf::Vector2<uint32_t> a_FallingBean1,
    sf::Vector2<uint32_t> a_FallingBean2

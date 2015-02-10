@@ -207,7 +207,7 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
    // only dropping up to 6.
    m_HighestScore = 6 * 140;
 
-   if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
+   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
    {
       //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
@@ -224,7 +224,7 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
 
       // If bean level is high then the pressure is high. Add 5 to account for
       // garbage rows
-      if (l_Average < (2 + 5))
+      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
       {
          //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
@@ -260,7 +260,7 @@ void cAiPersonality::_EasyPersonalityAdjustment(
 {
    m_CurrentAIThoughtLevel = 0;
 
-   if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
+   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
    {
       //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
@@ -275,7 +275,7 @@ void cAiPersonality::_EasyPersonalityAdjustment(
 
       // If bean level is high then the pressure is high. Add 5 to account for
       // garbage rows
-      if (l_Average < (3 + 5))
+      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
       {
          //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
@@ -308,7 +308,7 @@ void cAiPersonality::_MediumPersonalityAdjustment(
 {
    m_CurrentAIThoughtLevel = 1;
 
-   if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
+   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
    {
       //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
@@ -324,7 +324,7 @@ void cAiPersonality::_MediumPersonalityAdjustment(
 
       // If bean level is high then the pressure is high. Add 5 to account for
       // garbage rows
-      if (l_Average < (3 + 5))
+      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
       {
          //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
@@ -360,7 +360,7 @@ void cAiPersonality::_HardPersonalityAdjustment(
 {
    m_CurrentAIThoughtLevel = 2;
 
-   if (IsColumnUrgencyHigh(a_rPlayingField, a_FallingBean1, a_FallingBean2))
+   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
    {
       //~ std::cout << "Very high pressure" << std::endl;
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
@@ -376,7 +376,7 @@ void cAiPersonality::_HardPersonalityAdjustment(
 
       // If bean level is high then the pressure is high. Add 5 to account for
       // garbage rows
-      if (l_Average < (3 + 5))
+      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
       {
          //~ std::cout << "High Pressure" << std::endl;
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
@@ -403,16 +403,15 @@ void cAiPersonality::_HardPersonalityAdjustment(
    }
 }
 
-bool IsColumnUrgencyHigh(
+uint32_t ColumnFreeSpace(
    std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    sf::Vector2<uint32_t> a_FallingBean1,
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
-   // If the nearest bean in our column is within 2 then the pressure is
-   // automatically high.
    uint32_t l_Column1 = a_FallingBean1.x;
 
+   int32_t l_Min1 = 12;
    uint32_t i;
    for (i = 0; i < a_rPlayingField[l_Column1].size(); ++i)
    {
@@ -422,21 +421,10 @@ bool IsColumnUrgencyHigh(
       }
    }
 
-   if (i != a_rPlayingField[l_Column1].size())
-   {
-      if (
-         (static_cast<int32_t>(a_rPlayingField[l_Column1][i].GetGridPosition().y)
-         - static_cast<int32_t>(a_FallingBean1.y))
-         <= 2
-         )
-      {
-         return true;
-      }
-   }
+   l_Min1 = i - static_cast<int32_t>(a_FallingBean1.y);
 
-   // If the nearest bean in our column is within 2 then the pressure is
-   // automatically high.
    uint32_t l_Column2 = a_FallingBean2.x;
+   int32_t l_Min2 = 12;
 
    for (i = 0; i < a_rPlayingField[l_Column2].size(); ++i)
    {
@@ -446,19 +434,10 @@ bool IsColumnUrgencyHigh(
       }
    }
 
-   if (i != a_rPlayingField[l_Column1].size())
-   {
-      if (
-         (static_cast<int32_t>(a_rPlayingField[l_Column2][i].GetGridPosition().y)
-         - static_cast<int32_t>(a_FallingBean1.y))
-         <= 2
-         )
-      {
-         return true;
-      }
-   }
+   l_Min2 = i - static_cast<int32_t>(a_FallingBean1.y);
 
-   return false;
+
+   return std::min(l_Min1, l_Min2);
 }
 
 uint32_t GetEmpySpaceAverage(

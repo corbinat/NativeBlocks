@@ -644,6 +644,7 @@ void cAiPlayer::_AnalyzeMove(
             {
                std::cout << "Not clearning moves!" << std::endl;
             }
+
             m_OptimalMoves.push_back(a_InitialMove);
          }
       }
@@ -943,8 +944,7 @@ bool cAiPlayer::_IsCurrentColumnUrgencyHigh()
       GetBeanGridPosition(l_BeansInPlay.x);
    l_SwingPosition =
       GetBeanGridPosition(l_BeansInPlay.y);
-
-   return IsColumnUrgencyHigh(l_PlayingField, l_PivotPosition, l_SwingPosition);
+   return (ColumnFreeSpace(l_PlayingField, l_PivotPosition, l_SwingPosition) < 3);
 }
 
 
