@@ -49,6 +49,7 @@ public:
 
    uint32_t GetDelayToAdditionalMoves();
    uint32_t GetDelayToFirstMove();
+   uint32_t GetDelayToFastFall();
    uint32_t GetAIThoughtLevel();
    uint32_t GetHighestScore();
    uint32_t GetOptimalMoveOdds();
@@ -98,6 +99,10 @@ private:
    uint32_t m_CurrentMaxDelayToAdditionalMoves;
    // Gets randomized during AdjustPersonalityToState
    uint32_t m_CurrentDelayToAdditionalMoves;
+
+   uint32_t m_MinDelayToFastFall;
+   uint32_t m_MaxDelayToFastFall;
+   uint32_t m_CurrentDelayToFastFall;
 
    // The AI will stop searching for moves once this value is reached. Set to 0
    // if it should not apply.

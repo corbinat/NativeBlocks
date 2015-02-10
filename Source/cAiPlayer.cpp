@@ -15,6 +15,7 @@ cAiPlayer::cAiPlayer(
       m_DoneThinking(false),
       m_StartThinking(false),
       m_FirstMoveMade(false),
+      m_WantingToFastFall(false),
       m_DelayTimer(0),
       m_AIThinkingThread(NULL),
       m_Personality(a_Personality)
@@ -54,6 +55,7 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
       m_StartThinking = false;
       m_OptimalMoves.clear();
       m_DoneThinking = false;
+      m_WantingToFastFall = false;
       SetFastFall(false);
    }
 }
@@ -67,6 +69,17 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    }
 
    m_DelayTimer += a_ElapsedMiliSec;
+
+   if (m_WantingToFastFall)
+   {
+      // We've already finished controlling the bean. Make it fast fall
+      if (m_DelayTimer > m_Personality.GetDelayToFastFall())
+      {
+         SetFastFall(true);
+      }
+
+      return;
+   }
 
    if (!m_DoneThinking)
    {
@@ -149,7 +162,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    else
    {
       // The rotation and position are good, so just fall
-      SetFastFall(true);
+      m_WantingToFastFall = true;
    }
 
    if (!l_Success && !_IsCurrentColumnUrgencyHigh())

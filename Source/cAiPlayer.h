@@ -104,6 +104,7 @@ private:
    std::vector<sOptimalPosition> m_OptimalMoves;
 
    bool m_FirstMoveMade;
+   bool m_WantingToFastFall;
    uint32_t m_DelayTimer;
 
    // This has to be a pointer because threads can't be reused. I have to

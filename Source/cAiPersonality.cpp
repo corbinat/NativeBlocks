@@ -15,6 +15,9 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
      m_CurrentMinDelayToAdditionalMoves(50),
      m_CurrentMaxDelayToAdditionalMoves(0),
      m_CurrentDelayToAdditionalMoves(0),
+     m_MinDelayToFastFall(0),
+     m_MaxDelayToFastFall(0),
+     m_CurrentDelayToFastFall(0),
      m_HighestScore(0),
      m_OptimalMoveOdds(100),
      m_Personality(a_Personality),
@@ -160,6 +163,11 @@ void cAiPersonality::AdjustPersonalityToState(
 
    m_CurrentDelayToAdditionalMoves = l_AdditionalMoveDistribution(l_Random);
 
+   std::uniform_int_distribution<int> l_FastFallDistribution(
+      m_MinDelayToFastFall,
+      m_MaxDelayToFastFall
+      );
+   m_CurrentDelayToFastFall = l_FastFallDistribution(l_Random);
 }
 
 // Lets the AI know that garbage fell in case it wants to adjust its strategy
@@ -177,6 +185,11 @@ uint32_t cAiPersonality::GetDelayToFirstMove()
 {
 
    return m_CurrentDelayToFirstMove;
+}
+
+uint32_t cAiPersonality::GetDelayToFastFall()
+{
+   return m_CurrentDelayToFastFall;
 }
 
 uint32_t cAiPersonality::GetAIThoughtLevel()
@@ -202,6 +215,8 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
 {
    m_CurrentAIThoughtLevel = 0;
    m_OptimalMoveOdds = 35;
+   m_MinDelayToFastFall = m_MiliSecPerFall * 2;
+   m_MaxDelayToFastFall = m_MiliSecPerFall * 4;
 
    // For every 140 points we can drop a garbage block. Limit the beginner AI to
    // only dropping up to 6.
