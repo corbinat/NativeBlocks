@@ -370,7 +370,9 @@ void cAiPlayer::_AnalyzeAllMoves()
    // towards.
    if (m_OptimalMoves.size() != 0)
    {
-      std::random_device l_Generator;
+      //~ std::random_device l_Generator;
+      std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
       std::uniform_int_distribution<int> l_Distribution(0, m_OptimalMoves.size() - 1);
 
       int l_Number = l_Distribution(l_Generator);

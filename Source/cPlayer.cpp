@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <sstream>
 #include <cmath> // ceil
+#include <chrono>
 
 cPlayer::cPlayer(
    cResources* a_pResources,
@@ -508,7 +509,9 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                while (m_GarbageAcumulator != 0)
                {
                   // generate random number between 0 and size
-                  std::random_device l_Generator;
+                  //~ std::random_device l_Generator;
+                  std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
                   std::uniform_int_distribution<int> l_Distribution(0, l_Columns.size() - 1);
                   int l_Number = l_Distribution(l_Generator);
                   l_Number = l_Distribution(l_Generator);
@@ -1061,8 +1064,10 @@ uint32_t cPlayer::_CalculateGarbageBeanNumber()
    uint32_t l_Garbage =
       ceil(static_cast<double>(l_Score) / 70.0);
 
-   // Add a little randomness into the garbage. 1 in 5 chance to remove one
-   std::random_device l_Generator;
+   // Add a little randomness into the garbage. 1 in 5 change to remove one
+   //~ std::random_device l_Generator;
+   std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
    std::uniform_int_distribution<int> l_Distribution(0, 4);
    int l_Number = l_Distribution(l_Generator);
    l_Number = l_Distribution(l_Generator);
