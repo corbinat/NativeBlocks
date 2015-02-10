@@ -83,6 +83,10 @@ cObject* cBeanLevel::PixelToObject(
          {
             l_Personality = kAiPersonalityHard;
          }
+         else
+         {
+            return NULL;
+         }
          l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", l_Personality);
       }
 
@@ -102,7 +106,7 @@ cObject* cBeanLevel::PixelToObject(
       {
          l_Personality = kAiPersonalityBeginner;
       }
-      if (l_Player2Option == "Easy AI")
+      else if (l_Player2Option == "Easy AI")
       {
          l_Personality = kAiPersonalityEasy;
       }
@@ -113,6 +117,10 @@ cObject* cBeanLevel::PixelToObject(
       else if (l_Player2Option == "Hard AI")
       {
          l_Personality = kAiPersonalityHard;
+      }
+      else
+      {
+         return NULL;
       }
       l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", l_Personality);
    }
