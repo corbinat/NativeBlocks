@@ -16,6 +16,7 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
      m_CurrentMaxDelayToAdditionalMoves(0),
      m_CurrentDelayToAdditionalMoves(0),
      m_HighestScore(0),
+     m_OptimalMoveOdds(100),
      m_Personality(a_Personality),
      m_MiliSecPerFall(100)
 {
@@ -188,6 +189,11 @@ uint32_t cAiPersonality::GetHighestScore()
    return m_HighestScore;
 }
 
+uint32_t cAiPersonality::GetOptimalMoveOdds()
+{
+   return m_OptimalMoveOdds;
+}
+
 void cAiPersonality::_BeginnerPersonalityAdjustment(
    std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
    sf::Vector2<uint32_t> a_FallingBean1,
@@ -195,6 +201,7 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
    )
 {
    m_CurrentAIThoughtLevel = 0;
+   m_OptimalMoveOdds = 35;
 
    // For every 140 points we can drop a garbage block. Limit the beginner AI to
    // only dropping up to 6.
@@ -206,6 +213,7 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
       m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
       m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
       m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
+      m_OptimalMoveOdds = 0;
    }
    else
    {
@@ -222,6 +230,7 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
          m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
          m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
          m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
+         m_OptimalMoveOdds = 20;
 
       }
       // If bean level is midway then the pressure is up a just a bit. Add 5 to

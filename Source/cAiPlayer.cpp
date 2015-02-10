@@ -608,18 +608,42 @@ void cAiPlayer::_AnalyzeMove(
       {
          m_OptimalMoves.push_back(a_InitialMove);
       }
-      else if (m_OptimalMoves.begin()->m_Score == a_InitialMove.m_Score)
+      // Using back() because the AI might not have cleared out suboptimal moves
+      // from the front.
+      else if (m_OptimalMoves.back().m_Score == a_InitialMove.m_Score)
       {
          m_OptimalMoves.push_back(a_InitialMove);
       }
-      else if (m_OptimalMoves.begin()->m_Score < a_InitialMove.m_Score)
+      // Using back() on purpose. See above.
+      else if (m_OptimalMoves.back().m_Score < a_InitialMove.m_Score)
       {
          // This is a higher scoring move, but only use it if the personality
          // allows it. This is used for easier AIs to not do so much damage.
-         if (m_Personality.GetHighestScore() == 0
-            || m_Personality.GetHighestScore() > a_InitialMove.m_Score)
+         if (  m_Personality.GetHighestScore() == 0
+            || m_Personality.GetHighestScore() > a_InitialMove.m_Score
+            )
          {
-            m_OptimalMoves.clear();
+            // AIs might have a chance of not clearing out suboptimal moves
+            std::random_device l_Generator;
+            std::uniform_int_distribution<int> l_Distribution(
+               1,
+               100
+               );
+
+            int l_Number = l_Distribution(l_Generator);
+            l_Number = l_Distribution(l_Generator);
+            //~ std::cout << "Random: " << l_Number << std::endl;
+
+            if (  l_Number <= m_Personality.GetOptimalMoveOdds()
+               || m_OptimalMoves.begin()->m_Score == 0
+               )
+            {
+               m_OptimalMoves.clear();
+            }
+            else
+            {
+               std::cout << "Not clearning moves!" << std::endl;
+            }
             m_OptimalMoves.push_back(a_InitialMove);
          }
       }

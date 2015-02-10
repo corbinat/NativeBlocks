@@ -50,6 +50,7 @@ public:
    uint32_t GetDelayToFirstMove();
    uint32_t GetAIThoughtLevel();
    uint32_t GetHighestScore();
+   uint32_t GetOptimalMoveOdds();
 
 private:
 
@@ -100,6 +101,10 @@ private:
    // The AI will stop searching for moves once this value is reached. Set to 0
    // if it should not apply.
    uint32_t m_HighestScore;
+
+   // The odds that the AI will only consider the most optimal moves, in
+   // percentage. 100 means that AI always uses optimal moves.
+   uint32_t m_OptimalMoveOdds;
 
    eAiPersonality m_Personality;
 
