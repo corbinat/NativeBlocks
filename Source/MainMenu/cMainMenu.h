@@ -4,7 +4,7 @@
 
 #include "cObject.h"
 
-class cSelectionBox;
+class cFreePlayMenu;
 class cButton;
 
 class cMainMenu: public cObject
@@ -25,16 +25,10 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
+   cButton * m_pChallengeButton;
+   cButton * m_pFreePlayButton;
 
-   sf::Text m_Player1Label;
-   sf::Text m_Player2Label;
-   sf::Text m_GameSpeedLabel;
-
-   cSelectionBox * m_pPlayer1Option;
-   cSelectionBox * m_pPlayer2Option;
-   cSelectionBox * m_pGameSpeedOption;
-   cButton * m_pStartButton;
-
+   cFreePlayMenu * m_pFreePlayMenu;
 };
 
 #endif

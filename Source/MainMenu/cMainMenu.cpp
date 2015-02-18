@@ -1,61 +1,31 @@
 #include "cMainMenu.h"
-#include "cSelectionBox.h"
+
 #include "cButton.h"
+#include "cFreePlayMenu.h"
 
 #include <iostream>
 
 cMainMenu::cMainMenu(cResources* a_pResources)
    : cObject(a_pResources),
-     m_Player1Label(),
-     m_Player2Label(),
-     m_GameSpeedLabel(),
-     m_pPlayer1Option(NULL),
-     m_pPlayer2Option(NULL),
-     m_pGameSpeedOption(NULL),
-     m_pStartButton(NULL)
+     m_pChallengeButton(NULL),
+     m_pFreePlayButton(NULL),
+     m_pFreePlayMenu(NULL)
 {
    SetType("MainMenu");
 
    SetSolid(false);
 
-   std::shared_ptr<sf::Font> l_Font
-      = GetResources()->LoadFont("Media/junegull.ttf");
+   m_pChallengeButton = new cButton(GetResources());
+   m_pChallengeButton->SetImage("Media/Title.ani", "ChallengeButton");
 
-   m_Player1Label.setFont(*(l_Font.get()));
-   m_Player1Label.setString("Player 1: ");
-   m_Player1Label.setCharacterSize(20);
-   m_Player1Label.setColor(sf::Color::Black);
+   m_pFreePlayButton = new cButton(GetResources());
+   m_pFreePlayButton->SetImage("Media/Title.ani", "FreePlayButton");
 
-   m_pPlayer1Option = new cSelectionBox(GetResources());
-   m_pPlayer1Option->AddOption("Human");
-   m_pPlayer1Option->AddOption("Beginner AI");
-   m_pPlayer1Option->AddOption("Easy AI");
-   m_pPlayer1Option->AddOption("Medium AI");
-   m_pPlayer1Option->AddOption("Hard AI");
+   m_pFreePlayMenu = new cFreePlayMenu(GetResources());
 
-   m_Player2Label.setFont(*(l_Font.get()));
-   m_Player2Label.setString("Player 2: ");
-   m_Player2Label.setCharacterSize(20);
-   m_Player2Label.setColor(sf::Color::Black);
-
-   m_pPlayer2Option = new cSelectionBox(GetResources());
-   m_pPlayer2Option->AddOption("Beginner AI");
-   m_pPlayer2Option->AddOption("Easy AI");
-   m_pPlayer2Option->AddOption("Medium AI");
-   m_pPlayer2Option->AddOption("Hard AI");
-
-   m_GameSpeedLabel.setFont(*(l_Font.get()));
-   m_GameSpeedLabel.setString("Speed: ");
-   m_GameSpeedLabel.setCharacterSize(20);
-   m_GameSpeedLabel.setColor(sf::Color::Black);
-
-   m_pGameSpeedOption = new cSelectionBox(GetResources());
-   m_pGameSpeedOption->AddOption("1");
-   m_pGameSpeedOption->AddOption("2");
-   m_pGameSpeedOption->AddOption("3");
-
-   m_pStartButton = new cButton(GetResources());
-   m_pStartButton->SetImage("Media/Title.ani", "BeginButton");
+   AddChild(m_pChallengeButton);
+   AddChild(m_pFreePlayButton);
+   AddChild(m_pFreePlayMenu);
 }
 
 cMainMenu::~cMainMenu()
@@ -67,39 +37,48 @@ cMainMenu::~cMainMenu()
 void cMainMenu::Initialize()
 {
    sf::Vector3<double> l_Position = GetPosition();
-   m_Player1Label.setPosition(GetPosition().x, l_Position.y + 4);
-   l_Position.x += 90;
-   m_pPlayer1Option->SetPosition(l_Position, kNormal, false);
-   m_pPlayer1Option->Initialize();
+   m_pChallengeButton->SetPosition(l_Position, kNormal, false);
+   m_pChallengeButton->Initialize();
 
-   l_Position.y += m_pPlayer1Option->GetBoundingBox().height + 5;
-   m_Player2Label.setPosition(GetPosition().x, l_Position.y + 4);
-   m_pPlayer2Option->SetPosition(l_Position, kNormal, false);
-   m_pPlayer2Option->Initialize();
+   l_Position.y += m_pChallengeButton->GetBoundingBox().height + 5;
 
-   l_Position.y += m_pPlayer2Option->GetBoundingBox().height + 5;
-   m_GameSpeedLabel.setPosition(GetPosition().x, l_Position.y + 4);
-   m_pGameSpeedOption->SetPosition(l_Position, kNormal, false);
-   m_pGameSpeedOption->Initialize();
+   m_pFreePlayButton->SetPosition(l_Position, kNormal, false);
+   m_pFreePlayButton->Initialize();
 
-   l_Position.y += m_pGameSpeedOption->GetBoundingBox().height + 10;
-   m_pStartButton->SetPosition(l_Position, kNormal, false);
+   // Receive messages when The Challenege button is pushed.
+   std::function<void(sMessage)> l_MessageCallback =
+      std::bind(&cMainMenu::MessageReceived, this, std::placeholders::_1);
 
-   // Receive messages when The start button is pushed.
    sMessage l_Request;
-   l_Request.m_From = m_pStartButton->GetUniqueId();
+   l_Request.m_From = m_pChallengeButton->GetUniqueId();
    l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
    l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
    l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
-
-   std::function<void(sMessage)> l_MessageCallback =
-      std::bind(&cMainMenu::MessageReceived, this, std::placeholders::_1);
 
    GetResources()->GetMessageDispatcher()->RegisterForMessages(
       GetUniqueId(),
       l_MessageCallback,
       l_Request
-         );
+      );
+
+   // Receive messages when the Freeplay button is pushed
+   l_Request.m_From = m_pFreePlayButton->GetUniqueId();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+
+   // Set up the other menus
+   l_Position = GetPosition();
+   l_Position.x = GetResources()->GetWindow()->getSize().x;
+   //~ l_Position.x = GetResources()->GetWindow()->getSize().x - 200;
+   m_pFreePlayMenu->SetPosition(l_Position, kNormal, false);
+   m_pFreePlayMenu->Initialize();
 }
 
 void cMainMenu::Collision(cObject* a_pOther)
@@ -113,28 +92,40 @@ void cMainMenu::Event(std::list<sf::Event> * a_pEventList)
 
 void cMainMenu::Step (uint32_t a_ElapsedMiliSec)
 {
-
+   if (GetVelocity().x < 0)
+   {
+      std::cout << "WEEEE " << GetPosition().x << " " << std::endl;
+      if (GetPosition().x < (0 - static_cast<int32_t>(m_pChallengeButton->GetBoundingBox().width)))
+      {
+         SetVelocityX(0, kNormal);
+      }
+   }
 }
 
 void cMainMenu::Draw()
 {
-   GetResources()->GetWindow()->draw(m_Player1Label);
-   GetResources()->GetWindow()->draw(m_Player2Label);
-   GetResources()->GetWindow()->draw(m_GameSpeedLabel);
+
 }
 
 void cMainMenu::MessageReceived(sMessage a_Message)
 {
-   if (a_Message.m_From == m_pStartButton->GetUniqueId())
+   if (a_Message.m_From == m_pChallengeButton->GetUniqueId())
    {
       //~ std::cout << "Start button pressed" << std::endl;
-      GetResources()->SetActiveLevel("Level1", true);
+      //~ GetResources()->SetActiveLevel("Level1", true);
+//~
+      //~ std::string l_Player1Option = m_pPlayer1Option->GetSelectedOption();
+      //~ std::string l_Player2Option = m_pPlayer2Option->GetSelectedOption();
+//~
+      //~ GetResources()->GetGameConfigData()->SetProperty("Player1", l_Player1Option);
+      //~ GetResources()->GetGameConfigData()->SetProperty("Player2", l_Player2Option);
 
-      std::string l_Player1Option = m_pPlayer1Option->GetSelectedOption();
-      std::string l_Player2Option = m_pPlayer2Option->GetSelectedOption();
+      std::cout << "Challenege" << std::endl;
 
-      GetResources()->GetGameConfigData()->SetProperty("Player1", l_Player1Option);
-      GetResources()->GetGameConfigData()->SetProperty("Player2", l_Player2Option);
-
+   }
+   else if (a_Message.m_From == m_pFreePlayButton->GetUniqueId())
+   {
+      std::cout << "Free play" << std::endl;
+      SetVelocityX(-700, kNormal);
    }
 }

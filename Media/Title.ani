@@ -189,4 +189,46 @@ Animations:
       }
    }
 }
+{
+   Name: ChallengeButton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 121
+      Y: 280
+      Height: 32
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 128
+      }
+   }
+}
+{
+   Name: FreePlayButton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 249
+      Y: 280
+      Height: 32
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 128
+      }
+   }
+}
 
