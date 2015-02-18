@@ -28,13 +28,17 @@ cSelectionBox::cSelectionBox(cResources* a_pResources)
    m_pRightArrowButton->SetPressedImage("Media/Title.ani", "ButtonRightPressed");
 
    SetBoundingBox(
-      sf::Rect<uint32_t>(
+      sf::Rect<int32_t>(
          0,
          0,
          m_pLeftArrowButton->GetBoundingBox().width + m_pTextBox->GetBoundingBox().width + m_pRightArrowButton->GetBoundingBox().width + 2,
          m_pTextBox->GetBoundingBox().height
          )
       );
+
+   AddChild(m_pLeftArrowButton);
+   AddChild(m_pRightArrowButton);
+   AddChild(m_pTextBox);
 }
 
 cSelectionBox::~cSelectionBox()
@@ -93,7 +97,6 @@ void cSelectionBox::Event(std::list<sf::Event> * a_pEventList)
 
 void cSelectionBox::Step (uint32_t a_ElapsedMiliSec)
 {
-
 }
 
 void cSelectionBox::Draw()

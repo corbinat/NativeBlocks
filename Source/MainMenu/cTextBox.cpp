@@ -43,7 +43,10 @@ void cTextBox::Event(std::list<sf::Event> * a_pEventList)
 
 void cTextBox::Step (uint32_t a_ElapsedMiliSec)
 {
-
+   if (GetPosition() != GetPreviousPosition())
+   {
+      m_Data.setPosition(GetPosition().x + 4, GetPosition().y + 4);
+   }
 }
 
 void cTextBox::Draw()
