@@ -231,4 +231,25 @@ Animations:
       }
    }
 }
+{
+   Name: BackButton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 157
+      Y: 248
+      Height: 32
+      Width: 64
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 64
+      }
+   }
+}
 

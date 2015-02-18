@@ -34,6 +34,9 @@ private:
    cSelectionBox * m_pPlayer2Option;
    cSelectionBox * m_pGameSpeedOption;
    cButton * m_pStartButton;
+   cButton * m_pBackButton;
+
+   bool m_PostBackMessage;
 
 };
 

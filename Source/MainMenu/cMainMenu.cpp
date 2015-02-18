@@ -73,6 +73,18 @@ void cMainMenu::Initialize()
       l_Request
       );
 
+   // Receive messages for when this menu should be active
+   l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = "Menu Change";
+   l_Request.m_Value = "cMainMenu";
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+
    // Set up the other menus
    l_Position = GetPosition();
    l_Position.x = GetResources()->GetWindow()->getSize().x;
@@ -94,8 +106,14 @@ void cMainMenu::Step (uint32_t a_ElapsedMiliSec)
 {
    if (GetVelocity().x < 0)
    {
-      std::cout << "WEEEE " << GetPosition().x << " " << std::endl;
       if (GetPosition().x < (0 - static_cast<int32_t>(m_pChallengeButton->GetBoundingBox().width)))
+      {
+         SetVelocityX(0, kNormal);
+      }
+   }
+   else if (GetVelocity().x > 0)
+   {
+      if (m_pFreePlayMenu->GetPosition().x > 800)
       {
          SetVelocityX(0, kNormal);
       }
@@ -120,12 +138,14 @@ void cMainMenu::MessageReceived(sMessage a_Message)
       //~ GetResources()->GetGameConfigData()->SetProperty("Player1", l_Player1Option);
       //~ GetResources()->GetGameConfigData()->SetProperty("Player2", l_Player2Option);
 
-      std::cout << "Challenege" << std::endl;
 
    }
    else if (a_Message.m_From == m_pFreePlayButton->GetUniqueId())
    {
-      std::cout << "Free play" << std::endl;
       SetVelocityX(-700, kNormal);
+   }
+   else if (a_Message.m_Key == "Menu Change" && a_Message.m_Value == "cMainMenu")
+   {
+      SetVelocityX(700, kNormal);
    }
 }

@@ -12,7 +12,9 @@ cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
      m_pPlayer1Option(NULL),
      m_pPlayer2Option(NULL),
      m_pGameSpeedOption(NULL),
-     m_pStartButton(NULL)
+     m_pStartButton(NULL),
+     m_pBackButton(NULL),
+     m_PostBackMessage(false)
 {
    SetType("FreePlayMenu");
 
@@ -57,10 +59,14 @@ cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
    m_pStartButton = new cButton(GetResources());
    m_pStartButton->SetImage("Media/Title.ani", "BeginButton");
 
+   m_pBackButton = new cButton(GetResources());
+   m_pBackButton->SetImage("Media/Title.ani", "BackButton");
+
    AddChild(m_pPlayer1Option);
    AddChild(m_pPlayer2Option);
    AddChild(m_pGameSpeedOption);
    AddChild(m_pStartButton);
+   AddChild(m_pBackButton);
 }
 
 cFreePlayMenu::~cFreePlayMenu()
@@ -89,6 +95,8 @@ void cFreePlayMenu::Initialize()
 
    l_Position.y += m_pGameSpeedOption->GetBoundingBox().height + 10;
    m_pStartButton->SetPosition(l_Position, kNormal, false);
+   l_Position.x += m_pStartButton->GetBoundingBox().width + 5;
+   m_pBackButton->SetPosition(l_Position, kNormal, false);
 
    // Receive messages when The start button is pushed.
    sMessage l_Request;
@@ -104,7 +112,19 @@ void cFreePlayMenu::Initialize()
       GetUniqueId(),
       l_MessageCallback,
       l_Request
-         );
+      );
+
+   // Receive messages when the back button is pushed.
+   l_Request.m_From = m_pBackButton->GetUniqueId();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
 }
 
 void cFreePlayMenu::Collision(cObject* a_pOther)
@@ -126,6 +146,21 @@ void cFreePlayMenu::Step (uint32_t a_ElapsedMiliSec)
       m_Player2Label.setPosition(GetPosition().x, l_Position.y + 4);
       l_Position.y += m_pPlayer2Option->GetBoundingBox().height + 5;
       m_GameSpeedLabel.setPosition(GetPosition().x, l_Position.y + 4);
+   }
+
+   // We can't post a message from inside the MessageReceived function, so it
+   // gets deferred to here instead.
+   // TODO: This might not actually be true. It might only be registering for
+   // messages that is problematic.
+   if (m_PostBackMessage)
+   {
+      sMessage l_Message;
+      l_Message.m_From = GetUniqueId();
+      l_Message.m_Category = "Button";
+      l_Message.m_Key = "Menu Change";
+      l_Message.m_Value = "cMainMenu";
+      GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+      m_PostBackMessage = false;
    }
 }
 
@@ -149,5 +184,9 @@ void cFreePlayMenu::MessageReceived(sMessage a_Message)
       GetResources()->GetGameConfigData()->SetProperty("Player1", l_Player1Option);
       GetResources()->GetGameConfigData()->SetProperty("Player2", l_Player2Option);
 
+   }
+   else if (a_Message.m_From == m_pBackButton->GetUniqueId())
+   {
+      m_PostBackMessage = true;
    }
 }
