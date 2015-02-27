@@ -1,6 +1,6 @@
 Animations:
 {
-   Name: Countdown
+   Name: Three
    Speed: 2
    Frames:
    {
@@ -19,6 +19,11 @@ Animations:
          Width: 224
       }
    }
+}
+{
+   Name: Two
+   Speed: 2
+   Frames:
    {
       Image: Media/Textures.png
       X: 288
@@ -35,6 +40,11 @@ Animations:
          Width: 224
       }
    }
+}
+{
+   Name: One
+   Speed: 2
+   Frames:
    {
       Image: Media/Textures.png
       X: 288
@@ -51,6 +61,11 @@ Animations:
          Width: 224
       }
    }
+}
+{
+   Name: Go
+   Speed: 2
+   Frames:
    {
       Image: Media/Textures.png
       X: 288

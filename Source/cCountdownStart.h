@@ -3,6 +3,7 @@
 
 #include "cObject.h"
 
+
 class cCountdownStart: public cObject
 {
 public:
@@ -18,7 +19,16 @@ public:
 
 private:
 
-   bool m_Started;
+   enum eState
+   {
+      kWaitState,
+      kThreeState,
+      kTwoState,
+      kOneState,
+      kGoState
+   };
+
+   eState m_State;
    uint32_t m_TimeAlive;
 
 };
