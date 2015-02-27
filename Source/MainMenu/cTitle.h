@@ -4,6 +4,8 @@
 
 #include "cObject.h"
 
+#include <SFML/Audio.hpp>
+
 class cTitle: public cObject
 {
 public:
@@ -18,6 +20,7 @@ public:
    void Draw();
 
 private:
+
 };
 
 #endif

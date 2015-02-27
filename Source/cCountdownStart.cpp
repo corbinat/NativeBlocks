@@ -9,6 +9,10 @@ cCountdownStart::cCountdownStart(cResources* a_pResources)
    SetType("CountdownStart");
    SetSolid(true);
    SetCollidable(false);
+   GetResources()->GetBackGroundMusic()->stop();
+   GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/GetIt.ogg");
+   GetResources()->GetBackGroundMusic()->setLoop(true);
+   GetResources()->GetBackGroundMusic()->setVolume(30);
 }
 
 cCountdownStart::~cCountdownStart()
@@ -43,6 +47,7 @@ void cCountdownStart::Step (uint32_t a_ElapsedMiliSec)
    else if (m_TimeAlive > 2100 && m_State == kGoState)
    {
       PlayAnimationLoop("Go");
+      GetResources()->GetBackGroundMusic()->play();
       m_State = kWaitState;
    }
    else if (m_TimeAlive > 2700)

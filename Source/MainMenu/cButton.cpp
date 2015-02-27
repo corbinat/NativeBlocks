@@ -42,6 +42,7 @@ void cButton::Event(std::list<sf::Event> * a_pEventList)
          if (l_PositionBox.contains(i->mouseButton.x, i->mouseButton.y))
          {
             PlayAnimationLoop(m_SpritePressedImage.second);
+            PlaySound("Media/Sounds/Click1.wav");
             sMessage l_Message;
             l_Message.m_From = GetUniqueId();
             l_Message.m_Category = "Button";

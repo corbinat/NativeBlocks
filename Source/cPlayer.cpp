@@ -466,6 +466,15 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
             uint32_t l_TotalToSend =
                _CalculateGarbageBeanNumber();
 
+            if (m_ChainCount > 0)
+            {
+               PlaySound("Media/Sounds/Chain.wav");
+            }
+            else
+            {
+               PlaySound("Media/Sounds/Pop.wav");
+            }
+
             sMessage l_Message;
             l_Message.m_From = GetUniqueId();
             l_Message.m_Category = GetResources()->GetMessageDispatcher()->Any();
@@ -650,6 +659,7 @@ void cPlayer::MessageReceived(sMessage a_Message)
    }
    else if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))
    {
+      PlaySound("Media/Sounds/Fall.wav");
       cObject* l_pObject =
          GetResources()->GetActiveLevelData()->GetObjectWithId(a_Message.m_From);
       if (l_pObject != NULL)
@@ -737,6 +747,10 @@ bool cPlayer::MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition)
       m_BeanIsResting = false;
    }
 
+   if (a_NewRelativePosition.x != 0)
+   {
+      PlaySound("Media/Sounds/BlockMove.wav");
+   }
    return true;
 }
 
@@ -857,6 +871,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
    {
       m_BeanIsResting = true;
    }
+
+   PlaySound("Media/Sounds/Woosh.wav");
 }
 
 eRotationState cPlayer::GetRotationState()

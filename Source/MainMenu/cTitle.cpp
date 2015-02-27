@@ -1,4 +1,5 @@
 #include "cTitle.h"
+
 #include <iostream>
 
 cTitle::cTitle(cResources* a_pResources)
@@ -8,6 +9,12 @@ cTitle::cTitle(cResources* a_pResources)
    SetSolid(true);
    LoadAnimations("Media/Title.ani");
    PlayAnimationLoop("TitleBanner");
+
+   // The title plays the music
+   GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/Intro.ogg");
+   GetResources()->GetBackGroundMusic()->setVolume(100);
+   GetResources()->GetBackGroundMusic()->setLoop(true);
+   GetResources()->GetBackGroundMusic()->play();
 }
 
 cTitle::~cTitle()
