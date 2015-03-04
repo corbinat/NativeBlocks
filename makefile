@@ -13,6 +13,7 @@ EngineOBJ = ${EngineDIR}/*.o
 EngineINC = ${EngineDIR}
 
 CFLAGS = -I${SFMLINC}
+CFLAGS += -ISource
 CFLAGS += -I${EngineINC}
 CFLAGS += ${DEBUG} -std=c++11
 LDFLAGS = -L${SFMLLIB} -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio -lpthread -Wl,-Bstatic -lphysfs -lz -Wl,-Bdynamic
@@ -21,7 +22,10 @@ SourceDir = Source
 
 srcs = $(wildcard Source/*.cpp)
 srcs += $(wildcard Source/MainMenu/*.cpp)
-srcs += $(wildcard Source/Props/*.cpp)
+srcs += $(wildcard Source/Common/*.cpp)
+srcs += $(wildcard Source/Common/Props/*.cpp)
+srcs += $(wildcard Source/Common/Widgets/*.cpp)
+srcs += $(wildcard Source/ChallengeLevel/*.cpp)
 
 objs = $(srcs:.cpp=.o)
 deps = $(srcs:.cpp=.d)

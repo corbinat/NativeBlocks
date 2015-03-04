@@ -2,7 +2,7 @@
 #include "cHumanPlayer.h"
 #include "cAiPlayer.h"
 #include "cStagingObserver.h"
-#include "Props/cGrass.h"
+#include "Common/Props/cGrass.h"
 #include "cCountdownStart.h"
 #include "cFinalMenu.h"
 
@@ -67,31 +67,8 @@ cObject* cBeanLevel::PixelToObject(
       }
       else
       {
-         eAiPersonality l_Personality = kAiPersonalityEasy;
-
-         if (l_Player1Option == "Beginner AI")
-         {
-            l_Personality = kAiPersonalityBeginner;
-         }
-         else if (l_Player1Option == "Easy AI")
-         {
-            l_Personality = kAiPersonalityEasy;
-         }
-         else if (l_Player1Option == "Medium AI")
-         {
-            l_Personality = kAiPersonalityMedium;
-         }
-         else if (l_Player1Option == "Hard AI")
-         {
-            l_Personality = kAiPersonalityHard;
-         }
-         else
-         {
-            return NULL;
-         }
-         l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", l_Personality);
+         l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", l_Player1Option);
       }
-
 
    }
    else if (a_Color.r == 100 && a_Color.g == 100 && a_Color.b == 100)
@@ -102,29 +79,7 @@ cObject* cBeanLevel::PixelToObject(
    else if (a_Color.r == 255 && a_Color.g == 0 && a_Color.b == 0)
    {
       std::string l_Player2Option = GetResources()->GetGameConfigData()->GetProperty("Player2");
-      eAiPersonality l_Personality = kAiPersonalityEasy;
-
-      if (l_Player2Option == "Beginner AI")
-      {
-         l_Personality = kAiPersonalityBeginner;
-      }
-      else if (l_Player2Option == "Easy AI")
-      {
-         l_Personality = kAiPersonalityEasy;
-      }
-      else if (l_Player2Option == "Medium AI")
-      {
-         l_Personality = kAiPersonalityMedium;
-      }
-      else if (l_Player2Option == "Hard AI")
-      {
-         l_Personality = kAiPersonalityHard;
-      }
-      else
-      {
-         return NULL;
-      }
-      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", l_Personality);
+      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", l_Player2Option);
    }
    else if (a_Color.r == 100 && a_Color.g == 0 && a_Color.b == 0)
    {

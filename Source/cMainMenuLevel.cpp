@@ -1,7 +1,7 @@
 #include "cMainMenuLevel.h"
 #include "MainMenu/cTitle.h"
-#include "Props/cGrass.h"
-#include "Props/cCloud.h"
+#include "Common/Props/cGrass.h"
+#include "Common/Props/cCloud.h"
 #include "MainMenu/cMainMenu.h"
 #include "cResources.h"
 

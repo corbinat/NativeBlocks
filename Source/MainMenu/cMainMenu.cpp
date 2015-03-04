@@ -1,6 +1,6 @@
 #include "cMainMenu.h"
 
-#include "cButton.h"
+#include "Common/Widgets/cButton.h"
 #include "cFreePlayMenu.h"
 
 #include <iostream>

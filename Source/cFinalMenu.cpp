@@ -1,5 +1,5 @@
 #include "cFinalMenu.h"
-#include "MainMenu/cButton.h"
+#include "Common/Widgets/cButton.h"
 
 #include <iostream>
 
