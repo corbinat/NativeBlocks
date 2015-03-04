@@ -2,6 +2,8 @@
 #include "Common/Widgets/cSelectionBox.h"
 #include "Common/Widgets/cButton.h"
 
+#include "../cAiPersonality.h"
+
 #include <iostream>
 
 cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
@@ -30,10 +32,11 @@ cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
 
    m_pPlayer1Option = new cSelectionBox(GetResources());
    m_pPlayer1Option->AddOption("Human");
-   m_pPlayer1Option->AddOption("Beginner AI");
-   m_pPlayer1Option->AddOption("Easy AI");
-   m_pPlayer1Option->AddOption("Medium AI");
-   m_pPlayer1Option->AddOption("Hard AI");
+
+   for (std::string & l_Name : cAiPersonality::GetAINames())
+   {
+      m_pPlayer1Option->AddOption(l_Name);
+   }
 
    m_Player2Label.setFont(*(l_Font.get()));
    m_Player2Label.setString("Player 2: ");
@@ -41,10 +44,10 @@ cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
    m_Player2Label.setColor(sf::Color::Black);
 
    m_pPlayer2Option = new cSelectionBox(GetResources());
-   m_pPlayer2Option->AddOption("Beginner AI");
-   m_pPlayer2Option->AddOption("Easy AI");
-   m_pPlayer2Option->AddOption("Medium AI");
-   m_pPlayer2Option->AddOption("Hard AI");
+   for (std::string & l_Name : cAiPersonality::GetAINames())
+   {
+      m_pPlayer2Option->AddOption(l_Name);
+   }
 
    m_GameSpeedLabel.setFont(*(l_Font.get()));
    m_GameSpeedLabel.setString("Speed: ");

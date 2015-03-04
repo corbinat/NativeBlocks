@@ -6,7 +6,12 @@
 const uint32_t g_kMinFirstDelayDefault = 30;
 const uint32_t g_kMinAdditionalDelayDefault = 50;
 
-cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
+const char * const g_kBeginnerAIName = "Beginner AI";
+const char * const g_kEasyAIName = "Easy AI";
+const char * const g_kMediumAIName = "Medium AI";
+const char * const g_kHardAIName = "Hard AI";
+
+cAiPersonality::cAiPersonality(std::string a_Personality)
    : m_MaxAIThoughtLevel(0),
      m_CurrentAIThoughtLevel(0),
      m_EnableCountDownThoughtLevels(false),
@@ -21,37 +26,52 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
      m_CurrentDelayToFastFall(0),
      m_HighestScore(0),
      m_OptimalMoveOdds(100),
-     m_Personality(a_Personality),
+     m_Personality(kAiPersonalityBeginner),
      m_MiliSecPerFall(100)
 {
+
+   if (a_Personality == g_kBeginnerAIName)
+   {
+      m_Personality = kAiPersonalityBeginner;
+   }
+   else if (a_Personality == g_kEasyAIName)
+   {
+      m_Personality = kAiPersonalityEasy;
+   }
+   else if (a_Personality == g_kMediumAIName)
+   {
+      m_Personality = kAiPersonalityMedium;
+   }
+   else if (a_Personality == g_kHardAIName)
+   {
+      m_Personality = kAiPersonalityHard;
+   }
+
+
    switch(m_Personality)
    {
       case kAiPersonalityBeginner:
       {
          m_MaxAIThoughtLevel = 0;
          m_EnableCountDownThoughtLevels = false;
-         m_HighestScore = 0;
          break;
       }
       case kAiPersonalityEasy:
       {
          m_MaxAIThoughtLevel = 0;
          m_EnableCountDownThoughtLevels = false;
-         m_HighestScore = 0;
          break;
       }
       case kAiPersonalityMedium:
       {
          m_MaxAIThoughtLevel = 1;
          m_EnableCountDownThoughtLevels = false;
-         m_HighestScore = 0;
          break;
       }
       case kAiPersonalityHard:
       {
          m_MaxAIThoughtLevel = 2;
          m_EnableCountDownThoughtLevels = false;
-         m_HighestScore = 0;
          break;
       }
       default:
@@ -67,6 +87,17 @@ cAiPersonality::cAiPersonality(eAiPersonality a_Personality)
 cAiPersonality::~cAiPersonality()
 {
 
+}
+
+std::vector<std::string> cAiPersonality::GetAINames()
+{
+   std::vector<std::string> l_ReturnVector;
+   l_ReturnVector.push_back(g_kBeginnerAIName);
+   l_ReturnVector.push_back(g_kEasyAIName);
+   l_ReturnVector.push_back(g_kMediumAIName);
+   l_ReturnVector.push_back(g_kHardAIName);
+
+   return l_ReturnVector;
 }
 
 // Gets called when the AI starts thinking to allow parameters to change

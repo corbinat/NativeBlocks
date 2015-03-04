@@ -32,8 +32,10 @@ uint32_t GetEmpySpaceAverage(
 class cAiPersonality
 {
 public:
-   cAiPersonality(eAiPersonality a_Personality);
+   cAiPersonality(std::string a_Personality);
    ~cAiPersonality();
+
+   static std::vector<std::string> GetAINames();
 
    // Gets called when the AI starts thinking to allow parameters to change
    // based on pressure.

@@ -29,7 +29,7 @@ public:
       cResources* a_pResources,
       std::minstd_rand a_RandomNumberEngine,
       std::string a_Identifier,
-      eAiPersonality a_Personality
+      std::string a_Personality
       );
 
    ~cAiPlayer();
