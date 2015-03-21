@@ -69,7 +69,17 @@ void cAiBlock::Collision(cObject* a_pOther)
          GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10
          );
       SetVelocityY(0, kNormal);
+
+      sMessage l_Message;
+      l_Message.m_From = GetUniqueId();
+      l_Message.m_Category =GetResources()->GetMessageDispatcher()->Any();
+      l_Message.m_Key = GetResources()->GetMessageDispatcher()->Any();
+      l_Message.m_Value = "Settled";
+      GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+
       m_Falling = false;
+
+
    }
 }
 

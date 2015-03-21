@@ -2,7 +2,19 @@
 #ifndef ___cChallengeDisplay_h___
 #define ___cChallengeDisplay_h___
 
+#include "cArrow.h"
 #include "cObject.h"
+
+enum eChallengeState
+{
+   kStateStart,
+   kStateDelayToBlockFall,
+   kStateBlockFall,
+   kStateWaitForFallToFinish,
+   kStateMoveArrowUp,
+   kStateDelayToContinue,
+   kStateReadyToContinue
+};
 
 class cButton;
 
@@ -25,15 +37,12 @@ public:
 
 private:
 
-   bool m_NewBlockNeeded;
+   eChallengeState m_State;
    uint32_t m_TimeAccumulator;
    std::vector<cObject*> m_BlockStack;
+   cArrow* m_pArrow;
 
    sf::Text m_ContinueString;
-   bool m_ReadyToContinue;
-
-   cButton * m_pStartButton;
-   cButton * m_pBackButton;
 };
 
 #endif
