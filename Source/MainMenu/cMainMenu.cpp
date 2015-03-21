@@ -129,16 +129,9 @@ void cMainMenu::MessageReceived(sMessage a_Message)
 {
    if (a_Message.m_From == m_pChallengeButton->GetUniqueId())
    {
-      //~ std::cout << "Start button pressed" << std::endl;
-      //~ GetResources()->SetActiveLevel("Level1", true);
-//~
-      //~ std::string l_Player1Option = m_pPlayer1Option->GetSelectedOption();
-      //~ std::string l_Player2Option = m_pPlayer2Option->GetSelectedOption();
-//~
-      //~ GetResources()->GetGameConfigData()->SetProperty("Player1", l_Player1Option);
-      //~ GetResources()->GetGameConfigData()->SetProperty("Player2", l_Player2Option);
-
-
+      GetResources()->GetGameConfigData()->SetProperty("GameType", "Challenge");
+      GetResources()->SetActiveLevel("Challenge", true);
+      std::cout << "Challenge" << std::endl;
    }
    else if (a_Message.m_From == m_pFreePlayButton->GetUniqueId())
    {

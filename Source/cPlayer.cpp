@@ -655,6 +655,12 @@ void cPlayer::MessageReceived(sMessage a_Message)
    }
    else if (a_Message.m_Value == "Player Lost" && a_Message.m_From != GetUniqueId())
    {
+      // The other player lost. Record this as a win.
+      if (GetResources()->GetGameConfigData()->GetProperty("GameType") == "Challenge")
+      {
+         (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("LastWinner", GetType());
+      }
+
       m_CurrentState = kStateIdle;
    }
    else if (a_Message.m_Value == "BeanSettled" && a_Message.m_Category == std::to_string(GetUniqueId()))

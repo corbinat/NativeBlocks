@@ -186,6 +186,7 @@ void cFreePlayMenu::MessageReceived(sMessage a_Message)
 
       GetResources()->GetGameConfigData()->SetProperty("Player1", l_Player1Option);
       GetResources()->GetGameConfigData()->SetProperty("Player2", l_Player2Option);
+      GetResources()->GetGameConfigData()->SetProperty("GameType", "FreePlay");
 
    }
    else if (a_Message.m_From == m_pBackButton->GetUniqueId())
