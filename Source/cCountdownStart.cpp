@@ -1,5 +1,5 @@
 #include "cCountdownStart.h"
-#include "cFadeTransition.h"
+#include "Common/cFadeTransition.h"
 #include <iostream>
 
 cCountdownStart::cCountdownStart(cResources* a_pResources)
