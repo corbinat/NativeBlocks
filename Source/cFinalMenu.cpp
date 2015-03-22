@@ -99,12 +99,26 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
    if (a_Message.m_Value == "Player Lost")
    {
       //~ std::cout << "Detecting player lost" << std::endl;
-      _CreateMenu();
+      if (GetResources()->GetGameConfigData()->GetProperty("GameType") == "FreePlay")
+      {
+         _CreateFinalFreePlayMenu();
+      }
+      else
+      {
+         _CreateFinalChallengeMenu();
+      }
    }
    else if (m_pPlayAgainButton != NULL && a_Message.m_From == m_pPlayAgainButton->GetUniqueId())
    {
       //~ std::cout << "Play Again pressed" << std::endl;
-      GetResources()->SetActiveLevel("Level1", true);
+      if (GetResources()->GetGameConfigData()->GetProperty("GameType") == "FreePlay")
+      {
+         GetResources()->SetActiveLevel("Level1", true);
+      }
+      else
+      {
+         GetResources()->SetActiveLevel("Challenge", true);
+      }
    }
    else if (m_pMainMenuButton != NULL && a_Message.m_From == m_pMainMenuButton->GetUniqueId())
    {
@@ -113,7 +127,7 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
    }
 }
 
-void cFinalMenu::_CreateMenu()
+void cFinalMenu::_CreateFinalFreePlayMenu()
 {
    // If the buttons have already been created, don't do it again
    if (m_pPlayAgainButton != NULL)
@@ -122,13 +136,40 @@ void cFinalMenu::_CreateMenu()
    }
 
    m_pPlayAgainButton = new cButton(GetResources());
-   m_pPlayAgainButton->SetImage("Media/Final.ani", "PlayAgainButton");
+   m_pPlayAgainButton->SetImage("Media/Final.ani", "Button");
+   m_pPlayAgainButton->SetLabel("Play Again", 17);
    sf::Vector3<double> l_Position = GetPosition();
    l_Position.y = -1.0 * m_pPlayAgainButton->GetBoundingBox().height;
    m_pPlayAgainButton->SetPosition(l_Position, kNormal, false);
 
    m_pMainMenuButton = new cButton(GetResources());
-   m_pMainMenuButton->SetImage("Media/Final.ani", "MainMenuButton");
+   m_pMainMenuButton->SetImage("Media/Final.ani", "Button");
+   m_pMainMenuButton->SetLabel("Main Menu", 17);
+   l_Position.y -= m_pMainMenuButton->GetBoundingBox().height + 10;
+   m_pMainMenuButton->SetPosition(l_Position, kNormal, false);
+
+   m_NeedToActivateButtons = true;
+
+}
+
+void cFinalMenu::_CreateFinalChallengeMenu()
+{
+   // If the buttons have already been created, don't do it again
+   if (m_pPlayAgainButton != NULL)
+   {
+      return;
+   }
+
+   m_pPlayAgainButton = new cButton(GetResources());
+   m_pPlayAgainButton->SetImage("Media/Final.ani", "Button");
+   m_pPlayAgainButton->SetLabel("Continue", 17);
+   sf::Vector3<double> l_Position = GetPosition();
+   l_Position.y = -1.0 * m_pPlayAgainButton->GetBoundingBox().height;
+   m_pPlayAgainButton->SetPosition(l_Position, kNormal, false);
+
+   m_pMainMenuButton = new cButton(GetResources());
+   m_pMainMenuButton->SetImage("Media/Final.ani", "Button");
+   m_pMainMenuButton->SetLabel("Quit", 17);
    l_Position.y -= m_pMainMenuButton->GetBoundingBox().height + 10;
    m_pMainMenuButton->SetPosition(l_Position, kNormal, false);
 

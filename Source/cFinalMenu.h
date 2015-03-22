@@ -25,7 +25,8 @@ public:
 
 private:
 
-   void _CreateMenu();
+   void _CreateFinalFreePlayMenu();
+   void _CreateFinalChallengeMenu();
 
    bool m_NeedToActivateButtons;
 
