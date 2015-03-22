@@ -252,4 +252,46 @@ Animations:
       }
    }
 }
+{
+   Name: BlankMediumButton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 221
+      Y: 248
+      Height: 32
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 128
+      }
+   }
+}
+{
+   Name: BlankSmallButton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/MainMenu.png
+      X: 349
+      Y: 248
+      Height: 32
+      Width: 64
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 64
+      }
+   }
+}
 

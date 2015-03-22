@@ -16,10 +16,12 @@ cMainMenu::cMainMenu(cResources* a_pResources)
    SetSolid(false);
 
    m_pChallengeButton = new cButton(GetResources());
-   m_pChallengeButton->SetImage("Media/Title.ani", "ChallengeButton");
+   m_pChallengeButton->SetImage("Media/Title.ani", "BlankMediumButton");
+   m_pChallengeButton->SetLabel("Challenge");
 
    m_pFreePlayButton = new cButton(GetResources());
-   m_pFreePlayButton->SetImage("Media/Title.ani", "FreePlayButton");
+   m_pFreePlayButton->SetImage("Media/Title.ani", "BlankMediumButton");
+   m_pFreePlayButton->SetLabel("Free Play");
 
    m_pFreePlayMenu = new cFreePlayMenu(GetResources());
 

@@ -21,11 +21,15 @@ public:
    void SetImage(std::string a_AniFile, std::string a_Sprite);
    void SetPressedImage(std::string a_AniFile, std::string a_Sprite);
 
+   void SetLabel(std::string a_String, uint32_t a_Size = 21);
+
 private:
 
    // Pairs contain ani file and ani name
    std::pair<std::string, std::string> m_SpriteImage;
    std::pair<std::string, std::string> m_SpritePressedImage;
+
+   sf::Text m_Label;
 
 };
 

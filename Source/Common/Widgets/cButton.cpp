@@ -4,7 +4,8 @@
 cButton::cButton(cResources* a_pResources)
    : cObject(a_pResources),
      m_SpriteImage("Media/Title.ani", "ButtonLeft"),
-     m_SpritePressedImage("Media/Title.ani", "ButtonLeftPressed")
+     m_SpritePressedImage("Media/Title.ani", "ButtonLeftPressed"),
+     m_Label()
 {
    SetType("Button");
    SetSolid(true);
@@ -60,12 +61,18 @@ void cButton::Event(std::list<sf::Event> * a_pEventList)
 
 void cButton::Step(uint32_t a_ElapsedMiliSec)
 {
-
+   if (m_Label.getString() != "")
+   {
+      m_Label.setPosition(
+         static_cast<int32_t>(GetPosition().x + GetBoundingBox().left + GetBoundingBox().width / 2.0 - m_Label.getLocalBounds().width / 2.0),
+          static_cast<int32_t>(GetPosition().y + GetBoundingBox().height / 2.0 - (m_Label.getLocalBounds().height + m_Label.getLocalBounds().top + 10) / 2.0)
+         );
+   }
 }
 
 void cButton::Draw()
 {
-
+   GetResources()->GetWindow()->draw(m_Label);
 }
 
 void cButton::SetImage(std::string a_AniFile, std::string a_Sprite)
@@ -85,4 +92,14 @@ void cButton::SetPressedImage(std::string a_AniFile, std::string a_Sprite)
    m_SpritePressedImage.second = a_Sprite;
 
    LoadAnimations(m_SpritePressedImage.first);
+}
+
+void cButton::SetLabel(std::string a_String, uint32_t a_Size)
+{
+   std::shared_ptr<sf::Font> l_Font
+      = GetResources()->LoadFont("Media/junegull.ttf");
+   m_Label.setFont(*(l_Font.get()));
+   m_Label.setCharacterSize(a_Size);
+   m_Label.setColor(sf::Color::Black);
+   m_Label.setString(a_String);
 }

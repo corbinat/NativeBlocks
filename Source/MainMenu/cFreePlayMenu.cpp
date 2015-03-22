@@ -60,10 +60,12 @@ cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
    m_pGameSpeedOption->AddOption("3");
 
    m_pStartButton = new cButton(GetResources());
-   m_pStartButton->SetImage("Media/Title.ani", "BeginButton");
+   m_pStartButton->SetImage("Media/Title.ani", "BlankSmallButton");
+   m_pStartButton->SetLabel("Begin");
 
    m_pBackButton = new cButton(GetResources());
-   m_pBackButton->SetImage("Media/Title.ani", "BackButton");
+   m_pBackButton->SetImage("Media/Title.ani", "BlankSmallButton");
+   m_pBackButton->SetLabel("Back");
 
    AddChild(m_pPlayer1Option);
    AddChild(m_pPlayer2Option);
