@@ -140,12 +140,17 @@ void cBean::Collision(cObject* a_pOther)
       {
          SitFlush(a_pOther);
          cBean* l_pBean = dynamic_cast<cBean*>(a_pOther);
-         m_FreeFall = l_pBean->m_FreeFall;
+         // Continue to freefall if the bean we hit is also still freefalling
+         // or exploading
+         m_FreeFall = l_pBean->m_FreeFall || l_pBean->m_Exploding;
+
+         // If we hit a bean that is exploding set the velocity back to 0
+         if (l_pBean->m_Exploding)
+         {
+            SetVelocityY(0, kNormal);
+         }
       }
-      //~ else if (a_pOther->GetType() == "Wall")
-      //~ {
-         //~ std::cout << "What??????????" << std::endl;
-      //~ }
+
       else if (a_pOther->GetType() == "Floor")
       {
          SitFlush(a_pOther);
@@ -236,10 +241,56 @@ void cBean::Explode()
       l_pBean->m_ConnectedBeans.erase(this);
    }
 
-   UnregisterObject(true);
+   std::function<void(void)> l_MessageCallback =
+      std::bind(&cBean::ExplodeDone, this);
+
+   switch(m_Color)
+   {
+      case kBeanColorOrange:
+      {
+         PlayAnimationOnce("RedExplode", l_MessageCallback);
+         break;
+      }
+      case kBeanColorBlue:
+      {
+         PlayAnimationOnce("BlueExplode", l_MessageCallback);
+         break;
+      }
+      case kBeanColorYellow:
+      {
+         PlayAnimationOnce("YellowExplode", l_MessageCallback);
+         break;
+      }
+      case kBeanColorGreen:
+      {
+         PlayAnimationOnce("GreenExplode", l_MessageCallback);
+         break;
+      }
+      case kBeanColorPink:
+      {
+         PlayAnimationOnce("PinkExplode", l_MessageCallback);
+         break;
+      }
+      case kBeanColorGarbage:
+      {
+         PlayAnimationOnce("GarbageExplode", l_MessageCallback);
+         break;
+      }
+      default:
+      {
+         UnregisterObject(true);
+      }
+   }
+
+   //UnregisterObject(true);
 }
 
 bool cBean::IsExploding()
 {
    return m_Exploding;
+}
+
+void cBean::ExplodeDone()
+{
+   UnregisterObject(true);
 }

@@ -32,10 +32,9 @@ public:
 
    std::unordered_set<cBean*> CountConnections();
 
-
-
    void Explode();
    bool IsExploding();
+   void ExplodeDone();
 
 private:
 

@@ -4,9 +4,62 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Blocks.png
       X: 0
-      Y: 128
+      Y: 160
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: BlueExplode
+   Speed: 16
+   Frames:
+   {
+      Image: Media/Blocks.png
+      X: 32
+      Y: 160
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 64
+      Y: 160
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 96
+      Y: 160
       Height: 32
       Width: 32
       Origin: 0
@@ -25,8 +78,61 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Blocks.png
+      X: 0
+      Y: 128
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: GreenExplode
+   Speed: 16
+   Frames:
+   {
+      Image: Media/Blocks.png
       X: 32
+      Y: 128
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 64
+      Y: 128
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 96
       Y: 128
       Height: 32
       Width: 32
@@ -46,9 +152,62 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Blocks.png
+      X: 0
+      Y: 64
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: YellowExplode
+   Speed: 16
+   Frames:
+   {
+      Image: Media/Blocks.png
+      X: 32
+      Y: 64
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
       X: 64
-      Y: 128
+      Y: 64
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 96
+      Y: 64
       Height: 32
       Width: 32
       Origin: 0
@@ -67,9 +226,62 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Blocks.png
+      X: 0
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: RedExplode
+   Speed: 16
+   Frames:
+   {
+      Image: Media/Blocks.png
+      X: 32
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 64
+      Y: 32
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
       X: 96
-      Y: 128
+      Y: 32
       Height: 32
       Width: 32
       Origin: 0
@@ -88,9 +300,62 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
-      X: 128
-      Y: 128
+      Image: Media/Blocks.png
+      X: 0
+      Y: 96
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: PinkExplode
+   Speed: 16
+   Frames:
+   {
+      Image: Media/Blocks.png
+      X: 32
+      Y: 96
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 64
+      Y: 96
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 96
+      Y: 96
       Height: 32
       Width: 32
       Origin: 0
@@ -109,9 +374,62 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
-      X: 160
-      Y: 128
+      Image: Media/Blocks.png
+      X: 0
+      Y: 0
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+}
+{
+   Name: GarbageExplode
+   Speed: 16
+   Frames:
+   {
+      Image: Media/Blocks.png
+      X: 32
+      Y: 0
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 64
+      Y: 0
+      Height: 32
+      Width: 32
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 32
+         Width: 32
+      }
+   }
+   {
+      Image: Media/Blocks.png
+      X: 96
+      Y: 0
       Height: 32
       Width: 32
       Origin: 0
