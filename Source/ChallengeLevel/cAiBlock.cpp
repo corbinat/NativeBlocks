@@ -79,6 +79,8 @@ void cAiBlock::Collision(cObject* a_pOther)
 
       m_Falling = false;
 
+      PlaySound("Media/Sounds/BigFall.ogg");
+
 
    }
 }

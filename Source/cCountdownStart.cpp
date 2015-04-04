@@ -38,21 +38,25 @@ void cCountdownStart::Step (uint32_t a_ElapsedMiliSec)
    {
       LoadAnimations("Media/Countdown.ani");
       PlayAnimationLoop("Three");
+      PlaySound("Media/Sounds/BlockMove.wav");
       m_State = kTwoState;
    }
    else if (m_TimeAlive > 1900 && m_State == kTwoState)
    {
       PlayAnimationLoop("Two");
+      PlaySound("Media/Sounds/BlockMove.wav");
       m_State = kOneState;
    }
    else if (m_TimeAlive > 2500 && m_State == kOneState)
    {
       PlayAnimationLoop("One");
+      PlaySound("Media/Sounds/BlockMove.wav");
       m_State = kGoState;
    }
    else if (m_TimeAlive > 3100 && m_State == kGoState)
    {
       PlayAnimationLoop("Go");
+      PlaySound("Media/Sounds/BlockMove.wav");
       GetResources()->GetBackGroundMusic()->play();
       m_State = kWaitState;
    }

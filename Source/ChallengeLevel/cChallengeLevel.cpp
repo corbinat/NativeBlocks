@@ -29,6 +29,11 @@ void cChallengeLevel::Initialize()
    l_pFadeTransition->SetTransitionTime(1000);
    // Make sure the transition is in front of everything
    l_pFadeTransition->SetDepth(-10);
+
+   GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/GetItBreakdown2.ogg");
+   GetResources()->GetBackGroundMusic()->setVolume(30);
+   GetResources()->GetBackGroundMusic()->setLoop(true);
+   GetResources()->GetBackGroundMusic()->play();
 }
 
 void cChallengeLevel::Step(uint32_t a_ElapsedMiliSec)
