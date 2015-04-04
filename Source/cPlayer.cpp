@@ -1,6 +1,7 @@
 #include "cPlayer.h"
 #include "cBean.h"
 #include "cBeanInfo.h"
+#include "cBonusShot.h"
 #include "cFloor.h"
 #include "cWall.h"
 #include "cRoof.h"
@@ -42,7 +43,8 @@ cPlayer::cPlayer(
      m_NumberDifferentGroups(0),
      m_ChainCount(0),
      m_GarbageAcumulator(0),
-     m_GarbageDropped(false)
+     m_GarbageDropped(false),
+     m_pOpponent(NULL)
 {
    SetType(a_Identifier);
    SetSolid(false);
@@ -427,6 +429,12 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   m_Beans[l_DeleteX][l_DeleteY] = NULL;
 
                   l_pConnection->Explode();
+                  if (m_ChainCount > 0 & m_pOpponent != NULL && l_pConnection->GetColor() != kBeanColorGarbage)
+                  {
+                     cBonusShot * l_BonusShot = new cBonusShot(m_pOpponent->GetPosition(), GetResources());
+                     l_BonusShot->SetPosition(l_pConnection->GetPosition());
+                     l_BonusShot->Initialize();
+                  }
 
                   // Don't wait on this bean to fall because it is exploding
                   std::list<cBean*>::iterator l_Find =
@@ -619,6 +627,8 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          l_Message.m_Key = GetResources()->GetMessageDispatcher()->Any();
          l_Message.m_Value = "Player Lost";
          GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+
+         PlaySound("Media/Sounds/GameOver4.ogg");
 
          //~ std::cout << GetType() << " Lost" << std::endl;
 
@@ -944,6 +954,11 @@ std::vector<std::vector<cBeanInfo>> cPlayer::ClonePlayingField()
    }
 
    return l_PlayingField;
+}
+
+void cPlayer::SetOpponent(cPlayer* a_pOpponent)
+{
+   m_pOpponent = a_pOpponent;
 }
 
 uint32_t cPlayer::CalculateScore(

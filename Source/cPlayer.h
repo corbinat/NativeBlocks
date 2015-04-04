@@ -91,6 +91,8 @@ public:
       uint32_t a_Chains
       );
 
+   void SetOpponent(cPlayer* a_pOpponent);
+
 protected:
    cStaging m_Staging;
 
@@ -159,6 +161,9 @@ private:
 
    // Prevents multple garbage bean groups from falling in one round
    bool m_GarbageDropped;
+
+   // Used so we can "shoot" each other
+   cPlayer* m_pOpponent;
 
 };
 

@@ -5,6 +5,7 @@
 
 #include "cLevel.h"
 
+class cPlayer;
 
 class cBeanLevel: public cLevel
 {
@@ -32,6 +33,10 @@ public:
 private:
 
    std::minstd_rand m_RandomNumberEngine;
+
+   // This is kind of hacky. I save the first player created to this pointer
+   // so that when I get to the second player I can let them know of each other.
+   cPlayer* m_pOpponent;
 
 };
 

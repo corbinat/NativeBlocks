@@ -14,7 +14,8 @@ cBeanLevel::cBeanLevel(
    cResources* a_pResources
    )
    : cLevel(a_pResources),
-     m_RandomNumberEngine()
+     m_RandomNumberEngine(),
+     m_pOpponent(NULL)
 {
 }
 
@@ -32,6 +33,8 @@ void cBeanLevel::Initialize()
    // Change default level settings
    SetGridCellSize(sf::Vector2<uint32_t>(32,32));
    SetBackgroundColor(sf::Color(153,204,204,255));
+
+   m_pOpponent = NULL;
 }
 
 void cBeanLevel::Step(uint32_t a_ElapsedMiliSec)
@@ -70,6 +73,19 @@ cObject* cBeanLevel::PixelToObject(
          l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", l_Player1Option);
       }
 
+      // If we already know about player 2 then point the players to each other
+      if (m_pOpponent != NULL)
+      {
+         static_cast<cPlayer*>(l_pNewObject)->SetOpponent(m_pOpponent);
+         m_pOpponent->SetOpponent(static_cast<cPlayer*>(l_pNewObject));
+      }
+      else
+      {
+         m_pOpponent = static_cast<cPlayer*>(l_pNewObject);
+      }
+
+
+
    }
    else if (a_Color.r == 100 && a_Color.g == 100 && a_Color.b == 100)
    {
@@ -80,6 +96,18 @@ cObject* cBeanLevel::PixelToObject(
    {
       std::string l_Player2Option = GetResources()->GetGameConfigData()->GetProperty("Player2");
       l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", l_Player2Option);
+
+      // If we already know about player 1 then point the players to each other
+      if (m_pOpponent != NULL)
+      {
+         static_cast<cPlayer*>(l_pNewObject)->SetOpponent(m_pOpponent);
+         m_pOpponent->SetOpponent(static_cast<cPlayer*>(l_pNewObject));
+      }
+      else
+      {
+         m_pOpponent = static_cast<cPlayer*>(l_pNewObject);
+      }
+
    }
    else if (a_Color.r == 100 && a_Color.g == 0 && a_Color.b == 0)
    {
