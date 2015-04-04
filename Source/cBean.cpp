@@ -79,40 +79,7 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    SetType("Bean");
    SetSolid(true);
    LoadAnimations("Media/Beans.ani");
-   PlayAnimationLoop("Blue");
-
-   switch(m_Color)
-   {
-      case kBeanColorBlue:
-      {
-         PlayAnimationLoop("Blue");
-         break;
-      }
-      case kBeanColorGreen:
-      {
-         PlayAnimationLoop("Green");
-         break;
-      }
-      case kBeanColorYellow:
-      {
-         PlayAnimationLoop("Yellow");
-         break;
-      }
-      case kBeanColorOrange:
-      {
-         PlayAnimationLoop("Red");
-         break;
-      }
-      case kBeanColorPink:
-      {
-         PlayAnimationLoop("Pink");
-         break;
-      }
-      default:
-      {
-         PlayAnimationLoop("Garbage");
-      }
-   }
+   _SetBaseSprite();
 }
 
 cBean::~cBean()
@@ -174,9 +141,11 @@ void cBean::Collision(cObject* a_pOther)
 void cBean::Fall()
 {
    m_FreeFall = true;
+   _SetBaseSprite();
    for (cBean* l_pBean : m_ConnectedBeans)
    {
       l_pBean->m_ConnectedBeans.erase(this);
+      l_pBean->_SetBaseSprite();
    }
    m_ConnectedBeans.clear();
 }
@@ -184,6 +153,101 @@ void cBean::Fall()
 eBeanColor cBean::GetColor()
 {
    return m_Color;
+}
+
+void cBean::SetGlowLevel(uint32_t a_Level)
+{
+   switch(m_Color)
+   {
+      case kBeanColorOrange:
+      {
+         if (a_Level == 1)
+         {
+            PlayAnimationLoop("Red");
+         }
+         else if (a_Level == 2)
+         {
+            PlayAnimationLoop("RedGlow1");
+         }
+         else
+         {
+            PlayAnimationLoop("RedGlow2");
+         }
+         break;
+      }
+      case kBeanColorBlue:
+      {
+         if (a_Level == 1)
+         {
+            PlayAnimationLoop("Blue");
+         }
+         else if (a_Level == 2)
+         {
+            PlayAnimationLoop("BlueGlow1");
+         }
+         else
+         {
+            PlayAnimationLoop("BlueGlow2");
+         }
+         break;
+      }
+      case kBeanColorYellow:
+      {
+         if (a_Level == 1)
+         {
+            PlayAnimationLoop("Yellow");
+         }
+         else if (a_Level == 2)
+         {
+            PlayAnimationLoop("YellowGlow1");
+         }
+         else
+         {
+            PlayAnimationLoop("YellowGlow2");
+         }
+         break;
+      }
+      case kBeanColorGreen:
+      {
+         if (a_Level == 1)
+         {
+            PlayAnimationLoop("Green");
+         }
+         else if (a_Level == 2)
+         {
+            PlayAnimationLoop("GreenGlow1");
+         }
+         else
+         {
+            PlayAnimationLoop("GreenGlow2");
+         }
+         break;
+      }
+      case kBeanColorPink:
+      {
+         if (a_Level == 1)
+         {
+            PlayAnimationLoop("Pink");
+         }
+         else if (a_Level == 2)
+         {
+            PlayAnimationLoop("PinkGlow1");
+         }
+         else
+         {
+            PlayAnimationLoop("PinkGlow2");
+         }
+         break;
+      }
+      case kBeanColorGarbage:
+      {
+         break;
+      }
+      default:
+      {
+         UnregisterObject(true);
+      }
+   }
 }
 
 void cBean::AddConnection(cBean* a_pOtherBean)
@@ -218,6 +282,13 @@ std::unordered_set<cBean*> cBean::CountConnections()
       //~ std::cout << "\t" << l_pBean->GetPosition().y << std::endl;
    //~ }
 
+   // Use this oportunity to update the bean sprites so that they glow when
+   // making a connection
+   for (cBean* l_pBean : a_ExcludeList)
+   {
+      l_pBean->SetGlowLevel(a_ExcludeList.size());
+   }
+
    return a_ExcludeList;
 }
 
@@ -239,6 +310,7 @@ void cBean::Explode()
    for (cBean* l_pBean : m_ConnectedBeans)
    {
       l_pBean->m_ConnectedBeans.erase(this);
+      l_pBean->_SetBaseSprite();
    }
 
    std::function<void(void)> l_MessageCallback =
@@ -294,3 +366,40 @@ void cBean::ExplodeDone()
 {
    UnregisterObject(true);
 }
+
+void cBean::_SetBaseSprite()
+{
+   switch(m_Color)
+   {
+      case kBeanColorBlue:
+      {
+         PlayAnimationLoop("Blue");
+         break;
+      }
+      case kBeanColorGreen:
+      {
+         PlayAnimationLoop("Green");
+         break;
+      }
+      case kBeanColorYellow:
+      {
+         PlayAnimationLoop("Yellow");
+         break;
+      }
+      case kBeanColorOrange:
+      {
+         PlayAnimationLoop("Red");
+         break;
+      }
+      case kBeanColorPink:
+      {
+         PlayAnimationLoop("Pink");
+         break;
+      }
+      default:
+      {
+         PlayAnimationLoop("Garbage");
+      }
+   }
+}
+

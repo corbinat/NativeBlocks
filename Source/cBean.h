@@ -26,6 +26,7 @@ public:
 
    void Fall();
    eBeanColor GetColor();
+   void SetGlowLevel(uint32_t a_Level);
 
    void AddConnection(cBean* a_pOtherBean);
    std::unordered_set<cBean*> GetImmediateConnections();
@@ -39,6 +40,7 @@ public:
 private:
 
    void _CountConnections(std::unordered_set<cBean*>* a_ExcludeList);
+   void _SetBaseSprite();
 
    eBeanColor m_Color;
 
