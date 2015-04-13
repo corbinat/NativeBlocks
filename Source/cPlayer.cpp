@@ -668,7 +668,7 @@ void cPlayer::MessageReceived(sMessage a_Message)
       // The other player lost. Record this as a win.
       if (GetResources()->GetGameConfigData()->GetProperty("GameType") == "Challenge")
       {
-         (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("LastWinner", GetType());
+         (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = GetType();
       }
 
       m_CurrentState = kStateIdle;

@@ -26,7 +26,7 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
 
    std::vector<std::string> l_AINameVector = cAiPersonality::GetAINames();
    std::string l_NextAINumberString =
-      (*(GetResources()->GetGameConfigData()))["Challenge"].GetProperty("NextAINumber");
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"];
    if (l_NextAINumberString.empty())
    {
       l_NextAINumberString = "0";
@@ -66,14 +66,14 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
    // See if the Human won the last game (player 1). If so, move on to the next
    // AI.
    std::string l_LastWinner =
-      (*(GetResources()->GetGameConfigData()))["Challenge"].GetProperty("LastWinner");
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"];
 
    if (l_LastWinner == "Player1")
    {
       ++l_NextAINumber;
       l_NextAINumberString = std::to_string(l_NextAINumber);
-      (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("LastWinner", "");
-      (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("NextAINumber", l_NextAINumberString);
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "";
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = l_NextAINumberString;
 
       // Create another block that falls from the sky
       m_State = kStateDelayToBlockFall;
@@ -140,7 +140,7 @@ void cChallengeDisplay::Event(std::list<sf::Event> * a_pEventList)
 
                GetResources()->GetGameConfigData()->SetProperty("Player1", "Human");
 
-               std::string l_NextAINumber = (*(GetResources()->GetGameConfigData()))["Challenge"].GetProperty("NextAINumber");
+               std::string l_NextAINumber = (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"];
                if (l_NextAINumber.empty())
                {
                   l_NextAINumber = "0";
@@ -155,19 +155,19 @@ void cChallengeDisplay::Event(std::list<sf::Event> * a_pEventList)
 
             if ((*i).key.code == sf::Keyboard::Num0)
             {
-               (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("NextAINumber", "0");
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "0";
             }
             else if ((*i).key.code == sf::Keyboard::Num1)
             {
-               (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("NextAINumber", "1");
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "1";
             }
             else if ((*i).key.code == sf::Keyboard::Num2)
             {
-               (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("NextAINumber", "2");
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "2";
             }
             else if ((*i).key.code == sf::Keyboard::A)
             {
-                (*(GetResources()->GetGameConfigData()))["Challenge"].SetProperty("LastWinner", "Player1");
+                (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "Player1";
             }
             else if ((*i).key.code == sf::Keyboard::B)
             {
@@ -210,7 +210,7 @@ void cChallengeDisplay::Step (uint32_t a_ElapsedMiliSec)
             );
 
          std::string l_NextAINumberString =
-            (*(GetResources()->GetGameConfigData()))["Challenge"].GetProperty("NextAINumber");
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"];
          if (l_NextAINumberString.empty())
          {
             l_NextAINumberString = "0";
