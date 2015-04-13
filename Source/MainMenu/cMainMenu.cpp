@@ -2,6 +2,7 @@
 
 #include "Common/Widgets/cButton.h"
 #include "cFreePlayMenu.h"
+#include "cOptionsMenu.h"
 
 #include <iostream>
 
@@ -9,7 +10,9 @@ cMainMenu::cMainMenu(cResources* a_pResources)
    : cObject(a_pResources),
      m_pChallengeButton(NULL),
      m_pFreePlayButton(NULL),
-     m_pFreePlayMenu(NULL)
+     m_pFreePlayMenu(NULL),
+     m_pOptionsButton(NULL),
+     m_pOptionsMenu(NULL)
 {
    SetType("MainMenu");
 
@@ -23,11 +26,17 @@ cMainMenu::cMainMenu(cResources* a_pResources)
    m_pFreePlayButton->SetImage("Media/Title.ani", "BlankMediumButton");
    m_pFreePlayButton->SetLabel("Free Play");
 
+   m_pOptionsButton = new cButton(GetResources());
+   m_pOptionsButton->SetImage("Media/Title.ani", "BlankMediumButton");
+   m_pOptionsButton->SetLabel("Options");
+
    m_pFreePlayMenu = new cFreePlayMenu(GetResources());
+   m_pOptionsMenu = new cOptionsMenu(GetResources());
 
    AddChild(m_pChallengeButton);
    AddChild(m_pFreePlayButton);
-   AddChild(m_pFreePlayMenu);
+   AddChild(m_pOptionsButton);
+
 }
 
 cMainMenu::~cMainMenu()
@@ -39,13 +48,19 @@ cMainMenu::~cMainMenu()
 void cMainMenu::Initialize()
 {
    sf::Vector3<double> l_Position = GetPosition();
+   l_Position.x = GetResources()->GetWindow()->getSize().x/2 - (m_pChallengeButton->GetBoundingBox().width/2);
+   SetPosition(l_Position, kNormal, false);
+   //~ l_Position.x = 5;
    m_pChallengeButton->SetPosition(l_Position, kNormal, false);
    m_pChallengeButton->Initialize();
 
    l_Position.y += m_pChallengeButton->GetBoundingBox().height + 5;
-
    m_pFreePlayButton->SetPosition(l_Position, kNormal, false);
    m_pFreePlayButton->Initialize();
+
+   l_Position.y += m_pFreePlayButton->GetBoundingBox().height + 5;
+   m_pOptionsButton->SetPosition(l_Position, kNormal, false);
+   m_pOptionsButton->Initialize();
 
    // Receive messages when The Challenege button is pushed.
    std::function<void(sMessage)> l_MessageCallback =
@@ -75,6 +90,18 @@ void cMainMenu::Initialize()
       l_Request
       );
 
+   // Receive messages when the Options button is pushed
+   l_Request.m_From = m_pOptionsButton->GetUniqueId();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+
    // Receive messages for when this menu should be active
    l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
    l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
@@ -93,6 +120,8 @@ void cMainMenu::Initialize()
    //~ l_Position.x = GetResources()->GetWindow()->getSize().x - 200;
    m_pFreePlayMenu->SetPosition(l_Position, kNormal, false);
    m_pFreePlayMenu->Initialize();
+   m_pOptionsMenu->SetPosition(l_Position, kNormal, false);
+   m_pOptionsMenu->Initialize();
 }
 
 void cMainMenu::Collision(cObject* a_pOther)
@@ -115,9 +144,15 @@ void cMainMenu::Step (uint32_t a_ElapsedMiliSec)
    }
    else if (GetVelocity().x > 0)
    {
-      if (m_pFreePlayMenu->GetPosition().x > 800)
+      if (  m_pFreePlayMenu->GetPosition().x >= 800
+         && m_pOptionsMenu->GetPosition().x >= 800
+         )
       {
          SetVelocityX(0, kNormal);
+
+         // The main menu moved back in place. Remove children menus
+         RemoveChild(m_pFreePlayMenu);
+         RemoveChild(m_pOptionsMenu);
       }
    }
 }
@@ -137,10 +172,16 @@ void cMainMenu::MessageReceived(sMessage a_Message)
    }
    else if (a_Message.m_From == m_pFreePlayButton->GetUniqueId())
    {
-      SetVelocityX(-700, kNormal);
+      AddChild(m_pFreePlayMenu);
+      SetVelocityX(-1000, kNormal);
+   }
+   else if (a_Message.m_From == m_pOptionsButton->GetUniqueId())
+   {
+      AddChild(m_pOptionsMenu);
+      SetVelocityX(-1000, kNormal);
    }
    else if (a_Message.m_Key == "Menu Change" && a_Message.m_Value == "cMainMenu")
    {
-      SetVelocityX(700, kNormal);
+      SetVelocityX(1000, kNormal);
    }
 }

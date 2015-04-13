@@ -1,19 +1,17 @@
 
-#ifndef ___cMainMenu_h___
-#define ___cMainMenu_h___
+#ifndef ___cOptionsMenu_h___
+#define ___cOptionsMenu_h___
 
 #include "cObject.h"
 
-class cFreePlayMenu;
-class cOptionsMenu;
 class cButton;
 
-class cMainMenu: public cObject
+class cOptionsMenu: public cObject
 {
 public:
 
-   cMainMenu(cResources* a_pResources);
-   ~cMainMenu();
+   cOptionsMenu(cResources* a_pResources);
+   ~cOptionsMenu();
 
    // These functions are overloaded from cObject
    void Initialize();
@@ -26,12 +24,12 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
-   cButton * m_pChallengeButton;
-   cButton * m_pFreePlayButton;
-   cButton * m_pOptionsButton;
 
-   cFreePlayMenu * m_pFreePlayMenu;
-   cOptionsMenu * m_pOptionsMenu;
+   cButton * m_pKeyMapButton;
+   cButton * m_pBackButton;
+
+   bool m_PostBackMessage;
+
 };
 
 #endif
