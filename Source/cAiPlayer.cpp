@@ -83,7 +83,8 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
 
    if (!m_DoneThinking)
    {
-      // wait for the AI to finish thinking if urgency is getting high
+      // wait for the AI to finish thinking if urgency is getting high. We
+      // ideally shouldn't hit this because it will lag the game.
       if (_IsCurrentColumnUrgencyHigh())
       {
          //~ std::cout << "AI out of time" << std::endl;
@@ -617,6 +618,17 @@ void cAiPlayer::_AnalyzeMove(
       return;
    }
 
+   // See if the score is higher than this AI allows. If so, don't bother
+   // continuing on with this move.
+   if (  m_Personality.GetHighestScore() != 0
+      && m_Personality.GetHighestScore() < a_InitialMove.m_Score
+      )
+   {
+      return;
+   }
+
+   // This is as deep as we're going to think, so see if we should save this
+   // move.
    if (a_Depth == m_Personality.GetAIThoughtLevel())
    {
       if (m_OptimalMoves.size() == 0)
@@ -632,36 +644,30 @@ void cAiPlayer::_AnalyzeMove(
       // Using back() on purpose. See above.
       else if (m_OptimalMoves.back().m_Score < a_InitialMove.m_Score)
       {
-         // This is a higher scoring move, but only use it if the personality
-         // allows it. This is used for easier AIs to not do so much damage.
-         if (  m_Personality.GetHighestScore() == 0
-            || m_Personality.GetHighestScore() > a_InitialMove.m_Score
+         // AIs might have a chance of not clearing out suboptimal moves
+         // TODO: random_device doesn't work on Windows.
+         std::random_device l_Generator;
+         std::uniform_int_distribution<int> l_Distribution(
+            1,
+            100
+            );
+
+         int l_Number = l_Distribution(l_Generator);
+         l_Number = l_Distribution(l_Generator);
+         //~ std::cout << "Random: " << l_Number << std::endl;
+
+         if (  l_Number <= m_Personality.GetOptimalMoveOdds()
+            || m_OptimalMoves.begin()->m_Score == 0
             )
          {
-            // AIs might have a chance of not clearing out suboptimal moves
-            std::random_device l_Generator;
-            std::uniform_int_distribution<int> l_Distribution(
-               1,
-               100
-               );
-
-            int l_Number = l_Distribution(l_Generator);
-            l_Number = l_Distribution(l_Generator);
-            //~ std::cout << "Random: " << l_Number << std::endl;
-
-            if (  l_Number <= m_Personality.GetOptimalMoveOdds()
-               || m_OptimalMoves.begin()->m_Score == 0
-               )
-            {
-               m_OptimalMoves.clear();
-            }
-            else
-            {
-               std::cout << "Not clearning moves!" << std::endl;
-            }
-
-            m_OptimalMoves.push_back(a_InitialMove);
+            m_OptimalMoves.clear();
          }
+         else
+         {
+            std::cout << "Not clearning moves!" << std::endl;
+         }
+
+         m_OptimalMoves.push_back(a_InitialMove);
       }
    }
    else
