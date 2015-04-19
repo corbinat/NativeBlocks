@@ -1,0 +1,34 @@
+Bindings:
+{
+   ClassExclusive: True
+   RotateClockwise:
+   {
+      Key: X
+      Mouse:
+      Joystick:
+   }
+   RotateCounterClockwise:
+   {
+      Key: Z
+      Mouse:
+      Joystick:
+   }
+   Down:
+   {
+      Key: Down
+      Mouse:
+      Joystick:
+   }
+   Left:
+   {
+      Key: Left
+      Mouse:
+      Joystick:
+   }
+   Right:
+   {
+      Key: Right
+      Mouse:
+      Joystick:
+   }
+}

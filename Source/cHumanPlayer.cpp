@@ -1,6 +1,8 @@
 #include "cHumanPlayer.h"
 #include "cResources.h"
 
+#include "Common/Constants.h"
+
 cHumanPlayer::cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
    : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
      m_KeyRepeatTime(0),
@@ -16,7 +18,7 @@ cHumanPlayer::~cHumanPlayer()
 
 void cHumanPlayer::Event(std::list<sf::Event> * a_pEventList)
 {
-std::list<sf::Event>::iterator i = a_pEventList->begin();
+   std::list<sf::Event>::iterator i = a_pEventList->begin();
    for (i; i != a_pEventList->end(); ++i)
    {
       switch((*i).type)
@@ -26,7 +28,7 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
             sf::Vector2<uint32_t>* l_pGridCellSize =
                GetResources()->GetActiveLevelData()->GetGridCellSize();
 
-            if ((*i).key.code == sf::Keyboard::Right)
+            if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionRight))
             {
                sf::Vector3<double> l_RelativePosition;
                l_RelativePosition.x +=
@@ -34,7 +36,7 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
                MoveControlledBeans(l_RelativePosition);
                m_RightKeyDown = true;
             }
-            else if ((*i).key.code == sf::Keyboard::Left)
+            else if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionLeft))
             {
                sf::Vector3<double> l_RelativePosition;
                l_RelativePosition.x -=
@@ -42,34 +44,33 @@ std::list<sf::Event>::iterator i = a_pEventList->begin();
                MoveControlledBeans(l_RelativePosition);
                m_LeftKeyDown = true;
             }
-            else if ((*i).key.code == sf::Keyboard::Down)
+            else if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionDown))
             {
                SetFastFall(true);
             }
-            else if ((*i).key.code == sf::Keyboard::Z)
+            else if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionRotateCounterClockwise))
             {
                RotateBeans(kRotateCounterClockwise);
             }
-            else if ((*i).key.code == sf::Keyboard::X)
+            else if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionRotateClockwise))
             {
                RotateBeans(kRotateClockwise);
             }
-
 
             break;
          }
          case sf::Event::KeyReleased:
          {
-            if ((*i).key.code == sf::Keyboard::Down)
+            if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionDown))
             {
                SetFastFall(false);
             }
 
-            if ((*i).key.code == sf::Keyboard::Left)
+            if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionLeft))
             {
                m_LeftKeyDown = false;
             }
-            if ((*i).key.code == sf::Keyboard::Right)
+            if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionRight))
             {
                m_RightKeyDown = false;
             }

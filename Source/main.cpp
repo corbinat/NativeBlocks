@@ -13,6 +13,15 @@ int main(int argc, char* argv[])
    l_Resources.CreateWindow(800, 600, "Native Blocks");
    l_Resources.AddAssetResourcePack("Media/Media.pak");
 
+   bool l_Success =
+      l_Resources.GetEventTranslator()->LoadFromFile("Config/EventBindings.bnd");
+
+   if (!l_Success)
+   {
+      std::cout << "Failed to load controls from Config/EventBindings.bnd" << std::endl;
+      return 0;
+   }
+
    cMainMenuLevel l_MainMenu(
       &l_Resources
       );
