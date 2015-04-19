@@ -164,6 +164,12 @@ void cMainMenu::Draw()
 
 void cMainMenu::MessageReceived(sMessage a_Message)
 {
+   // If the menu is transitioning then ignore button presses
+   if (GetVelocity().x != 0)
+   {
+      return;
+   }
+
    if (a_Message.m_From == m_pChallengeButton->GetUniqueId())
    {
       GetResources()->GetGameConfigData()->SetProperty("GameType", "Challenge");

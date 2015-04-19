@@ -1,18 +1,18 @@
 
-#ifndef ___cOptionsMenu_h___
-#define ___cOptionsMenu_h___
+#ifndef ___cControlsMenu_h___
+#define ___cControlsMenu_h___
 
 #include "cObject.h"
 
-class cControlsMenu;
+class cSelectionBox;
 class cButton;
 
-class cOptionsMenu: public cObject
+class cControlsMenu: public cObject
 {
 public:
 
-   cOptionsMenu(cResources* a_pResources);
-   ~cOptionsMenu();
+   cControlsMenu(cResources* a_pResources);
+   ~cControlsMenu();
 
    // These functions are overloaded from cObject
    void Initialize();
@@ -25,10 +25,8 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
-
-   cButton * m_pKeyMapButton;
-   cControlsMenu * m_pControlsMenu;
-
+   sf::Text m_DownLabel;
+   cButton * m_pDownButton;
    cButton * m_pBackButton;
 
    bool m_PostBackMessage;
