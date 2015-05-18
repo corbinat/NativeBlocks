@@ -14,6 +14,8 @@ public:
    cOptionsMenu(cResources* a_pResources);
    ~cOptionsMenu();
 
+   void SetActive(bool a_Active);
+
    // These functions are overloaded from cObject
    void Initialize();
    void Collision(cObject* a_pOther);
@@ -25,7 +27,7 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
-
+   bool m_Active;
    cButton * m_pKeyMapButton;
    cControlsMenu * m_pControlsMenu;
 

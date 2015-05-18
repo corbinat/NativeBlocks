@@ -144,15 +144,9 @@ void cMainMenu::Step (uint32_t a_ElapsedMiliSec)
    }
    else if (GetVelocity().x > 0)
    {
-      if (  m_pFreePlayMenu->GetPosition().x >= 800
-         && m_pOptionsMenu->GetPosition().x >= 800
-         )
+      if (m_pChallengeButton->GetPosition().x + m_pChallengeButton->GetBoundingBox().width/2 > GetResources()->GetWindow()->getSize().x / 2)
       {
          SetVelocityX(0, kNormal);
-
-         // The main menu moved back in place. Remove children menus
-         RemoveChild(m_pFreePlayMenu);
-         RemoveChild(m_pOptionsMenu);
       }
    }
 }
@@ -164,12 +158,6 @@ void cMainMenu::Draw()
 
 void cMainMenu::MessageReceived(sMessage a_Message)
 {
-   // If the menu is transitioning then ignore button presses
-   if (GetVelocity().x != 0)
-   {
-      return;
-   }
-
    if (a_Message.m_From == m_pChallengeButton->GetUniqueId())
    {
       GetResources()->GetGameConfigData()->SetProperty("GameType", "Challenge");
@@ -178,12 +166,14 @@ void cMainMenu::MessageReceived(sMessage a_Message)
    }
    else if (a_Message.m_From == m_pFreePlayButton->GetUniqueId())
    {
-      AddChild(m_pFreePlayMenu);
+      m_pFreePlayMenu->SetActive(true);
+      m_pFreePlayMenu->SetVelocityX(-1000, kNormal);
       SetVelocityX(-1000, kNormal);
    }
    else if (a_Message.m_From == m_pOptionsButton->GetUniqueId())
    {
-      AddChild(m_pOptionsMenu);
+      m_pOptionsMenu->SetActive(true);
+      m_pOptionsMenu->SetVelocityX(-1000, kNormal);
       SetVelocityX(-1000, kNormal);
    }
    else if (a_Message.m_Key == "Menu Change" && a_Message.m_Value == "cMainMenu")

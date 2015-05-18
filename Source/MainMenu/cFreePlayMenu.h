@@ -14,6 +14,8 @@ public:
    cFreePlayMenu(cResources* a_pResources);
    ~cFreePlayMenu();
 
+   void SetActive(bool a_Active);
+
    // These functions are overloaded from cObject
    void Initialize();
    void Collision(cObject* a_pOther);
@@ -25,6 +27,7 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
+   bool m_Active;
 
    sf::Text m_Player1Label;
    sf::Text m_Player2Label;

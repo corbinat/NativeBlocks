@@ -7,6 +7,7 @@
 
 cOptionsMenu::cOptionsMenu(cResources* a_pResources)
    : cObject(a_pResources),
+     m_Active(false),
      m_pKeyMapButton(NULL),
      m_pControlsMenu(NULL),
      m_pBackButton(NULL),
@@ -26,7 +27,7 @@ cOptionsMenu::cOptionsMenu(cResources* a_pResources)
    m_pControlsMenu = new cControlsMenu(GetResources());
 
    m_pBackButton = new cButton(GetResources());
-   m_pBackButton->SetImage("Media/Title.ani", "BlankSmallButton");
+   m_pBackButton->SetImage("Media/Title.ani", "BlankMediumButton");
    m_pBackButton->SetLabel("Back");
 
    AddChild(m_pKeyMapButton);
@@ -36,6 +37,11 @@ cOptionsMenu::cOptionsMenu(cResources* a_pResources)
 cOptionsMenu::~cOptionsMenu()
 {
    GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
+}
+
+void cOptionsMenu::SetActive(bool a_Active)
+{
+   m_Active = a_Active;
 }
 
 // These functions are overloaded from cObject
@@ -122,19 +128,39 @@ void cOptionsMenu::Step (uint32_t a_ElapsedMiliSec)
 
    if (GetVelocity().x < 0)
    {
-      if (GetPosition().x < (0 - static_cast<int32_t>(m_pKeyMapButton->GetBoundingBox().width)))
+      if (!m_Active)
       {
-         SetVelocityX(0, kNormal);
+         if (GetPosition().x < (0 - static_cast<int32_t>(m_pKeyMapButton->GetBoundingBox().width)))
+         {
+            SetVelocityX(0, kNormal);
+            std::cout << "POW1" << std::endl;
+         }
+      }
+      else
+      {
+         if (m_pKeyMapButton->GetPosition().x + m_pKeyMapButton->GetBoundingBox().width/2 < GetResources()->GetWindow()->getSize().x / 2)
+         {
+            SetVelocityX(0, kNormal);
+            std::cout << "POW2" << std::endl;
+         }
       }
    }
    else if (GetVelocity().x > 0)
    {
-      if (m_pControlsMenu->GetPosition().x >= 800)
+      if (!m_Active)
       {
-         SetVelocityX(0, kNormal);
-
-         // The main menu moved back in place. Remove children menus
-         RemoveChild(m_pControlsMenu);
+         if (GetPosition().x > GetResources()->GetWindow()->getSize().x)
+         {
+            SetVelocityX(0, kNormal);
+            std::cout << "POW3" << std::endl;
+         }
+      }
+      else
+      {
+         if (m_pKeyMapButton->GetPosition().x + m_pKeyMapButton->GetBoundingBox().width/2 > GetResources()->GetWindow()->getSize().x / 2)
+         {
+            SetVelocityX(0, kNormal);
+         }
       }
    }
 }
@@ -148,16 +174,19 @@ void cOptionsMenu::MessageReceived(sMessage a_Message)
 {
    if (a_Message.m_From == m_pKeyMapButton->GetUniqueId())
    {
-      AddChild(m_pControlsMenu);
+      m_pControlsMenu->SetVelocityX(-1000, kNormal);
       SetVelocityX(-1000, kNormal);
+      m_Active = false;
    }
    else if (a_Message.m_From == m_pBackButton->GetUniqueId())
    {
+      SetVelocityX(1000, kNormal);
       m_PostBackMessage = true;
+      m_Active = false;
    }
    else if (a_Message.m_Key == "Menu Change" && a_Message.m_Value == "cOptionsMenu")
    {
       SetVelocityX(1000, kNormal);
-      std::cout << "Moving back" << std::endl;
+      m_Active = true;
    }
 }

@@ -2,23 +2,39 @@
 
 #include <iostream>
 
-cEventCapture::cEventCapture(std::string a_Action, cResources* a_pResources)
+cEventCapture::cEventCapture(std::string a_Action, std::string a_Label, cResources* a_pResources)
    : cObject(a_pResources),
-     m_Action(a_Action)
+     m_NewActionLabel(),
+     m_Action(a_Action),
+     m_Label(a_Label)
 {
    std::cout << "Creating Event Capture" << std::endl;
    SetType("EventCapture");
    SetSolid(false);
 
-   // Depth needs to be high so it receives events first.
-   SetDepth(100);
-   // LoadAnimations("Media/Title.ani");
-   // PlayAnimationLoop("TitleBanner");
+   // Depth needs to be low so it is on top of everything else and will receive
+   // events first.
+   SetDepth(-100);
+
+   std::shared_ptr<sf::Font> l_Font
+      = GetResources()->LoadFont("Media/junegull.ttf");
+
+   m_NewActionLabel.setFont(*(l_Font.get()));
+   m_NewActionLabel.setString(std::string("Press new button for ") + m_Label + ":");
+   m_NewActionLabel.setCharacterSize(20);
+   m_NewActionLabel.setColor(sf::Color::Black);
+
 }
 
 cEventCapture::~cEventCapture()
 {
 
+}
+
+void cEventCapture::Initialize()
+{
+   sf::Vector3<double> l_Position = GetPosition();
+   m_NewActionLabel.setPosition(GetPosition().x, l_Position.y + 4);
 }
 
 // These functions are overloaded from cObject
@@ -38,6 +54,13 @@ void cEventCapture::Event(std::list<sf::Event> * a_pEventList)
       if (l_Success)
       {
          std::cout << "Binding Added" << std::endl;
+         sMessage l_Message;
+         l_Message.m_From = GetUniqueId();
+         l_Message.m_Category = "Update";
+         l_Message.m_Key = m_Action;
+         l_Message.m_Value = GetResources()->GetEventTranslator()->GetActionToEventString(m_Action);
+         GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+
          UnregisterObject(true);
          break;
       }
@@ -53,5 +76,5 @@ void cEventCapture::Step (uint32_t a_ElapsedMiliSec)
 
 void cEventCapture::Draw()
 {
-
+   GetResources()->GetWindow()->draw(m_NewActionLabel);
 }

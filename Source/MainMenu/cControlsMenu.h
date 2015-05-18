@@ -25,8 +25,21 @@ public:
    void MessageReceived(sMessage a_Message);
 
 private:
-   sf::Text m_DownLabel;
-   cButton * m_pDownButton;
+
+   enum eActions
+   {
+      kActionDOwn,
+      kActionLeft,
+      kActionRight,
+      kActionClockwise,
+      kActionCounterClockwise,
+      kActionCount
+   };
+
+   void _UpdateButtons();
+
+   // The pair is the button label and the button itself
+   std::vector< std::pair<sf::Text, cButton*> > m_ActionButtons;
    cButton * m_pBackButton;
 
    bool m_PostBackMessage;
