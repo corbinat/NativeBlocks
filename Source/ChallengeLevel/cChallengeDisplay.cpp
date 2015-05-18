@@ -184,6 +184,14 @@ void cChallengeDisplay::Event(std::list<sf::Event> * a_pEventList)
                   "Player2",
                   cAiPersonality::GetAINames()[std::stoi(l_NextAINumber)]
                   );
+
+               GetResources()->GetGameConfigData()->SetProperty(
+                  "GameSpeed",
+                  l_NextAINumber
+                  );
+
+               // Turn off the arrow's control of the view and reset it to normal
+               m_pArrow->SetView(NULL);
             }
 
 

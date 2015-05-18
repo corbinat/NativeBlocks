@@ -7,6 +7,7 @@
 #include "cObject.h"
 #include "cMessageDispatcher.h"
 #include "cStaging.h"
+#include "cSpeedController.h"
 
 #include <unordered_set>
 
@@ -48,7 +49,7 @@ class cPlayer: public cObject
 {
 public:
 
-   cPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier);
+   cPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier, uint32_t a_SpeedLevel);
    virtual ~cPlayer();
 
    // These functions are overloaded from cObject
@@ -128,6 +129,9 @@ private:
 
    // How long to wait before moving the bean down one
    uint32_t m_MiliSecSinceLastFall;
+
+   // Calculates how fast beans should move down;
+   cSpeedController m_SpeedController;
 
    // Count how long a bean has been resting. Lock bean in when this hits max
    uint32_t m_RestingBeanTimer;

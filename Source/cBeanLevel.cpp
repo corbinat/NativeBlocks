@@ -63,14 +63,16 @@ cObject* cBeanLevel::PixelToObject(
    if (a_Color.r == 0 && a_Color.g == 0 && a_Color.b == 0)
    {
       std::string l_Player1Option = GetResources()->GetGameConfigData()->GetProperty("Player1");
+      std::string l_GameSpeed = GetResources()->GetGameConfigData()->GetProperty("GameSpeed");
 
       if (l_Player1Option == "Human")
       {
-         l_pNewObject = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1");
+         std::cout << "GAMESPEED " << l_GameSpeed << std::endl;
+         l_pNewObject = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1", std::stoi(l_GameSpeed));
       }
       else
       {
-         l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", l_Player1Option);
+         l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player1", std::stoi(l_GameSpeed), l_Player1Option);
       }
 
       // If we already know about player 2 then point the players to each other
@@ -83,9 +85,6 @@ cObject* cBeanLevel::PixelToObject(
       {
          m_pOpponent = static_cast<cPlayer*>(l_pNewObject);
       }
-
-
-
    }
    else if (a_Color.r == 100 && a_Color.g == 100 && a_Color.b == 100)
    {
@@ -95,7 +94,9 @@ cObject* cBeanLevel::PixelToObject(
    else if (a_Color.r == 255 && a_Color.g == 0 && a_Color.b == 0)
    {
       std::string l_Player2Option = GetResources()->GetGameConfigData()->GetProperty("Player2");
-      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", l_Player2Option);
+      std::string l_GameSpeed = GetResources()->GetGameConfigData()->GetProperty("GameSpeed");
+
+      l_pNewObject = new cAiPlayer(a_pResources, m_RandomNumberEngine, "Player2", std::stoi(l_GameSpeed), l_Player2Option);
 
       // If we already know about player 1 then point the players to each other
       if (m_pOpponent != NULL)

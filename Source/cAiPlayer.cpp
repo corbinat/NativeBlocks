@@ -9,8 +9,9 @@ cAiPlayer::cAiPlayer(
    cResources* a_pResources,
    std::minstd_rand a_RandomNumberEngine,
    std::string a_Identifier,
+   uint32_t a_SpeedLevel,
    std::string a_Personality
-   ): cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
+   ): cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier, a_SpeedLevel),
       m_OptimalMoves(),
       m_DoneThinking(false),
       m_StartThinking(false),
@@ -53,6 +54,7 @@ void cAiPlayer::StateChange(ePlayerState a_Old, ePlayerState a_New)
    else
    {
       m_StartThinking = false;
+      m_FirstMoveMade = false;
       m_OptimalMoves.clear();
       m_DoneThinking = false;
       m_WantingToFastFall = false;
@@ -87,7 +89,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       // ideally shouldn't hit this because it will lag the game.
       if (_IsCurrentColumnUrgencyHigh())
       {
-         //~ std::cout << "AI out of time" << std::endl;
+         std::cout << "AI out of time" << std::endl;
          //~ std::cout << "JOIN 1" << std::endl;
          //~ if (!m_AIThinkingThread->joinable())
          //~ {
@@ -113,6 +115,10 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    {
       if (m_DelayTimer < m_Personality.GetDelayToAdditionalMoves())
       {
+         if (GetType() == "Player1")
+         {
+            std::cout << "Stop1" << std::endl;
+         }
          return;
       }
    }
@@ -120,6 +126,10 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    {
       if (m_DelayTimer < m_Personality.GetDelayToFirstMove())
       {
+         if (GetType() == "Player1")
+         {
+            std::cout << "Stop2 (" << m_DelayTimer << " < " << m_Personality.GetDelayToFirstMove() << ")" <<std::endl;
+         }
          return;
       }
    }
@@ -134,6 +144,15 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    if (m_OptimalMoves.size() != 0)
    {
       l_Destination = m_OptimalMoves[0];
+
+      if (GetType() == "Player1")
+      {
+         std::cout << "Optimal Move column: " << l_Destination.m_Column << std::endl;
+      }
+   }
+   else
+   {
+      std::cout << "NO OPTIMAL MOVES!!!!!!!" << std::endl;
    }
 
    // If our rotation isn't right, rotate the beans.
@@ -176,7 +195,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
 
       //~ if (m_AIThinkingThread->joinable())
       //~ {
-         //~ std::cout << "WHAT THE HECKKKKKK" << std::endl;
+         std::cout << "WHAT THE HECKKKKKK" << std::endl;
       //~ }
       m_AIThinkingThread.reset(
          new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
@@ -221,9 +240,13 @@ void cAiPlayer::_AnalyzeAllMoves()
 
    std::vector <eRotationState> l_RotationsToTest;
    l_RotationsToTest.push_back(kRotationStateUp);
-   l_RotationsToTest.push_back(kRotationStateDown);
-   l_RotationsToTest.push_back(kRotationStateLeft);
-   l_RotationsToTest.push_back(kRotationStateRight);
+
+   if (!m_Personality.IsRotationLocked())
+   {
+      l_RotationsToTest.push_back(kRotationStateDown);
+      l_RotationsToTest.push_back(kRotationStateLeft);
+      l_RotationsToTest.push_back(kRotationStateRight);
+   }
 
    for (eRotationState l_RotationState : l_RotationsToTest)
    {
@@ -620,7 +643,7 @@ void cAiPlayer::_AnalyzeMove(
 
    // See if the score is higher than this AI allows. If so, don't bother
    // continuing on with this move.
-   if (  m_Personality.GetHighestScore() != 0
+   if (  m_Personality.GetHighestScore() != -1
       && m_Personality.GetHighestScore() < a_InitialMove.m_Score
       )
    {
@@ -656,15 +679,9 @@ void cAiPlayer::_AnalyzeMove(
          l_Number = l_Distribution(l_Generator);
          //~ std::cout << "Random: " << l_Number << std::endl;
 
-         if (  l_Number <= m_Personality.GetOptimalMoveOdds()
-            || m_OptimalMoves.begin()->m_Score == 0
-            )
+         if (l_Number <= m_Personality.GetOptimalMoveOdds())
          {
             m_OptimalMoves.clear();
-         }
-         else
-         {
-            std::cout << "Not clearning moves!" << std::endl;
          }
 
          m_OptimalMoves.push_back(a_InitialMove);

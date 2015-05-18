@@ -19,7 +19,8 @@
 cPlayer::cPlayer(
    cResources* a_pResources,
    std::minstd_rand a_RandomNumberEngine,
-   std::string a_Identifier
+   std::string a_Identifier,
+   uint32_t a_SpeedLevel
    )
    : cObject(a_pResources),
      m_CurrentState(kStateIdle),
@@ -27,10 +28,11 @@ cPlayer::cPlayer(
      m_pPivotBean(NULL),
      m_pSwingBean(NULL),
      m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId()),
+     m_MiliSecPerFall(500),
      m_FallingBeans(),
      m_NewBeans(),
      m_Beans(6, std::vector<cBean*>(g_kTotalRows, NULL)),
-     m_MiliSecPerFall(500),
+     m_SpeedController(a_SpeedLevel),
      m_MiliSecSinceLastFall(0),
      m_RestingBeanTimer(0),
      m_RestingLimit(500),
@@ -180,6 +182,11 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
    // 7. If match, go to 4
    // 8. Go to 1
 
+   if (m_CurrentState != kStateIdle)
+   {
+      m_SpeedController.Update(a_ElapsedMiliSec);
+   }
+
    switch (m_CurrentState)
    {
       case kStateCreateBeans:
@@ -206,9 +213,14 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
             m_BeanIsResting = true;
          }
 
+         // Calculate miliseconds per fall for this turn;
+         m_MiliSecPerFall = m_SpeedController.GetMiliSecPerFall();
+
          m_CurrentState = kStateControlBeans;
          StateChange(kStateCreateBeans, kStateControlBeans);
-         m_MiliSecSinceLastFall = 500;
+
+         // We want the beans to move down immediately upon creation
+         m_MiliSecSinceLastFall = m_MiliSecPerFall;
 
          // Tell the staging observer area to update
          sMessage l_Message;

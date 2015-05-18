@@ -3,8 +3,8 @@
 
 #include "Common/Constants.h"
 
-cHumanPlayer::cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
-   : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier),
+cHumanPlayer::cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier, uint32_t a_SpeedLevel)
+   : cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier, a_SpeedLevel),
      m_KeyRepeatTime(0),
      m_KeyRepeatLimit(150),
      m_LeftKeyDown(false),
@@ -24,6 +24,8 @@ void cHumanPlayer::Event(std::list<sf::Event> * a_pEventList)
       switch((*i).type)
       {
          case sf::Event::KeyPressed:
+         case sf::Event::MouseButtonPressed:
+         case sf::Event::JoystickButtonPressed:
          {
             sf::Vector2<uint32_t>* l_pGridCellSize =
                GetResources()->GetActiveLevelData()->GetGridCellSize();
@@ -60,6 +62,8 @@ void cHumanPlayer::Event(std::list<sf::Event> * a_pEventList)
             break;
          }
          case sf::Event::KeyReleased:
+         case sf::Event::MouseButtonReleased:
+         case sf::Event::JoystickButtonReleased:
          {
             if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionDown))
             {

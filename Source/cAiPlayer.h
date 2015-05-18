@@ -29,6 +29,7 @@ public:
       cResources* a_pResources,
       std::minstd_rand a_RandomNumberEngine,
       std::string a_Identifier,
+      uint32_t a_SpeedLevel,
       std::string a_Personality
       );
 
