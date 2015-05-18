@@ -12,6 +12,8 @@
 enum eAiPersonality
 {
    kAiPersonalityBeginner,
+   kAiPersonalityBeginner2,
+   kAiPersonalityBeginner3,
    kAiPersonalityEasy,
    kAiPersonalityMedium,
    kAiPersonalityHard,
@@ -55,10 +57,23 @@ public:
    uint32_t GetAIThoughtLevel();
    uint32_t GetHighestScore();
    uint32_t GetOptimalMoveOdds();
+   bool IsRotationLocked();
 
 private:
 
    void _BeginnerPersonalityAdjustment(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
+
+   void _Beginner2PersonalityAdjustment(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
+
+   void _Beginner3PersonalityAdjustment(
       std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
       sf::Vector2<uint32_t> a_FallingBean1,
       sf::Vector2<uint32_t> a_FallingBean2
@@ -82,6 +97,14 @@ private:
       sf::Vector2<uint32_t> a_FallingBean2
       );
 
+   void _HardestPersonalityAdjustment(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
+
+   void _AdjustThoughtLevel(uint32_t a_Max);
+
    // How many moves ahead the AI can think
    uint32_t m_MaxAIThoughtLevel;
    uint32_t m_CurrentAIThoughtLevel;
@@ -89,7 +112,13 @@ private:
    // True if the AI's thought level will count down or not. The point of this
    // is so that the AI can execute its ideas instead of always trying to set up
    // something until it loses. The thought level should reset if garbage falls.
+   // Update: this actually makes the AI significantly worse. Medium is about 50%
+   // against a countdown hard
    bool m_EnableCountDownThoughtLevels;
+
+   // Turn this on if the AI shouldn't rotate blocks. This is used by one of the
+   // fast easy AIs
+   bool m_LockRotation;
 
    uint32_t m_CurrentMinDelayToFirstMove;
    uint32_t m_CurrentMaxDelayToFirstMove;
@@ -108,7 +137,7 @@ private:
 
    // The AI will stop searching for moves once this value is reached. Set to 0
    // if it should not apply.
-   uint32_t m_HighestScore;
+   int32_t m_HighestScore;
 
    // The odds that the AI will only consider the most optimal moves, in
    // percentage. 100 means that AI always uses optimal moves.
