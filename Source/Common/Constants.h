@@ -4,10 +4,10 @@
 #include <string>
 
 // Action bindings
-static const std::string g_kActionDown = "Down";
-static const std::string g_kActionLeft = "Left";
-static const std::string g_kActionRight = "Right";
-static const std::string g_kActionRotateCounterClockwise = "RotateCounterClockwise";
-static const std::string g_kActionRotateClockwise = "RotateClockwise";
+const std::string g_kActionDown = "Down";
+const std::string g_kActionLeft = "Left";
+const std::string g_kActionRight = "Right";
+const std::string g_kActionRotateCounterClockwise = "RotateCounterClockwise";
+const std::string g_kActionRotateClockwise = "RotateClockwise";
 
 #endif

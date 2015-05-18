@@ -17,6 +17,12 @@ cFadeTransition::cFadeTransition(cResources* a_pResources)
    l_Size.x = GetResources()->GetWindow()->getSize().x;
    l_Size.y = GetResources()->GetWindow()->getSize().y;
    m_Rectangle.setSize(l_Size);
+
+   // Figure out where to position the transition. Take into account views
+   sf::View l_View = GetResources()->GetWindow()->getView();
+   float l_X = l_View.getCenter().x - l_View.getSize().x / 2;
+   float l_Y = l_View.getCenter().y - l_View.getSize().y / 2;
+   m_Rectangle.setPosition(l_X, l_Y);
 }
 
 cFadeTransition::~cFadeTransition()

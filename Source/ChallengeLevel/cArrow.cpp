@@ -16,6 +16,7 @@ cArrow::cArrow(cResources* a_pResources)
 
 cArrow::~cArrow()
 {
+
 }
 
 void cArrow::SetBounce(bool a_Enable)

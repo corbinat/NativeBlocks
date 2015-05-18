@@ -41,6 +41,7 @@ private:
    uint32_t m_TimeAccumulator;
    std::vector<cObject*> m_BlockStack;
    cArrow* m_pArrow;
+   cView m_View;
 
    sf::Text m_ContinueString;
 };

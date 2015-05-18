@@ -2,6 +2,7 @@
 #include "cAiBlock.h"
 #include "cArrow.h"
 #include "Common/Widgets/cButton.h"
+#include "Common/cFadeTransition.h"
 
 #include "../cAiPersonality.h"
 
@@ -15,9 +16,14 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
      m_State(kStateStart),
      m_TimeAccumulator(0),
      m_BlockStack(),
+     m_pArrow(),
+     m_View(),
      m_ContinueString()
 {
    SetType("ChallegeDisplay");
+
+   // Need to be up front so that the text is on top
+   SetDepth(-1);
 
    SetSolid(false);
 
@@ -35,10 +41,10 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
    uint32_t l_NextAINumber = std::stoi(l_NextAINumberString);
 
    // Create the blocks
-   for (uint32_t i = 0; i < l_NextAINumber+1; ++i)
+   std::cout << "NextAI: " << l_NextAINumber << std::endl;
+   for (int32_t i = 0; i < l_NextAINumber+1; ++i)
    {
       cAiBlock * l_NewBlock = new cAiBlock(GetResources());
-      l_NewBlock->SetDepth(-5);
       sf::Vector3<double> l_Position(
          GetResources()->GetWindow()->getSize().x/2 - (l_NewBlock->GetBoundingBox().width/2),
          420 - (i * l_NewBlock->GetBoundingBox().height),
@@ -47,6 +53,7 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
 
       l_NewBlock->SetPosition(l_Position, kNormal, false);
       l_NewBlock->SetAiLabel(l_AINameVector[i]);
+      std::cout << "Creating " << l_AINameVector[i] << " " << l_NewBlock->GetPosition().y << std::endl;
       l_NewBlock->Initialize();
       l_NewBlock->SetDepth(i);
 
@@ -62,6 +69,26 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
       );
    m_pArrow->SetPosition(l_Position);
    m_pArrow->Initialize();
+
+   // Make a view to follow the arrow
+   m_View.Reset(
+      sf::FloatRect(
+         0,
+         0,
+         GetResources()->GetWindow()->getSize().x,
+         GetResources()->GetWindow()->getSize().y
+         )
+      );
+
+   m_View.SetPadding(0, 100);
+   m_View.SetLimits(
+      0,
+      -500,
+      GetResources()->GetWindow()->getSize().x,
+      GetResources()->GetWindow()->getSize().y
+      );
+
+   m_pArrow->SetView(&m_View);
 
    // See if the Human won the last game (player 1). If so, move on to the next
    // AI.
@@ -87,8 +114,15 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
 
    m_ContinueString.setFont(*(l_Font.get()));
    m_ContinueString.setString("");
-   m_ContinueString.setCharacterSize(20);
+   m_ContinueString.setCharacterSize(18);
    m_ContinueString.setColor(sf::Color::White);
+
+   // Finally, start the fade-in transition
+   cFadeTransition * l_pFadeTransition = new cFadeTransition(GetResources());
+   l_pFadeTransition->SetFadeDirection(cFadeTransition::kFadeDirectionIn);
+   l_pFadeTransition->SetTransitionTime(1000);
+   // Make sure the transition is in front of everything
+   l_pFadeTransition->SetDepth(-10);
 }
 
 cChallengeDisplay::~cChallengeDisplay()
@@ -167,11 +201,14 @@ void cChallengeDisplay::Event(std::list<sf::Event> * a_pEventList)
             }
             else if ((*i).key.code == sf::Keyboard::A)
             {
-                (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "Player1";
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "Player1";
             }
             else if ((*i).key.code == sf::Keyboard::B)
             {
-                GetResources()->SetActiveLevel("MainMenu", true);
+               GetResources()->SetActiveLevel("MainMenu", true);
+
+               // Turn off the arrow's control of the view and reset it to normal
+               m_pArrow->SetView(NULL);
             }
             break;
          }
@@ -203,9 +240,13 @@ void cChallengeDisplay::Step (uint32_t a_ElapsedMiliSec)
       case kStateBlockFall:
       {
          cAiBlock * l_NewBlock = new cAiBlock(GetResources());
+
+         sf::View l_View = GetResources()->GetWindow()->getView();
+         float l_TopOfView = l_View.getCenter().y - l_View.getSize().y / 2;
+
          sf::Vector3<double> l_Position(
             GetResources()->GetWindow()->getSize().x/2 - (l_NewBlock->GetBoundingBox().width/2),
-            0 - l_NewBlock->GetBoundingBox().height,
+            l_TopOfView - l_NewBlock->GetBoundingBox().height,
             0
             );
 
@@ -259,10 +300,12 @@ void cChallengeDisplay::Step (uint32_t a_ElapsedMiliSec)
          {
             m_State = kStateReadyToContinue;
             m_ContinueString.setString("Press any button to continue");
-            m_ContinueString.setPosition(
-            GetResources()->GetWindow()->getSize().x - m_ContinueString.getLocalBounds().width - 10,
-            GetResources()->GetWindow()->getSize().y - m_ContinueString.getCharacterSize() - 10
-            );
+
+            // Set the position relative to the camera
+            sf::View l_View = GetResources()->GetWindow()->getView();
+            float l_X = l_View.getCenter().x + l_View.getSize().x / 2 - m_ContinueString.getLocalBounds().width - 10;
+            float l_Y = l_View.getCenter().y + l_View.getSize().y / 2 - m_ContinueString.getCharacterSize() - 10;
+            m_ContinueString.setPosition(l_X, l_Y);
          }
          break;
       }
