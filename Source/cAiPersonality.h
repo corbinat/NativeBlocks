@@ -15,7 +15,11 @@ enum eAiPersonality
    kAiPersonalityBeginner2,
    kAiPersonalityBeginner3,
    kAiPersonalityEasy,
+   kAiPersonalityEasy2,
+   kAiPersonalityEasy3,
    kAiPersonalityMedium,
+   kAiPersonalityMedium2,
+   kAiPersonalityMedium3,
    kAiPersonalityHard,
 };
 
@@ -103,7 +107,13 @@ private:
       sf::Vector2<uint32_t> a_FallingBean2
       );
 
-   void _AdjustThoughtLevel(uint32_t a_Max);
+   void _AdjustThoughtLevel(uint32_t a_Max, uint32_t a_Min = 0);
+
+   uint32_t _AdjustAITiming(
+      std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+      sf::Vector2<uint32_t> a_FallingBean1,
+      sf::Vector2<uint32_t> a_FallingBean2
+      );
 
    // How many moves ahead the AI can think
    uint32_t m_MaxAIThoughtLevel;

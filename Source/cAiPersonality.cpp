@@ -1,4 +1,5 @@
 #include "cAiPersonality.h"
+#include "cSpeedController.h"
 
 #include <iostream>
 #include <chrono>
@@ -10,14 +11,14 @@ const char * const g_kBeginnerAIName = "Amos";
 
 // Carelessly places blocks for a while
 const char * const g_kBeginner2AIName = "Broot";
-
 const char * const g_kBeginner3AIName = "Calo";
-
 const char * const g_kEasyAIName = "Deneb";
-const char * const g_kEasy2AIName = "Eris";
+const char * const g_kEasy2AIName = "EeBoo";
 const char * const g_kEasy3AIName = "Nix";
 const char * const g_kMediumAIName = "Rolla";
-const char * const g_kHardAIName = "Triton";
+const char * const g_kMedium2AIName = "Triton";
+const char * const g_kMedium3AIName = "Vesta";
+const char * const g_kHardAIName = "Wolf";
 
 cAiPersonality::cAiPersonality(std::string a_Personality)
    : m_MaxAIThoughtLevel(0),
@@ -65,7 +66,7 @@ cAiPersonality::cAiPersonality(std::string a_Personality)
    }
    else if (a_Personality == g_kEasy2AIName)
    {
-      m_Personality = kAiPersonalityMedium;
+      m_Personality = kAiPersonalityEasy2;
       m_MaxAIThoughtLevel = 1;
       m_EnableCountDownThoughtLevels = true;
 
@@ -74,7 +75,7 @@ cAiPersonality::cAiPersonality(std::string a_Personality)
    }
    else if (a_Personality == g_kEasy3AIName)
    {
-      m_Personality = kAiPersonalityMedium;
+      m_Personality = kAiPersonalityEasy3;
       m_MaxAIThoughtLevel = 1;
       m_EnableCountDownThoughtLevels = true;
 
@@ -90,11 +91,20 @@ cAiPersonality::cAiPersonality(std::string a_Personality)
       // For every 140 points we can drop a garbage block. Limit to 6
       m_HighestScore = 8 * 140;
    }
-   else if (a_Personality == g_kMediumAIName)
+   else if (a_Personality == g_kMedium2AIName)
    {
-      m_Personality = kAiPersonalityMedium;
+      m_Personality = kAiPersonalityMedium2;
       m_MaxAIThoughtLevel = 1;
       m_EnableCountDownThoughtLevels = false;
+
+      // Don't limit high score
+      m_HighestScore = -1;
+   }
+   else if (a_Personality == g_kMedium3AIName)
+   {
+      m_Personality = kAiPersonalityMedium3;
+      m_MaxAIThoughtLevel = 2;
+      m_EnableCountDownThoughtLevels = true;
 
       // Don't limit high score
       m_HighestScore = -1;
@@ -124,6 +134,8 @@ std::vector<std::string> cAiPersonality::GetAINames()
    l_ReturnVector.push_back(g_kEasy2AIName);
    l_ReturnVector.push_back(g_kEasy3AIName);
    l_ReturnVector.push_back(g_kMediumAIName);
+   l_ReturnVector.push_back(g_kMedium2AIName);
+   l_ReturnVector.push_back(g_kMedium3AIName);
    l_ReturnVector.push_back(g_kHardAIName);
 
 
@@ -179,7 +191,10 @@ void cAiPersonality::AdjustPersonalityToState(
             );
          break;
       }
+      case kAiPersonalityEasy2:
+      case kAiPersonalityEasy3:
       case kAiPersonalityMedium:
+      case kAiPersonalityMedium2:
       {
          _MediumPersonalityAdjustment(
             a_rPlayingField,
@@ -188,6 +203,7 @@ void cAiPersonality::AdjustPersonalityToState(
             );
          break;
       }
+      case kAiPersonalityMedium3:
       case kAiPersonalityHard:
       {
          std::cout << "Hard thinking" << std::endl;
@@ -306,59 +322,33 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
-   m_CurrentAIThoughtLevel = 0;
-   m_OptimalMoveOdds = 35;
-   m_MinDelayToFastFall = m_MiliSecPerFall * 2;
-   m_MaxDelayToFastFall = m_MiliSecPerFall * 4;
+   uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
 
    // For every 140 points we can drop a garbage block. Limit the beginner AI to
    // only dropping up to 6.
    m_HighestScore = 6 * 140;
+   m_CurrentAIThoughtLevel = 0;
 
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
+   switch(l_AlarmLevel)
    {
-      //~ std::cout << "Very high pressure" << std::endl;
-      m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-      m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
-      m_OptimalMoveOdds = 0;
-   }
-   else
-   {
-      // No beans right under us, so base the pressure off of average height of the
-      // columns. This average is actually the average number of empty spaces per
-      // column.
-      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
-
-      // If bean level is high then the pressure is high. Add 5 to account for
-      // garbage rows
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
+      case 4:
       {
-         //~ std::cout << "High Pressure" << std::endl;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
+         m_OptimalMoveOdds = 0;
+         break;
+      }
+      case 3:
+      {
          m_OptimalMoveOdds = 20;
-
+         break;
       }
-      // If bean level is midway then the pressure is up a just a bit. Add 5 to
-      // account for garbage rows
-      else if (l_Average < (4 + 5))
+      default:
       {
-         //~ std::cout << "Med Pressure" << std::endl;
-         // wait up to 1 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.5;
-      }
-      else
-      {
-         // wait up to 6 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 6;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 2;
+         m_OptimalMoveOdds = 35;
+         break;
       }
    }
+
+   std::cout << "Delay: " << m_CurrentMaxDelayToFirstMove << std::endl;
 }
 
 void cAiPersonality::_Beginner2PersonalityAdjustment(
@@ -367,71 +357,43 @@ void cAiPersonality::_Beginner2PersonalityAdjustment(
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
-   m_CurrentAIThoughtLevel = 0;
-   m_OptimalMoveOdds = 50;
-   m_MinDelayToFastFall = m_MiliSecPerFall * 2;
-   m_MaxDelayToFastFall = m_MiliSecPerFall * 4;
-   m_LockRotation = false;
 
-   // For every 140 points we can drop a garbage block. Limit this AI to only
-   // dropping up to 12.
+   uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
+
+   // For every 140 points we can drop a garbage block. Limit the beginner AI to
+   // only dropping up to 6.
    m_HighestScore = 12 * 140;
 
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
+   switch(l_AlarmLevel)
    {
-      //~ std::cout << "Very high pressure" << std::endl;
-      m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-      m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
-      m_OptimalMoveOdds = 10;
-   }
-   else
-   {
-      // No beans right under us, so base the pressure off of average height of the
-      // columns. This average is actually the average number of empty spaces per
-      // column.
-      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
-
-      // If bean level is high then the pressure is high. Add 5 to account for
-      // garbage rows
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
+      case 4:
       {
-         //~ std::cout << "High Pressure" << std::endl;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
+         m_OptimalMoveOdds = 10;
+         break;
+      }
+      case 3:
+      {
          m_OptimalMoveOdds = 30;
-
+         break;
       }
-      // If bean level is midway then the pressure is up a just a bit. Add 5 to
-      // account for garbage rows
-      else if (l_Average < (4 + 5))
-      {
-         //~ std::cout << "Med Pressure" << std::endl;
-         // wait up to 1 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.5;
-      }
-      else if (l_Average < (8 + 5))
-      {
-         // wait up to 5 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 5;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 2;
-      }
-      else
+      case 0:
       {
          // This AI moves fast and dumb if it has a lot of breathing room
          m_LockRotation = true;
          m_OptimalMoveOdds = 20;
          // Allow connections but not full matches
          m_HighestScore = 4;
-         m_MinDelayToFastFall = m_MiliSecPerFall / 10;
-         m_MaxDelayToFastFall = m_MiliSecPerFall / 6;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 6;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 10;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
+         m_MinDelayToFastFall = 40;
+         m_MaxDelayToFastFall = 60;
+         m_CurrentMaxDelayToFirstMove = 80;
+         m_CurrentMaxDelayToAdditionalMoves = 50;
+         m_CurrentMinDelayToAdditionalMoves = 30;
+         break;
+      }
+      default:
+      {
+         m_OptimalMoveOdds = 35;
+         break;
       }
    }
 }
@@ -442,57 +404,28 @@ void cAiPersonality::_Beginner3PersonalityAdjustment(
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
-   m_CurrentAIThoughtLevel = 0;
-   m_OptimalMoveOdds = 100;
-   m_MinDelayToFastFall = m_MiliSecPerFall * 2;
-   m_MaxDelayToFastFall = m_MiliSecPerFall * 3;
+   uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
 
    // For every 140 points we can drop a garbage block. Limit the beginner AI to
-   // only dropping up to 18.
-   m_HighestScore = 18 * 140;
+   // only dropping up to 6.
+   m_HighestScore = 14 * 140;
 
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
+   switch(l_AlarmLevel)
    {
-      //~ std::cout << "Very high pressure" << std::endl;
-      m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-      m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
-      m_OptimalMoveOdds = 30;
-   }
-   else
-   {
-      // No beans right under us, so base the pressure off of average height of the
-      // columns. This average is actually the average number of empty spaces per
-      // column.
-      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
-
-      // If bean level is high then the pressure is high. Add 5 to account for
-      // garbage rows
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
+      case 4:
       {
-         //~ std::cout << "High Pressure" << std::endl;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
+         m_OptimalMoveOdds = 30;
+         break;
+      }
+      case 3:
+      {
          m_OptimalMoveOdds = 60;
-
+         break;
       }
-      // If bean level is midway then the pressure is up a just a bit. Add 5 to
-      // account for garbage rows
-      else if (l_Average < (5 + 5))
+      default:
       {
-         //~ std::cout << "Med Pressure" << std::endl;
-         // wait up to 1 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.5;
-      }
-      else
-      {
-         // wait up to 4 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 4;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.7;
+         m_OptimalMoveOdds = 100;
+         break;
       }
    }
 }
@@ -503,55 +436,23 @@ void cAiPersonality::_EasyPersonalityAdjustment(
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
-   m_CurrentAIThoughtLevel = 0;
-   m_OptimalMoveOdds = 100;
-   m_MinDelayToFastFall = m_MiliSecPerFall * 1;
-   m_MaxDelayToFastFall = m_MiliSecPerFall * 3;
+   uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
 
    // For every 140 points we can drop a garbage block. Limit the beginner AI to
-   // only dropping up to 18.
+   // only dropping up to 6.
    m_HighestScore = 18 * 140;
 
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
+   switch(l_AlarmLevel)
    {
-      //~ std::cout << "Very high pressure" << std::endl;
-      m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-      m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
-      m_OptimalMoveOdds = 60;
-   }
-   else
-   {
-      // No beans right under us, so base the pressure off of average height of the
-      // columns. This average is actually the average number of empty spaces per
-      // column.
-      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
-
-      // If bean level is high then the pressure is high. Add 5 to account for
-      // garbage rows
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
+      case 4:
       {
-         //~ std::cout << "High Pressure" << std::endl;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 4;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
+         m_OptimalMoveOdds = 60;
+         break;
       }
-      // If bean level is midway then the pressure is up a just a bit. Add 5 to
-      // account for garbage rows
-      else if (l_Average < (5 + 5))
+      default:
       {
-         //~ std::cout << "Med Pressure" << std::endl;
-         // wait up to 1 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 3;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
-      }
-      else
-      {
-         // wait up to 4 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 3;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault * 1.2;
+         m_OptimalMoveOdds = 100;
+         break;
       }
    }
 }
@@ -562,56 +463,20 @@ void cAiPersonality::_MediumPersonalityAdjustment(
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
-   m_OptimalMoveOdds = 100;
-   m_MinDelayToFastFall = m_MiliSecPerFall * 0;
-   m_MaxDelayToFastFall = m_MiliSecPerFall * 2;
+   uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
 
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
+   switch(l_AlarmLevel)
    {
-      //~ std::cout << "Very high pressure" << std::endl;
-      m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-      m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
-      _AdjustThoughtLevel(0);
-   }
-   else
-   {
-      // No beans right under us, so base the pressure off of average height of the
-      // columns. This average is actually the average number of empty spaces per
-      // column.
-      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
-
-      // If bean level is high then the pressure is high. Add 5 to account for
-      // garbage rows
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
+      case 4:
+      case 3:
       {
-         //~ std::cout << "High Pressure" << std::endl;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
          _AdjustThoughtLevel(0);
-
+         break;
       }
-      // If bean level is midway then the pressure is up a just a bit. Add 5 to
-      // account for garbage rows
-      else if (l_Average < (4 + 5))
+      default:
       {
-         //~ std::cout << "Med Pressure" << std::endl;
-         // wait up to 1 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 4;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
          _AdjustThoughtLevel(1);
-      }
-      else
-      {
-         // wait up to 2 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall * 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
-         m_CurrentMinDelayToAdditionalMoves = g_kMinAdditionalDelayDefault;
-         _AdjustThoughtLevel(1);
-
-         //~ std::cout << "WHAT IS TIHS: " << m_CurrentMaxDelayToFirstMove << std::endl;
+         break;
       }
    }
 }
@@ -622,57 +487,30 @@ void cAiPersonality::_HardPersonalityAdjustment(
    sf::Vector2<uint32_t> a_FallingBean2
    )
 {
+   uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
 
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
+   switch(l_AlarmLevel)
    {
-      //~ std::cout << "Very high pressure" << std::endl;
-      m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-      m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
-      _AdjustThoughtLevel(1);
-   }
-   else
-   {
-      // No beans right under us, so base the pressure off of average height of the
-      // columns. This average is actually the average number of empty spaces per
-      // column.
-      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
-
-      // If bean level is high then the pressure is high. Add 5 to account for
-      // garbage rows
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
+      case 4:
+      case 3:
+      case 2:
       {
-         //~ std::cout << "High Pressure" << std::endl;
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 4;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 6;
          _AdjustThoughtLevel(1);
-
+         break;
       }
-      // If bean level is midway then the pressure is up a just a bit. Add 5 to
-      // account for garbage rows
-      else if (l_Average < (4 + 5))
+      default:
       {
-         //~ std::cout << "Med Pressure" << std::endl;
-         // wait up to 1 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall / 2;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 4;
-         _AdjustThoughtLevel(1);
-      }
-      else
-      {
-         // wait up to 2 bean falls before making the first move
-         m_CurrentMaxDelayToFirstMove = m_MiliSecPerFall;
-         m_CurrentMaxDelayToAdditionalMoves = m_MiliSecPerFall / 2;
          _AdjustThoughtLevel(2);
+         break;
       }
    }
 }
 
-void cAiPersonality::_AdjustThoughtLevel(uint32_t a_Max)
+void cAiPersonality::_AdjustThoughtLevel(uint32_t a_Max, uint32_t a_Min)
 {
    if (m_EnableCountDownThoughtLevels)
    {
-      std::cout << "Thought level: " << m_CurrentAIThoughtLevel << std::endl;
-      if (m_CurrentAIThoughtLevel == 0)
+      if (m_CurrentAIThoughtLevel == a_Min)
       {
          m_CurrentAIThoughtLevel = a_Max;
       }
@@ -685,6 +523,102 @@ void cAiPersonality::_AdjustThoughtLevel(uint32_t a_Max)
    {
       m_CurrentAIThoughtLevel = a_Max;
    }
+}
+
+uint32_t cAiPersonality::_AdjustAITiming(
+   std::vector<std::vector<cBeanInfo>>& a_rPlayingField,
+   sf::Vector2<uint32_t> a_FallingBean1,
+   sf::Vector2<uint32_t> a_FallingBean2
+   )
+{
+   // This is the game speed that the AI is comfortable with.
+   uint32_t l_ComfortableGameSpeed =
+      cSpeedController::GetStartingMsPerFallAtLevel(static_cast<uint32_t>(m_Personality));
+
+   std::cout << "Comfy Game Speed: " << l_ComfortableGameSpeed << std::endl;
+
+   m_MinDelayToFastFall = l_ComfortableGameSpeed * 2;
+   m_MaxDelayToFastFall = l_ComfortableGameSpeed * 4;
+
+   uint32_t l_AlarmLevel = 0;
+   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3 || (m_MiliSecPerFall < l_ComfortableGameSpeed / 2))
+   {
+      l_AlarmLevel = 4;
+   }
+   else
+   {
+      // No beans right under us, so base the pressure off of average height of the
+      // columns. This average is actually the average number of empty spaces per
+      // column.
+      uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
+
+      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5 || (m_MiliSecPerFall < (l_ComfortableGameSpeed > 200 ? l_ComfortableGameSpeed - 200 : 0)))
+      {
+         l_AlarmLevel = 3;
+      }
+      else if (l_Average < (4 + 5) || (m_MiliSecPerFall < (l_ComfortableGameSpeed > 100 ? l_ComfortableGameSpeed - 100 : 0)))
+      {
+         l_AlarmLevel = 2;
+      }
+      else if (l_Average < (8 + 5))
+      {
+         l_AlarmLevel = 1;
+      }
+      else
+      {
+         l_AlarmLevel = 0;
+      }
+   }
+
+   switch (l_AlarmLevel)
+   {
+      case 4:
+      {
+         //~ std::cout << "Very high pressure" << std::endl;
+         m_CurrentMaxDelayToFirstMove = l_ComfortableGameSpeed / 2;
+         m_CurrentMaxDelayToAdditionalMoves = l_ComfortableGameSpeed / 4;
+         m_CurrentMinDelayToAdditionalMoves = 30 + (10 - static_cast<uint32_t>(m_Personality));
+         break;
+      }
+      case 3:
+      {
+         //~ std::cout << "High Pressure" << std::endl;
+         m_CurrentMaxDelayToFirstMove = l_ComfortableGameSpeed;
+         m_CurrentMaxDelayToAdditionalMoves = l_ComfortableGameSpeed / 3;
+         m_CurrentMinDelayToAdditionalMoves = 30 + (10 - static_cast<uint32_t>(m_Personality));
+         break;
+      }
+      case 2:
+      {
+         //~ std::cout << "Med Pressure" << std::endl;
+         // wait up to 1 bean falls before making the first move
+         m_CurrentMaxDelayToFirstMove = l_ComfortableGameSpeed * 2;
+         m_CurrentMaxDelayToAdditionalMoves = l_ComfortableGameSpeed / 2;
+         m_CurrentMinDelayToAdditionalMoves = 30 + 2 * (10 - static_cast<uint32_t>(m_Personality));
+         break;
+      }
+      // Not all AIs need this granulatiry. Case 0 is just for the AIs that want
+      // to go crazy when there is low risk.
+      case 1:
+      case 0:
+      {
+         m_CurrentMaxDelayToFirstMove = l_ComfortableGameSpeed * 6;
+         m_CurrentMaxDelayToAdditionalMoves = l_ComfortableGameSpeed;
+         m_CurrentMinDelayToAdditionalMoves = 30 + 3 * (10 - static_cast<uint32_t>(m_Personality));
+         break;
+      }
+      default:
+      {
+         // Shouldn't ever get here.
+         m_CurrentMaxDelayToFirstMove = l_ComfortableGameSpeed * 6;
+         m_CurrentMaxDelayToAdditionalMoves = l_ComfortableGameSpeed;
+         m_CurrentMinDelayToAdditionalMoves = 30 + 3 * (10 - static_cast<uint32_t>(m_Personality));
+         break;
+      }
+   }
+
+   std::cout << "Alarm level:" << l_AlarmLevel << std::endl;
+   return l_AlarmLevel;
 }
 
 uint32_t ColumnFreeSpace(

@@ -11,6 +11,7 @@ public:
 
    uint32_t GetMiliSecPerFall();
    void Update(uint32_t a_ElapsedMiliSec);
+   static uint32_t GetStartingMsPerFallAtLevel(uint32_t a_Level);
 
 private:
    uint32_t m_StartingMsPerFall;

@@ -62,6 +62,10 @@ cFreePlayMenu::cFreePlayMenu(cResources* a_pResources)
    m_pGameSpeedOption->AddOption("3");
    m_pGameSpeedOption->AddOption("4");
    m_pGameSpeedOption->AddOption("5");
+   m_pGameSpeedOption->AddOption("6");
+   m_pGameSpeedOption->AddOption("7");
+   m_pGameSpeedOption->AddOption("8");
+   m_pGameSpeedOption->AddOption("9");
 
    m_pStartButton = new cButton(GetResources());
    m_pStartButton->SetImage("Media/Title.ani", "BlankSmallButton");
