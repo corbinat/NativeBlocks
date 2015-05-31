@@ -3,12 +3,14 @@
 #include "Common/Widgets/cButton.h"
 #include "cFreePlayMenu.h"
 #include "cOptionsMenu.h"
+#include "cChallengeMenu.h"
 
 #include <iostream>
 
 cMainMenu::cMainMenu(cResources* a_pResources)
    : cObject(a_pResources),
      m_pChallengeButton(NULL),
+     m_pChallengeMenu(NULL),
      m_pFreePlayButton(NULL),
      m_pFreePlayMenu(NULL),
      m_pOptionsButton(NULL),
@@ -30,6 +32,7 @@ cMainMenu::cMainMenu(cResources* a_pResources)
    m_pOptionsButton->SetImage("Media/Title.ani", "BlankMediumButton");
    m_pOptionsButton->SetLabel("Options");
 
+   m_pChallengeMenu = new cChallengeMenu(GetResources());
    m_pFreePlayMenu = new cFreePlayMenu(GetResources());
    m_pOptionsMenu = new cOptionsMenu(GetResources());
 
@@ -122,6 +125,8 @@ void cMainMenu::Initialize()
    m_pFreePlayMenu->Initialize();
    m_pOptionsMenu->SetPosition(l_Position, kNormal, false);
    m_pOptionsMenu->Initialize();
+   m_pChallengeMenu->SetPosition(l_Position, kNormal, false);
+   m_pChallengeMenu->Initialize();
 }
 
 void cMainMenu::Collision(cObject* a_pOther)
@@ -160,9 +165,13 @@ void cMainMenu::MessageReceived(sMessage a_Message)
 {
    if (a_Message.m_From == m_pChallengeButton->GetUniqueId())
    {
-      GetResources()->GetGameConfigData()->SetProperty("GameType", "Challenge");
-      GetResources()->SetActiveLevel("Challenge", true);
-      std::cout << "Challenge" << std::endl;
+      //~ GetResources()->GetGameConfigData()->SetProperty("GameType", "Challenge");
+      //~ GetResources()->SetActiveLevel("Challenge", true);
+      //~ std::cout << "Challenge" << std::endl;
+
+      m_pChallengeMenu->SetActive(true);
+      m_pChallengeMenu->SetVelocityX(-1000, kNormal);
+      SetVelocityX(-1000, kNormal);
    }
    else if (a_Message.m_From == m_pFreePlayButton->GetUniqueId())
    {

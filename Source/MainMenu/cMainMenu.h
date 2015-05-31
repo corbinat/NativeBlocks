@@ -6,6 +6,7 @@
 
 class cFreePlayMenu;
 class cOptionsMenu;
+class cChallengeMenu;
 class cButton;
 
 class cMainMenu: public cObject
@@ -32,6 +33,7 @@ private:
 
    cFreePlayMenu * m_pFreePlayMenu;
    cOptionsMenu * m_pOptionsMenu;
+   cChallengeMenu * m_pChallengeMenu;;
 };
 
 #endif
