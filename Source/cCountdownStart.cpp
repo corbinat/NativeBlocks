@@ -62,6 +62,33 @@ void cCountdownStart::Step (uint32_t a_ElapsedMiliSec)
    }
    else if (m_TimeAlive > 3700)
    {
+      if (GetResources()->GetGameConfigData()->GetProperty("GameType") == "Challenge")
+      {
+         // Anti-cheating measure. If this is a challenge game then mark the game
+         // in progress. If the player quits out then we can use this to increase
+         // the retry count
+         std::string l_GameStarted =
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["GameStarted"];
+         if (l_GameStarted == "1")
+         {
+            std::string l_RetryString =
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"];
+            if (l_RetryString.empty())
+            {
+               l_RetryString = "0";
+            }
+            uint32_t l_RetryCount = std::stoi(l_RetryString);
+            ++l_RetryCount;
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"]
+               = std::to_string(l_RetryCount);
+            }
+
+         (*(GetResources()->GetGameConfigData()))["Challenge"]["GameStarted"] = "1";
+
+         // Save progress for testing
+         // (*(GetResources()->GetGameConfigData()))["Challenge"].ExportToFile("Config/SaveGame.SG");
+      }
+
       // Tell the players they can begin.
       sMessage l_Message;
       l_Message.m_From = GetUniqueId();

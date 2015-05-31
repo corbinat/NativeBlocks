@@ -105,6 +105,30 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
       }
       else
       {
+         // Mark the game as no longer in progress
+         (*(GetResources()->GetGameConfigData()))["Challenge"]["GameStarted"] = "0";
+
+         // If player lost then record it
+         std::string l_LastWinner =
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"];
+
+         if (l_LastWinner != "Player1")
+         {
+            std::string l_RetryString =
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"];
+            if (l_RetryString.empty())
+            {
+               l_RetryString = "0";
+            }
+            uint32_t l_RetryCount = std::stoi(l_RetryString);
+            ++l_RetryCount;
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"]
+               = std::to_string(l_RetryCount);
+         }
+
+         // Save progress for testing
+         // (*(GetResources()->GetGameConfigData()))["Challenge"].ExportToFile("Config/SaveGame.SG");
+
          _CreateFinalChallengeMenu();
       }
    }
@@ -169,7 +193,7 @@ void cFinalMenu::_CreateFinalChallengeMenu()
 
    m_pMainMenuButton = new cButton(GetResources());
    m_pMainMenuButton->SetImage("Media/Final.ani", "Button");
-   m_pMainMenuButton->SetLabel("Quit", 17);
+   m_pMainMenuButton->SetLabel("Main Menu", 17);
    l_Position.y -= m_pMainMenuButton->GetBoundingBox().height + 10;
    m_pMainMenuButton->SetPosition(l_Position, kNormal, false);
 
