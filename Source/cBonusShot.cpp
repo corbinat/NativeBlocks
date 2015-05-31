@@ -34,8 +34,6 @@ void cBonusShot::Step (uint32_t a_ElapsedMiliSec)
 
    if (m_AngleInRadians < l_AngleToDest + g_kPI / 40 || m_AngleInRadians > l_AngleToDest - g_kPI / 40)
    {
-      std::cout << "PI/2 " << g_kPI / 2 << std::endl;
-      std::cout << "Destination " << l_AngleToDest << std::endl;
       // We need to rotate our angle towards destination. Figure out direction.
       bool l_IsClockwise = false;
       if (l_AngleToDest < -g_kPI / 2.0)
@@ -109,7 +107,6 @@ void cBonusShot::Collision(cObject* a_pOther)
 
 void cBonusShot::Initialize()
 {
-   std::cout << "Destination" << m_Destination.x << "," << m_Destination.y << std::endl;
    m_OriginalPosition = GetPosition();
 
    // Initial angle starts away from destination

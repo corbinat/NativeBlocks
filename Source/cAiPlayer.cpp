@@ -89,7 +89,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       // ideally shouldn't hit this because it will lag the game.
       if (_IsCurrentColumnUrgencyHigh())
       {
-         std::cout << "AI out of time" << std::endl;
+         std::cout << "AI out of time!!!!!!!!!!!!!!!" << std::endl;
          //~ std::cout << "JOIN 1" << std::endl;
          //~ if (!m_AIThinkingThread->joinable())
          //~ {
@@ -115,10 +115,6 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    {
       if (m_DelayTimer < m_Personality.GetDelayToAdditionalMoves())
       {
-         if (GetType() == "Player1")
-         {
-            std::cout << "Stop1" << std::endl;
-         }
          return;
       }
    }
@@ -126,10 +122,6 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    {
       if (m_DelayTimer < m_Personality.GetDelayToFirstMove())
       {
-         if (GetType() == "Player1")
-         {
-            std::cout << "Stop2 (" << m_DelayTimer << " < " << m_Personality.GetDelayToFirstMove() << ")" <<std::endl;
-         }
          return;
       }
    }
@@ -144,11 +136,6 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    if (m_OptimalMoves.size() != 0)
    {
       l_Destination = m_OptimalMoves[0];
-
-      if (GetType() == "Player1")
-      {
-         std::cout << "Optimal Move column: " << l_Destination.m_Column << std::endl;
-      }
    }
    else
    {
