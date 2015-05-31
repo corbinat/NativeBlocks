@@ -12,7 +12,7 @@ const char * const g_kBeginnerAIName = "Amos";
 // Carelessly places blocks for a while
 const char * const g_kBeginner2AIName = "Broot";
 const char * const g_kBeginner3AIName = "Calo";
-const char * const g_kEasyAIName = "Deneb";
+const char * const g_kEasyAIName = "Drub";
 const char * const g_kEasy2AIName = "EeBoo";
 const char * const g_kEasy3AIName = "Nix";
 const char * const g_kMediumAIName = "Rolla";
@@ -88,7 +88,7 @@ cAiPersonality::cAiPersonality(std::string a_Personality)
       m_MaxAIThoughtLevel = 1;
       m_EnableCountDownThoughtLevels = false;
 
-      // For every 140 points we can drop a garbage block. Limit to 6
+      // For every 140 points we can drop a garbage block. Limit to 8
       m_HighestScore = 8 * 140;
    }
    else if (a_Personality == g_kMedium2AIName)
@@ -363,17 +363,18 @@ void cAiPersonality::_Beginner2PersonalityAdjustment(
    // For every 140 points we can drop a garbage block. Limit the beginner AI to
    // only dropping up to 6.
    m_HighestScore = 12 * 140;
+   m_LockRotation = false;
 
    switch(l_AlarmLevel)
    {
       case 4:
       {
-         m_OptimalMoveOdds = 10;
+         m_OptimalMoveOdds = 20;
          break;
       }
       case 3:
       {
-         m_OptimalMoveOdds = 30;
+         m_OptimalMoveOdds = 45;
          break;
       }
       case 0:
@@ -392,7 +393,7 @@ void cAiPersonality::_Beginner2PersonalityAdjustment(
       }
       default:
       {
-         m_OptimalMoveOdds = 35;
+         m_OptimalMoveOdds = 60;
          break;
       }
    }
@@ -489,6 +490,16 @@ void cAiPersonality::_HardPersonalityAdjustment(
 {
    uint32_t l_AlarmLevel = _AdjustAITiming(a_rPlayingField, a_FallingBean1, a_FallingBean2);
 
+   // Hard AI needs time to think, so need to do some special adjustments
+   if (  ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 10
+      && m_MiliSecPerFall < 50
+      && l_AlarmLevel < 2
+      )
+   {
+      l_AlarmLevel = 2;
+      std::cout << "SPECIAL HARD AI ADJUSTMENT" << std::endl;
+   }
+
    switch(l_AlarmLevel)
    {
       case 4:
@@ -541,7 +552,7 @@ uint32_t cAiPersonality::_AdjustAITiming(
    m_MaxDelayToFastFall = l_ComfortableGameSpeed * 4;
 
    uint32_t l_AlarmLevel = 0;
-   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3 || (m_MiliSecPerFall < l_ComfortableGameSpeed / 2))
+   if (ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 3)
    {
       l_AlarmLevel = 4;
    }
@@ -552,11 +563,11 @@ uint32_t cAiPersonality::_AdjustAITiming(
       // column.
       uint32_t l_Average = GetEmpySpaceAverage(a_rPlayingField);
 
-      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5 || (m_MiliSecPerFall < (l_ComfortableGameSpeed > 200 ? l_ComfortableGameSpeed - 200 : 0)))
+      if (l_Average < (3 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 5)
       {
          l_AlarmLevel = 3;
       }
-      else if (l_Average < (4 + 5) || (m_MiliSecPerFall < (l_ComfortableGameSpeed > 100 ? l_ComfortableGameSpeed - 100 : 0)))
+      else if (l_Average < (5 + 5) || ColumnFreeSpace(a_rPlayingField, a_FallingBean1, a_FallingBean2) < 6)
       {
          l_AlarmLevel = 2;
       }
@@ -568,6 +579,24 @@ uint32_t cAiPersonality::_AdjustAITiming(
       {
          l_AlarmLevel = 0;
       }
+   }
+
+   if (m_MiliSecPerFall < (l_ComfortableGameSpeed > 300 ? l_ComfortableGameSpeed - 300 : 0))
+   {
+      l_AlarmLevel += 4;
+   }
+   else if (m_MiliSecPerFall < (l_ComfortableGameSpeed > 200 ? l_ComfortableGameSpeed - 200 : 0))
+   {
+      l_AlarmLevel += 3;
+   }
+   else if (m_MiliSecPerFall < (l_ComfortableGameSpeed > 100 ? l_ComfortableGameSpeed - 100 : 0))
+   {
+      l_AlarmLevel += 2;
+   }
+
+   if (l_AlarmLevel > 4)
+   {
+      l_AlarmLevel = 4;
    }
 
    switch (l_AlarmLevel)
