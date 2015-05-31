@@ -1,0 +1,128 @@
+Animations:
+{
+   Name: Amos
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 0
+      Y: 188
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Calo
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 0
+      Y: 246
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Broot
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 0
+      Y: 304
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Drub
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 0
+      Y: 362
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: EeBoo
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 0
+      Y: 420
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Nix
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 128
+      Y: 188
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+

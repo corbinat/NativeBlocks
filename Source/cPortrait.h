@@ -1,20 +1,17 @@
 // A player is one person's playing surface. This is a 6x12 grid and contains
 // children objects, such as the beans and floor
 
-#ifndef ___cRoof_h___
-#define ___cRoof_h___
-
+#ifndef ___cPortrait_h___
+#define ___cPortrait_h___
 
 #include "cObject.h"
 
-class cPortrait;
-
-class cRoof: public cObject
+class cPortrait: public cObject
 {
 public:
 
-   cRoof(cResources* a_pResources, std::string a_Label);
-   virtual ~cRoof();
+   cPortrait(cResources* a_pResources, std::string a_PlayerName);
+   virtual ~cPortrait();
 
    // These functions are overloaded from cObject
    virtual void Initialize();
@@ -25,9 +22,6 @@ public:
 
 
 private:
-
-   sf::Text m_PlayerName;
-   cPortrait * m_pPortrait;
 
 };
 
