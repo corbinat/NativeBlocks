@@ -180,7 +180,10 @@ void cChallengeMenu::MessageReceived(sMessage a_Message)
       (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "0";
       (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "";
       (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"] = "0";
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["RetriesHighScore"] = "0";
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["AINumberHighScore"] = "0";
       (*(GetResources()->GetGameConfigData()))["Challenge"]["GameStarted"] = "0";
+      (*(GetResources()->GetGameConfigData()))["Challenge"]["ChallengeInProgress"] = "1";
       // Save progress for testing
       // (*(GetResources()->GetGameConfigData()))["Challenge"].ExportToFile("Config/SaveGame.SG");
 
@@ -189,7 +192,7 @@ void cChallengeMenu::MessageReceived(sMessage a_Message)
    }
    else if (a_Message.m_From == m_pHighScoresButton->GetUniqueId())
    {
-
+      GetResources()->SetActiveLevel("HighScores", true);
    }
    else if (a_Message.m_From == m_pBackButton->GetUniqueId())
    {
@@ -206,16 +209,5 @@ void cChallengeMenu::MessageReceived(sMessage a_Message)
 
 bool cChallengeMenu::_SaveFileExists()
 {
-   if (  (static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"]) == "0"
-      || static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"]) == "")
-      && static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"]) == ""
-      && (static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"]) == "0"
-      || static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"]) == "")
-      && (static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["GameStarted"]) == "0"
-      || static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["GameStarted"]) == "")
-      )
-   {
-      return false;
-   }
-   return true;
+   return static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["ChallengeInProgress"]) == "1";
 }

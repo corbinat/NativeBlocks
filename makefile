@@ -1,6 +1,6 @@
 Gpp = g++
-DEBUG = -O0 -g -DDEBUG_PRINTS
-#DEBUG = -O2
+#DEBUG = -O0 -g -DDEBUG_PRINTS
+DEBUG = -O2
 
 # SFML library
 SFMLDIR = ../External/SFML-2.2
@@ -26,6 +26,7 @@ srcs += $(wildcard Source/Common/*.cpp)
 srcs += $(wildcard Source/Common/Props/*.cpp)
 srcs += $(wildcard Source/Common/Widgets/*.cpp)
 srcs += $(wildcard Source/ChallengeLevel/*.cpp)
+srcs += $(wildcard Source/HighScores/*.cpp)
 
 objs = $(srcs:.cpp=.o)
 deps = $(srcs:.cpp=.d)

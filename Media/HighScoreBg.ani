@@ -1,0 +1,43 @@
+Animations:
+{
+   Name: HighScoreBg
+   Speed: 8
+   Frames:
+   {
+      Image: Media/HighScoreBg.png
+      X: 0
+      Y: 0
+      Height: 512
+      Width: 512
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 512
+         Width: 512
+      }
+   }
+}
+{
+   Name: HighScoreRecorderBg
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Blocks.png
+      X: 0
+      Y: 192
+      Height: 192
+      Width: 512
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 192
+         Width: 512
+      }
+   }
+}

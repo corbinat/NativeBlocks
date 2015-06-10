@@ -1,4 +1,5 @@
 #include "cFinalMenu.h"
+#include "cHighScoreRecorder.h"
 #include "Common/Widgets/cButton.h"
 
 #include <iostream>
@@ -84,9 +85,19 @@ void cFinalMenu::Step (uint32_t a_ElapsedMiliSec)
    {
       m_pPlayAgainButton->SetPosition(sf::Vector3<double>(0, 600.0 / 1000 * a_ElapsedMiliSec, 0), kRelative, false);
    }
-   if (m_pMainMenuButton != NULL && m_pMainMenuButton->GetPosition().y < GetPosition().y + m_pPlayAgainButton->GetBoundingBox().height + 10)
+
+   if (m_pMainMenuButton != NULL)
    {
-      m_pMainMenuButton->SetPosition(sf::Vector3<double>(0, 600.0 / 1000 * a_ElapsedMiliSec, 0), kRelative, false);
+      if (m_pMainMenuButton->GetPosition().y < GetPosition().y + m_pPlayAgainButton->GetBoundingBox().height + 10)
+      {
+         m_pMainMenuButton->SetPosition(sf::Vector3<double>(0, 600.0 / 1000 * a_ElapsedMiliSec, 0), kRelative, false);
+      }
+      else
+      {
+         sf::Vector3<double> l_Position = m_pPlayAgainButton->GetPosition();
+         l_Position.y += m_pPlayAgainButton->GetBoundingBox().height + 11;
+         m_pMainMenuButton->SetPosition(l_Position, kNormal, false);
+      }
    }
 }
 
@@ -122,8 +133,35 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
             }
             uint32_t l_RetryCount = std::stoi(l_RetryString);
             ++l_RetryCount;
-            (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"]
-               = std::to_string(l_RetryCount);
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"] =
+               std::to_string(l_RetryCount);
+         }
+         else
+         {
+            // Player won. Record for the high score list
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["RetriesHighScore"] =
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["Retries"];
+
+            // We can't use NextAINumber because it doesn't get incremented until
+            // the next time we get to the cChallengeDisplay. For high score
+            // purposes we need to increment something now.
+            std::string l_NextAIString =
+               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"];
+
+            if (l_NextAIString.empty())
+            {
+               l_NextAIString = "0";
+            }
+
+            uint32_t l_NextAiNumber = std::stoi(l_NextAIString);
+            l_NextAiNumber++;
+
+            (*(GetResources()->GetGameConfigData()))["Challenge"]["AINumberHighScore"] =
+               std::to_string(l_NextAiNumber);
+
+            std::cout << "RetriesHS " << static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["RetriesHighScore"])
+               << "AINumberHS " << static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["AINumberHighScore"])
+               << std::endl;
          }
 
          // Save progress for testing
@@ -147,7 +185,18 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
    else if (m_pMainMenuButton != NULL && a_Message.m_From == m_pMainMenuButton->GetUniqueId())
    {
       //~ std::cout << "Main Menu button pressed" << std::endl;
-      GetResources()->SetActiveLevel("MainMenu", true);
+
+      if (GetResources()->GetGameConfigData()->GetProperty("GameType") == "FreePlay")
+      {
+         GetResources()->SetActiveLevel("MainMenu", true);
+      }
+      else
+      {
+         cHighScoreRecorder * l_HighScoreRecorder =
+            new cHighScoreRecorder(GetResources());
+
+         (*(GetResources()->GetGameConfigData()))["Challenge"]["ChallengeInProgress"] = "0";
+      }
    }
 }
 
@@ -193,7 +242,7 @@ void cFinalMenu::_CreateFinalChallengeMenu()
 
    m_pMainMenuButton = new cButton(GetResources());
    m_pMainMenuButton->SetImage("Media/Final.ani", "Button");
-   m_pMainMenuButton->SetLabel("Main Menu", 17);
+   m_pMainMenuButton->SetLabel("Give Up", 17);
    l_Position.y -= m_pMainMenuButton->GetBoundingBox().height + 10;
    m_pMainMenuButton->SetPosition(l_Position, kNormal, false);
 
