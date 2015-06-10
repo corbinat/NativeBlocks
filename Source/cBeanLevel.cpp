@@ -3,6 +3,7 @@
 #include "cAiPlayer.h"
 #include "cStagingObserver.h"
 #include "Common/Props/cGrass.h"
+#include "Common/Props/cCloud.h"
 #include "cCountdownStart.h"
 #include "cFinalMenu.h"
 
@@ -125,6 +126,10 @@ cObject* cBeanLevel::PixelToObject(
    else if (a_Color.r == 255 && a_Color.g ==0 && a_Color.b == 255)
    {
       l_pNewObject = new cFinalMenu(a_pResources);
+   }
+   else if (a_Color.r == 0 && a_Color.g == 100 && a_Color.b == 255)
+   {
+      l_pNewObject = new cCloud(a_pResources);
    }
 
    if (l_pNewObject != NULL)
