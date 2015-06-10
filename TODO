@@ -1,26 +1,13 @@
-AI Personality ideas
-   Number of pressure levels
-      Changes thought depth, time to first move
-   Max thought depth
-      Constant vs countdown
-   Max/Min Delay to first move
-      Random value in between
-      Reduce the MAX as pressure level goes up
-   Delay to additional moves
-      This should only be slow for the worst AI
-   AI that stops searching if they found something good enough
-
-Improve AI
-
-
-New Bean Graphics
-
-Sounds
+TODO:
+- Make High score list work
+- Finish creating AI portraits
+- Make bonus shot spin the opposite way if it is pretty high up
+- Music / sound volume sliders in the options menu
+- Make last AI block crush through the others
+- Keyboard / joystick driven menus
 
 full screen
    different resolutions
 
 Overall asthetics
 
-Increase game speed over time
-   Maybe with some acceleration value to say how fast it changes
