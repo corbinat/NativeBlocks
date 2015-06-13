@@ -21,7 +21,7 @@ Animations:
    }
 }
 {
-   Name: Calo
+   Name: Bundt
    Speed: 8
    Frames:
    {
@@ -42,7 +42,7 @@ Animations:
    }
 }
 {
-   Name: Broot
+   Name: Drub
    Speed: 8
    Frames:
    {
@@ -63,7 +63,7 @@ Animations:
    }
 }
 {
-   Name: Drub
+   Name: EeBoo
    Speed: 8
    Frames:
    {
@@ -84,7 +84,7 @@ Animations:
    }
 }
 {
-   Name: EeBoo
+   Name: Nix
    Speed: 8
    Frames:
    {
@@ -105,7 +105,7 @@ Animations:
    }
 }
 {
-   Name: Nix
+   Name: Rolla
    Speed: 8
    Frames:
    {
@@ -125,4 +125,108 @@ Animations:
       }
    }
 }
-
+{
+   Name: Broot
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 128
+      Y: 246
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Triton
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 128
+      Y: 304
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Vesta
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 128
+      Y: 362
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Wolf
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 128
+      Y: 420
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}
+{
+   Name: Human
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Players.png
+      X: 256
+      Y: 188
+      Height: 58
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 58
+         Width: 128
+      }
+   }
+}

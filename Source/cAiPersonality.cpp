@@ -10,12 +10,12 @@ const uint32_t g_kMinAdditionalDelayDefault = 30;
 const char * const g_kBeginnerAIName = "Amos";
 
 // Carelessly places blocks for a while
-const char * const g_kBeginner2AIName = "Broot";
-const char * const g_kBeginner3AIName = "Calo";
-const char * const g_kEasyAIName = "Drub";
-const char * const g_kEasy2AIName = "EeBoo";
-const char * const g_kEasy3AIName = "Nix";
-const char * const g_kMediumAIName = "Rolla";
+const char * const g_kBeginner2AIName = "Bundt";
+const char * const g_kBeginner3AIName = "Drub";
+const char * const g_kEasyAIName = "EeBoo";
+const char * const g_kEasy2AIName = "Nix";
+const char * const g_kEasy3AIName = "Rolla";
+const char * const g_kMediumAIName = "Broot";
 const char * const g_kMedium2AIName = "Triton";
 const char * const g_kMedium3AIName = "Vesta";
 const char * const g_kHardAIName = "Wolf";
