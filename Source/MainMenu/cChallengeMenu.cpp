@@ -78,11 +78,11 @@ void cChallengeMenu::Initialize()
    m_pBackButton->SetPosition(l_Position, kNormal, false);
 
    // Need to Receive messages when the Control buttons are pushed. Buttons emit
-   // a "Button" category, so we'll just look for all of those as a shortcut.
+   // a "Widget" category, so we'll just look for all of those as a shortcut.
    // This is kind of fragile. Need to change buttons to just have a callback
    sMessage l_Request;
    l_Request.m_From = GetResources()->GetMessageDispatcher()->AnyID();
-   l_Request.m_Category = "Button";
+   l_Request.m_Category = "Widget";
    l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
    l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
 

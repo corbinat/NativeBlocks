@@ -46,9 +46,9 @@ void cButton::Event(std::list<sf::Event> * a_pEventList)
             PlaySound("Media/Sounds/Click1.wav");
             sMessage l_Message;
             l_Message.m_From = GetUniqueId();
-            l_Message.m_Category = "Button";
-            l_Message.m_Key = "Pressed";
-            l_Message.m_Value = "True";
+            l_Message.m_Category = "Widget";
+            l_Message.m_Key = "Button";
+            l_Message.m_Value = "Pressed";
             GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
          }
       }
