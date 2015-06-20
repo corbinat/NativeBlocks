@@ -36,8 +36,8 @@ void cAiBlock::Fall()
 void cAiBlock::Initialize()
 {
    m_AiLabel.setPosition(
-      GetPosition().x + GetBoundingBox().width / 2 - m_AiLabel.getLocalBounds().width / 2,
-      GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10
+      static_cast<int32_t>(GetPosition().x + GetBoundingBox().width / 2 - m_AiLabel.getLocalBounds().width / 2),
+      static_cast<int32_t>(GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10)
       );
 
 }
@@ -53,8 +53,8 @@ void cAiBlock::Step(uint32_t a_ElapsedMiliSec)
    {
       SetVelocityY(1500, kNormal);
       m_AiLabel.setPosition(
-         GetPosition().x + GetBoundingBox().width / 2 - m_AiLabel.getLocalBounds().width / 2,
-         GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10
+         static_cast<int32_t>(GetPosition().x + GetBoundingBox().width / 2 - m_AiLabel.getLocalBounds().width / 2),
+         static_cast<int32_t>(GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10)
          );
    }
 }
@@ -65,8 +65,8 @@ void cAiBlock::Collision(cObject* a_pOther)
    {
       SitFlush(a_pOther);
       m_AiLabel.setPosition(
-         GetPosition().x + GetBoundingBox().width / 2 - m_AiLabel.getLocalBounds().width / 2,
-         GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10
+         static_cast<int32_t>(GetPosition().x + GetBoundingBox().width / 2 - m_AiLabel.getLocalBounds().width / 2),
+         static_cast<int32_t>(GetPosition().y + GetBoundingBox().height / 2 - m_AiLabel.getCharacterSize() / 2.0 - 10)
          );
       SetVelocityY(0, kNormal);
 
