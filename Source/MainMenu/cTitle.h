@@ -14,6 +14,7 @@ public:
    ~cTitle();
 
    // These functions are overloaded from cObject
+   void Initialize();
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step (uint32_t a_ElapsedMiliSec);
@@ -21,6 +22,7 @@ public:
 
 private:
 
+   sf::Text m_DemoString;
 };
 
 #endif
