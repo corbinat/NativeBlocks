@@ -158,10 +158,6 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
 
             (*(GetResources()->GetGameConfigData()))["Challenge"]["AINumberHighScore"] =
                std::to_string(l_NextAiNumber);
-
-            std::cout << "RetriesHS " << static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["RetriesHighScore"])
-               << "AINumberHS " << static_cast<std::string>((*(GetResources()->GetGameConfigData()))["Challenge"]["AINumberHighScore"])
-               << std::endl;
          }
 
          // Save progress for testing

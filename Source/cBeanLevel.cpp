@@ -68,7 +68,6 @@ cObject* cBeanLevel::PixelToObject(
 
       if (l_Player1Option == "Human")
       {
-         std::cout << "GAMESPEED " << l_GameSpeed << std::endl;
          l_pNewObject = new cHumanPlayer(a_pResources, m_RandomNumberEngine, "Player1", std::stoi(l_GameSpeed));
       }
       else

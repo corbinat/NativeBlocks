@@ -8,7 +8,6 @@ cEventCapture::cEventCapture(std::string a_Action, std::string a_Label, cResourc
      m_Action(a_Action),
      m_Label(a_Label)
 {
-   std::cout << "Creating Event Capture" << std::endl;
    SetType("EventCapture");
    SetSolid(false);
 
@@ -48,12 +47,10 @@ void cEventCapture::Event(std::list<sf::Event> * a_pEventList)
    std::list<sf::Event>::iterator i = a_pEventList->begin();
    for (i; i != a_pEventList->end(); ++i)
    {
-      std::cout << "Adding" << std::endl;
       bool l_Success =
          GetResources()->GetEventTranslator()->AddBinding(*i, m_Action);
       if (l_Success)
       {
-         std::cout << "Binding Added" << std::endl;
          sMessage l_Message;
          l_Message.m_From = GetUniqueId();
          l_Message.m_Category = "Update";

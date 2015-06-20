@@ -206,7 +206,6 @@ void cAiPersonality::AdjustPersonalityToState(
       case kAiPersonalityMedium3:
       case kAiPersonalityHard:
       {
-         std::cout << "Hard thinking" << std::endl;
          _HardPersonalityAdjustment(
             a_rPlayingField,
             a_FallingBean1,
@@ -348,7 +347,6 @@ void cAiPersonality::_BeginnerPersonalityAdjustment(
       }
    }
 
-   std::cout << "Delay: " << m_CurrentMaxDelayToFirstMove << std::endl;
 }
 
 void cAiPersonality::_Beginner2PersonalityAdjustment(
@@ -497,7 +495,6 @@ void cAiPersonality::_HardPersonalityAdjustment(
       )
    {
       l_AlarmLevel = 2;
-      std::cout << "SPECIAL HARD AI ADJUSTMENT" << std::endl;
    }
 
    switch(l_AlarmLevel)
@@ -545,8 +542,6 @@ uint32_t cAiPersonality::_AdjustAITiming(
    // This is the game speed that the AI is comfortable with.
    uint32_t l_ComfortableGameSpeed =
       cSpeedController::GetStartingMsPerFallAtLevel(static_cast<uint32_t>(m_Personality));
-
-   std::cout << "Comfy Game Speed: " << l_ComfortableGameSpeed << std::endl;
 
    m_MinDelayToFastFall = l_ComfortableGameSpeed * 2;
    m_MaxDelayToFastFall = l_ComfortableGameSpeed * 4;
@@ -646,7 +641,6 @@ uint32_t cAiPersonality::_AdjustAITiming(
       }
    }
 
-   std::cout << "Alarm level:" << l_AlarmLevel << std::endl;
    return l_AlarmLevel;
 }
 

@@ -41,7 +41,6 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
    uint32_t l_NextAINumber = std::stoi(l_NextAINumberString);
 
    // Create the blocks
-   std::cout << "NextAI: " << l_NextAINumber << std::endl;
    for (int32_t i = 0; i < l_NextAINumber+1; ++i)
    {
       cAiBlock * l_NewBlock = new cAiBlock(GetResources());
@@ -53,7 +52,6 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
 
       l_NewBlock->SetPosition(l_Position, kNormal, false);
       l_NewBlock->SetAiLabel(l_AINameVector[i]);
-      std::cout << "Creating " << l_AINameVector[i] << " " << l_NewBlock->GetPosition().y << std::endl;
       l_NewBlock->Initialize();
       l_NewBlock->SetDepth(i);
 

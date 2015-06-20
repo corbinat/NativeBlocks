@@ -89,8 +89,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
       // ideally shouldn't hit this because it will lag the game.
       if (_IsCurrentColumnUrgencyHigh())
       {
-         std::cout << "AI out of time!!!!!!!!!!!!!!!" << std::endl;
-         //~ std::cout << "JOIN 1" << std::endl;
+         //~ std::cout << "AI out of time!!!!!!!!!!!!!!!" << std::endl;
          //~ if (!m_AIThinkingThread->joinable())
          //~ {
             //~ std::cout << "WHY NOT JOINABLE??????? CRASHHHH" << std::endl;
@@ -137,10 +136,10 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
    {
       l_Destination = m_OptimalMoves[0];
    }
-   else
-   {
-      std::cout << "NO OPTIMAL MOVES!!!!!!!" << std::endl;
-   }
+   //~ else
+   //~ {
+      //~ std::cout << "NO OPTIMAL MOVES!!!!!!!" << std::endl;
+   //~ }
 
    // If our rotation isn't right, rotate the beans.
    if (GetRotationState() != l_Destination.m_Rotation)
@@ -182,7 +181,7 @@ void cAiPlayer::ControlBeans(uint32_t a_ElapsedMiliSec)
 
       //~ if (m_AIThinkingThread->joinable())
       //~ {
-         std::cout << "WHAT THE HECKKKKKK" << std::endl;
+         //~ std::cout << "WHAT THE HECKKKKKK" << std::endl;
       //~ }
       m_AIThinkingThread.reset(
          new std::thread (&cAiPlayer::_AnalyzeAllMoves, this)
@@ -395,7 +394,6 @@ void cAiPlayer::_AnalyzeAllMoves()
 
       if (GetType() == "Player1")
       {
-         std::cout << "Expecting Score: " << l_Final.m_Score << std::endl;
          //~ std::cout << "Upcoming Beans: ";
          //~ for (int i = 0; i < 3 ; ++ i)
          //~ {

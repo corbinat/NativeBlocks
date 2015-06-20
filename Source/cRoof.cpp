@@ -39,7 +39,6 @@ void cRoof::Initialize()
    // the bottom of the roof at 32 * 2. Frame starts 13 pixels up, so 13 - 6 = 7
    l_Position.y += 32 * 2 - 7;
 
-   std::cout << "SET PORTRAIT: " << static_cast<std::string>(m_PlayerName.getString()) << std::endl;
    m_pPortrait->SetPosition(l_Position, kNormal, false);
 }
 

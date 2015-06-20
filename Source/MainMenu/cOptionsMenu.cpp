@@ -213,7 +213,6 @@ void cOptionsMenu::Step (uint32_t a_ElapsedMiliSec)
          if (m_pKeyMapButton->GetPosition().x + m_pKeyMapButton->GetBoundingBox().width < 0 )
          {
             SetVelocityX(0, kNormal);
-            std::cout << "POW1" << std::endl;
          }
       }
       else
@@ -221,7 +220,6 @@ void cOptionsMenu::Step (uint32_t a_ElapsedMiliSec)
          if (l_CenterPoint < GetResources()->GetWindow()->getSize().x / 2)
          {
             SetVelocityX(0, kNormal);
-            std::cout << "POW2" << std::endl;
          }
       }
    }
@@ -232,7 +230,6 @@ void cOptionsMenu::Step (uint32_t a_ElapsedMiliSec)
          if (GetPosition().x > GetResources()->GetWindow()->getSize().x)
          {
             SetVelocityX(0, kNormal);
-            std::cout << "POW3" << std::endl;
          }
       }
       else

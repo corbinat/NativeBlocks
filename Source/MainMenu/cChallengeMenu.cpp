@@ -129,7 +129,6 @@ void cChallengeMenu::Step (uint32_t a_ElapsedMiliSec)
          if (GetPosition().x < (0 - static_cast<int32_t>(m_pNewGameButton->GetBoundingBox().width)))
          {
             SetVelocityX(0, kNormal);
-            std::cout << "POW1" << std::endl;
          }
       }
       else
@@ -137,7 +136,6 @@ void cChallengeMenu::Step (uint32_t a_ElapsedMiliSec)
          if (m_pNewGameButton->GetPosition().x + m_pNewGameButton->GetBoundingBox().width/2 < GetResources()->GetWindow()->getSize().x / 2)
          {
             SetVelocityX(0, kNormal);
-            std::cout << "POW2" << std::endl;
          }
       }
    }
@@ -148,7 +146,6 @@ void cChallengeMenu::Step (uint32_t a_ElapsedMiliSec)
          if (GetPosition().x > GetResources()->GetWindow()->getSize().x)
          {
             SetVelocityX(0, kNormal);
-            std::cout << "POW3" << std::endl;
          }
       }
       else

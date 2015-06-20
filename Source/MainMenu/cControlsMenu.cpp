@@ -163,8 +163,6 @@ void cControlsMenu::Step (uint32_t a_ElapsedMiliSec)
       l_Message.m_Value = "cOptionsMenu";
       GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
       m_PostBackMessage = false;
-
-      std::cout << "Posting back button" << std::endl;
    }
 
    if (GetVelocity().x < 0)
