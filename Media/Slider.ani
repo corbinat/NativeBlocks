@@ -1,0 +1,43 @@
+Animations:
+{
+   Name: SliderNub
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 267
+      Height: 11
+      Width: 10
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 11
+         Width: 10
+      }
+   }
+}
+{
+   Name: Slider
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures.png
+      X: 0
+      Y: 256
+      Height: 11
+      Width: 128
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 11
+         Width: 128
+      }
+   }
+}
