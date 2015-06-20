@@ -6,6 +6,7 @@
 
 class cControlsMenu;
 class cButton;
+class cSlider;
 
 class cOptionsMenu: public cObject
 {
@@ -28,9 +29,14 @@ public:
 
 private:
    bool m_Active;
+
+   sf::Text m_SoundLabel;
+   sf::Text m_MusicLabel;
+
+   cSlider * m_pSoundSlider;
+   cSlider * m_pMusicSlider;
    cButton * m_pKeyMapButton;
    cControlsMenu * m_pControlsMenu;
-
    cButton * m_pBackButton;
 
    bool m_PostBackMessage;

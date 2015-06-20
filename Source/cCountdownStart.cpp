@@ -13,7 +13,6 @@ cCountdownStart::cCountdownStart(cResources* a_pResources)
    GetResources()->GetBackGroundMusic()->stop();
    GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/GetIt.ogg");
    GetResources()->GetBackGroundMusic()->setLoop(true);
-   GetResources()->GetBackGroundMusic()->setVolume(30);
 
    cFadeTransition * l_pFadeTransition = new cFadeTransition(GetResources());
    l_pFadeTransition->SetFadeDirection(cFadeTransition::kFadeDirectionIn);

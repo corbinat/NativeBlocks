@@ -12,7 +12,6 @@ cTitle::cTitle(cResources* a_pResources)
 
    // The title plays the music
    GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/Intro.ogg");
-   GetResources()->GetBackGroundMusic()->setVolume(100);
    GetResources()->GetBackGroundMusic()->setLoop(true);
    GetResources()->GetBackGroundMusic()->play();
 }

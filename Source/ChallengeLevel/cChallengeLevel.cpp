@@ -24,7 +24,6 @@ void cChallengeLevel::Initialize()
    SetBackgroundColor(sf::Color(153,204,204,255));
 
    GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/GetItBreakdown2.ogg");
-   GetResources()->GetBackGroundMusic()->setVolume(30);
    GetResources()->GetBackGroundMusic()->setLoop(true);
    GetResources()->GetBackGroundMusic()->play();
 }
