@@ -11,7 +11,7 @@ cCountdownStart::cCountdownStart(cResources* a_pResources)
    SetSolid(true);
    SetCollidable(false);
    GetResources()->GetBackGroundMusic()->stop();
-   GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/GetIt.ogg");
+   GetResources()->PlayBackgroundMusic("Media/Music/GetIt.ogg");
    GetResources()->GetBackGroundMusic()->setLoop(true);
 
    cFadeTransition * l_pFadeTransition = new cFadeTransition(GetResources());

@@ -23,7 +23,7 @@ void cChallengeLevel::Initialize()
    SetGridCellSize(sf::Vector2<uint32_t>(100,100));
    SetBackgroundColor(sf::Color(153,204,204,255));
 
-   GetResources()->GetBackGroundMusic()->openFromFile("Media/Music/GetItBreakdown2.ogg");
+   GetResources()->PlayBackgroundMusic("Media/Music/GetItBreakdown2.ogg");
    GetResources()->GetBackGroundMusic()->setLoop(true);
    GetResources()->GetBackGroundMusic()->play();
 }
