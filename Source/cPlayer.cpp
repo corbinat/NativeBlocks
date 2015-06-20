@@ -592,7 +592,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                      _CreateGarbageBean(l_Column, l_Row);
                      --m_GarbageAcumulator;
                   }
-                  else if (l_Columns.size() == 0)
+                  if (l_Columns.size() == 0)
                   {
                      // There must have already been garbage in this row
                      // preventing us from unleashing all the garbage we wanted
