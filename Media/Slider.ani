@@ -4,9 +4,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
-      X: 0
-      Y: 267
+      Image: Media/Textures1.png
+      X: 374
+      Y: 177
       Height: 11
       Width: 10
       Origin: 0
@@ -25,9 +25,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Textures.png
-      X: 0
-      Y: 256
+      Image: Media/Textures1.png
+      X: 384
+      Y: 177
       Height: 11
       Width: 128
       Origin: 0

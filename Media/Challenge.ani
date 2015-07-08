@@ -4,9 +4,9 @@ Animations:
    Speed: 2
    Frames:
    {
-      Image: Media/Challenge.png
+      Image: Media/Textures2.png
       X: 0
-      Y: 0
+      Y: 352
       Height: 99
       Width: 256
       Origin: 0
@@ -25,94 +25,9 @@ Animations:
    Speed: 1
    Frames:
    {
-      Image: Media/Challenge.png
-      X: 0
-      Y: 99
-      Height: 48
-      Width: 32
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 48
-         Width: 32
-      }
-   }
-}
-{
-   Name: BlinkArrow
-   Speed: 14
-   Frames:
-   {
-      Image: Media/Challenge.png
-      X: 32
-      Y: 99
-      Height: 48
-      Width: 32
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 48
-         Width: 32
-      }
-   }
-   {
-      Image: Media/Challenge.png
-      X: 64
-      Y: 99
-      Height: 48
-      Width: 32
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 48
-         Width: 32
-      }
-   }
-   {
-      Image: Media/Challenge.png
-      X: 96
-      Y: 99
-      Height: 48
-      Width: 32
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 48
-         Width: 32
-      }
-   }
-   {
-      Image: Media/Challenge.png
-      X: 128
-      Y: 99
-      Height: 48
-      Width: 32
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 48
-         Width: 32
-      }
-   }
-   {
-      Image: Media/Challenge.png
-      X: 160
-      Y: 99
+      Image: Media/Textures1.png
+      X: 416
+      Y: 414
       Height: 48
       Width: 32
       Origin: 0

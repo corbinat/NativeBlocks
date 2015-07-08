@@ -4,9 +4,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 188
+      Y: 297
       Height: 58
       Width: 128
       Origin: 0
@@ -25,9 +25,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 246
+      Y: 355
       Height: 58
       Width: 128
       Origin: 0
@@ -46,9 +46,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 0
-      Y: 304
+      Image: Media/Textures1.png
+      X: 128
+      Y: 297
       Height: 58
       Width: 128
       Origin: 0
@@ -67,9 +67,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 0
-      Y: 362
+      Image: Media/Textures1.png
+      X: 128
+      Y: 355
       Height: 58
       Width: 128
       Origin: 0
@@ -88,9 +88,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 0
-      Y: 420
+      Image: Media/Textures1.png
+      X: 256
+      Y: 297
       Height: 58
       Width: 128
       Origin: 0
@@ -109,9 +109,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 128
-      Y: 188
+      Image: Media/Textures1.png
+      X: 256
+      Y: 355
       Height: 58
       Width: 128
       Origin: 0
@@ -130,9 +130,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 128
-      Y: 246
+      Image: Media/Textures1.png
+      X: 256
+      Y: 239
       Height: 58
       Width: 128
       Origin: 0
@@ -151,9 +151,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 128
-      Y: 304
+      Image: Media/Textures1.png
+      X: 256
+      Y: 181
       Height: 58
       Width: 128
       Origin: 0
@@ -172,9 +172,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 128
-      Y: 362
+      Image: Media/Textures1.png
+      X: 384
+      Y: 355
       Height: 58
       Width: 128
       Origin: 0
@@ -193,9 +193,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 128
-      Y: 420
+      Image: Media/Textures1.png
+      X: 384
+      Y: 297
       Height: 58
       Width: 128
       Origin: 0
@@ -214,9 +214,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Players.png
-      X: 256
-      Y: 188
+      Image: Media/Textures1.png
+      X: 384
+      Y: 239
       Height: 58
       Width: 128
       Origin: 0

@@ -4,7 +4,7 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/HighScoreBg.png
+      Image: Media/TextureHS1.png
       X: 0
       Y: 0
       Height: 512
@@ -25,7 +25,7 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/TextureHS2.png
       X: 0
       Y: 192
       Height: 192

@@ -4,7 +4,7 @@ Animations:
    Speed: 2
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Textures2.png
       X: 288
       Y: 7
       Height: 85
@@ -25,7 +25,7 @@ Animations:
    Speed: 2
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Textures2.png
       X: 288
       Y: 112
       Height: 85
@@ -46,7 +46,7 @@ Animations:
    Speed: 2
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Textures2.png
       X: 288
       Y: 217
       Height: 85
@@ -67,7 +67,7 @@ Animations:
    Speed: 2
    Frames:
    {
-      Image: Media/Textures.png
+      Image: Media/Textures2.png
       X: 288
       Y: 321
       Height: 85

@@ -1,61 +1,19 @@
 Animations:
 {
-   Name: PlayAgainButton
-   Speed: 2
-   Frames:
-   {
-      Image: Media/Textures.png
-      X: 0
-      Y: 352
-      Height: 32
-      Width: 224
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 64
-         Y: 0
-         Height: 32
-         Width: 96
-      }
-   }
-}
-{
-   Name: MainMenuButton
-   Speed: 2
-   Frames:
-   {
-      Image: Media/Textures.png
-      X: 0
-      Y: 384
-      Height: 32
-      Width: 224
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 64
-         Y: 0
-         Height: 32
-         Width: 96
-      }
-   }
-}
-{
    Name: Button
    Speed: 2
    Frames:
    {
-      Image: Media/Textures.png
-      X: 0
-      Y: 416
+      Image: Media/Textures1.png
+      X: 416
+      Y: 188
       Height: 32
-      Width: 224
+      Width: 96
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
-         X: 64
+         X: 0
          Y: 0
          Height: 32
          Width: 96
@@ -67,9 +25,9 @@ Animations:
    Speed: 1
    Frames:
    {
-      Image: Media/Textures.png
-      X: 0
-      Y: 192
+      Image: Media/Textures1.png
+      X: 320
+      Y: 113
       Height: 64
       Width: 192
       Origin: 0

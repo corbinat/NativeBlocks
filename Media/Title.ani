@@ -4,7 +4,7 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
+      Image: Media/Textures1.png
       X: 0
       Y: 0
       Height: 49
@@ -25,9 +25,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 312
+      Y: 416
       Height: 100
       Width: 416
       Origin: 0
@@ -46,19 +46,19 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 12
-      Y: 60
-      Height: 90
-      Width: 240
+      Image: Media/Textures1.png
+      X: 0
+      Y: 49
+      Height: 88
+      Width: 248
       Origin: 0
       BoundingBoxes:
       {
          Name: Full Box
          X: 0
          Y: 0
-         Height: 90
-         Width: 240
+         Height: 88
+         Width: 249
       }
    }
 
@@ -68,9 +68,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 21
-      Y: 248
+      Image: Media/Textures1.png
+      X: 476
+      Y: 49
       Height: 32
       Width: 18
       Origin: 0
@@ -89,9 +89,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 21
-      Y: 280
+      Image: Media/Textures1.png
+      X: 476
+      Y: 81
       Height: 32
       Width: 18
       Origin: 0
@@ -110,9 +110,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 39
-      Y: 248
+      Image: Media/Textures1.png
+      X: 494
+      Y: 49
       Height: 32
       Width: 18
       Origin: 0
@@ -131,9 +131,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 39
-      Y: 280
+      Image: Media/Textures1.png
+      X: 494
+      Y: 81
       Height: 32
       Width: 18
       Origin: 0
@@ -152,9 +152,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 57
-      Y: 248
+      Image: Media/Textures1.png
+      X: 376
+      Y: 49
       Height: 32
       Width: 100
       Origin: 0
@@ -169,97 +169,13 @@ Animations:
    }
 }
 {
-   Name: BeginButton
-   Speed: 8
-   Frames:
-   {
-      Image: Media/MainMenu.png
-      X: 57
-      Y: 280
-      Height: 32
-      Width: 64
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 32
-         Width: 64
-      }
-   }
-}
-{
-   Name: ChallengeButton
-   Speed: 8
-   Frames:
-   {
-      Image: Media/MainMenu.png
-      X: 121
-      Y: 280
-      Height: 32
-      Width: 128
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 32
-         Width: 128
-      }
-   }
-}
-{
-   Name: FreePlayButton
-   Speed: 8
-   Frames:
-   {
-      Image: Media/MainMenu.png
-      X: 249
-      Y: 280
-      Height: 32
-      Width: 128
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 32
-         Width: 128
-      }
-   }
-}
-{
-   Name: BackButton
-   Speed: 8
-   Frames:
-   {
-      Image: Media/MainMenu.png
-      X: 157
-      Y: 248
-      Height: 32
-      Width: 64
-      Origin: 0
-      BoundingBoxes:
-      {
-         Name: Full Box
-         X: 0
-         Y: 0
-         Height: 32
-         Width: 64
-      }
-   }
-}
-{
    Name: BlankMediumButton
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 221
-      Y: 248
+      Image: Media/Textures1.png
+      X: 248
+      Y: 49
       Height: 32
       Width: 128
       Origin: 0
@@ -278,9 +194,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/MainMenu.png
-      X: 349
-      Y: 248
+      Image: Media/Textures1.png
+      X: 248
+      Y: 81
       Height: 32
       Width: 64
       Origin: 0

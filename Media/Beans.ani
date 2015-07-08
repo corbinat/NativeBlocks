@@ -4,9 +4,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -25,9 +25,9 @@ Animations:
    Speed: 16
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 32
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -41,9 +41,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 64
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -57,9 +57,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 96
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -78,9 +78,9 @@ Animations:
    Speed: 5
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -94,9 +94,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -110,9 +110,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -126,9 +126,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -147,9 +147,9 @@ Animations:
    Speed: 6
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -163,9 +163,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -179,9 +179,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -195,9 +195,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -211,9 +211,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 224
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -227,9 +227,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -243,9 +243,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -259,9 +259,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 160
+      Y: 265
       Height: 32
       Width: 32
       Origin: 0
@@ -280,9 +280,9 @@ Animations:
    Speed: 5
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -301,9 +301,9 @@ Animations:
    Speed: 5
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -317,9 +317,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -333,9 +333,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -349,9 +349,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -370,9 +370,9 @@ Animations:
    Speed: 6
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -386,9 +386,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -402,9 +402,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -418,9 +418,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -434,9 +434,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 224
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -450,9 +450,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -466,9 +466,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -482,9 +482,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -503,9 +503,9 @@ Animations:
    Speed: 16
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 32
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -519,9 +519,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 64
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -535,9 +535,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 96
-      Y: 128
+      Y: 233
       Height: 32
       Width: 32
       Origin: 0
@@ -556,9 +556,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -577,9 +577,9 @@ Animations:
    Speed: 5
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -593,9 +593,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -609,9 +609,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -625,9 +625,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -646,9 +646,9 @@ Animations:
    Speed: 6
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -662,9 +662,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -678,9 +678,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -694,9 +694,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -710,9 +710,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 224
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -726,9 +726,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -742,9 +742,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -758,9 +758,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -779,9 +779,9 @@ Animations:
    Speed: 16
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 32
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -795,9 +795,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 64
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -811,9 +811,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 96
-      Y: 64
+      Y: 169
       Height: 32
       Width: 32
       Origin: 0
@@ -832,9 +832,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -853,9 +853,9 @@ Animations:
    Speed: 5
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -869,9 +869,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -885,9 +885,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -901,9 +901,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -922,9 +922,9 @@ Animations:
    Speed: 6
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -938,9 +938,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -954,9 +954,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -970,9 +970,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -986,9 +986,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 224
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1002,9 +1002,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1018,9 +1018,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1034,9 +1034,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1055,9 +1055,9 @@ Animations:
    Speed: 16
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 32
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1071,9 +1071,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 64
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1087,9 +1087,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 96
-      Y: 32
+      Y: 137
       Height: 32
       Width: 32
       Origin: 0
@@ -1108,9 +1108,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1129,9 +1129,9 @@ Animations:
    Speed: 5
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1145,9 +1145,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1161,9 +1161,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1177,9 +1177,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1198,9 +1198,9 @@ Animations:
    Speed: 6
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 0
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1214,9 +1214,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1230,9 +1230,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1246,9 +1246,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1262,9 +1262,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 224
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1278,9 +1278,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 192
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1294,9 +1294,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 160
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1310,9 +1310,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 128
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1331,9 +1331,9 @@ Animations:
    Speed: 16
    Frames:
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 32
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1347,9 +1347,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 64
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1363,9 +1363,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
+      Image: Media/Textures1.png
       X: 96
-      Y: 96
+      Y: 201
       Height: 32
       Width: 32
       Origin: 0
@@ -1384,9 +1384,9 @@ Animations:
    Speed: 8
    Frames:
    {
-      Image: Media/Blocks.png
-      X: 0
-      Y: 0
+      Image: Media/Textures1.png
+      X: 312
+      Y: 81
       Height: 32
       Width: 32
       Origin: 0
@@ -1405,9 +1405,9 @@ Animations:
    Speed: 16
    Frames:
    {
-      Image: Media/Blocks.png
-      X: 32
-      Y: 0
+      Image: Media/Textures1.png
+      X: 344
+      Y: 81
       Height: 32
       Width: 32
       Origin: 0
@@ -1421,9 +1421,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
-      X: 64
-      Y: 0
+      Image: Media/Textures1.png
+      X: 376
+      Y: 81
       Height: 32
       Width: 32
       Origin: 0
@@ -1437,9 +1437,9 @@ Animations:
       }
    }
    {
-      Image: Media/Blocks.png
-      X: 96
-      Y: 0
+      Image: Media/Textures1.png
+      X: 408
+      Y: 81
       Height: 32
       Width: 32
       Origin: 0
