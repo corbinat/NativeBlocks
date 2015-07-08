@@ -51,7 +51,6 @@ void cHighScoreRecorder::Initialize()
    l_Position.y += m_Description.getCharacterSize() * 2;
    l_Position.x += 64;
    m_Name.setPosition(l_Position.x, l_Position.y);
-
 }
 
 void cHighScoreRecorder::Event(std::list<sf::Event> * a_pEventList)

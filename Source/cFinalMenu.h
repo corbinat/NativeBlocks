@@ -27,6 +27,8 @@ private:
 
    void _CreateFinalFreePlayMenu();
    void _CreateFinalChallengeMenu();
+   void _CreateChallengeVictoryMenu();
+   bool _IsHighScore();
 
    bool m_NeedToActivateButtons;
 
