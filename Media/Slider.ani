@@ -5,8 +5,8 @@ Animations:
    Frames:
    {
       Image: Media/Textures1.png
-      X: 374
-      Y: 177
+      X: 384
+      Y: 188
       Height: 11
       Width: 10
       Origin: 0
