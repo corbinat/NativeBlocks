@@ -37,6 +37,8 @@ public:
    bool IsExploding();
    void ExplodeDone();
 
+   void MessageReceived(sMessage a_Message);
+
 private:
 
    void _CountConnections(std::unordered_set<cBean*>* a_ExcludeList);
@@ -55,6 +57,10 @@ private:
    bool m_Exploding;
 
    uint32_t m_ParentId;
+
+   // If the game is paused
+   bool m_Paused;
+   sf::Vector3<double> m_SavedVelocity;
 
 };
 

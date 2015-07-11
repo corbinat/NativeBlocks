@@ -8,7 +8,8 @@ cHumanPlayer::cHumanPlayer(cResources* a_pResources, std::minstd_rand a_RandomNu
      m_KeyRepeatTime(0),
      m_KeyRepeatLimit(150),
      m_LeftKeyDown(false),
-     m_RightKeyDown(false)
+     m_RightKeyDown(false),
+     m_Paused(false)
 {
 }
 
@@ -57,6 +58,19 @@ void cHumanPlayer::Event(std::list<sf::Event> * a_pEventList)
             else if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionRotateClockwise))
             {
                RotateBeans(kRotateClockwise);
+            }
+            else if (GetResources()->GetEventTranslator()->Compare(*i, g_kActionPause))
+            {
+               if (GetPlayerState() != kStateIdle)
+               {
+                  m_Paused = !m_Paused;
+                  sMessage l_Message;
+                  l_Message.m_From = GetUniqueId();
+                  l_Message.m_Category = GetResources()->GetMessageDispatcher()->Any();
+                  l_Message.m_Key = "PauseState";
+                  l_Message.m_Value = m_Paused ? "Pause" : "Unpause";
+                  GetResources()->GetMessageDispatcher()->PostMessage(l_Message);
+               }
             }
 
             break;

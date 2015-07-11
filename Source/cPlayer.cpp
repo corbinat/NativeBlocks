@@ -6,6 +6,7 @@
 #include "cWall.h"
 #include "cRoof.h"
 #include "cGameOver.h"
+#include "cPause.h"
 
 #include "cResources.h"
 
@@ -24,6 +25,8 @@ cPlayer::cPlayer(
    )
    : cObject(a_pResources),
      m_CurrentState(kStateIdle),
+     m_SavedState(kStateIdle),
+     m_pPauseBanner(NULL),
      m_RotationState(kRotationStateUp),
      m_pPivotBean(NULL),
      m_pSwingBean(NULL),
@@ -104,6 +107,19 @@ cPlayer::cPlayer(
       GetUniqueId(),
       l_MessageCallback,
       l_GameOverRequest
+      );
+
+   // Look for messages indicating the game was paused
+   sMessage l_PauseRequest;
+   l_PauseRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_PauseRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_PauseRequest.m_Key = "PauseState";
+   l_PauseRequest.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_PauseRequest
       );
 }
 
@@ -721,6 +737,43 @@ void cPlayer::MessageReceived(sMessage a_Message)
       l_Stream >> l_NewGarbage;
 
       m_GarbageAcumulator += l_NewGarbage;
+   }
+   else if(a_Message.m_Key == "PauseState")
+   {
+      if (a_Message.m_Value == "Pause")
+      {
+         m_SavedState = m_CurrentState;
+         m_CurrentState = kStatePaused;
+         // Pause the music
+         GetResources()->GetBackGroundMusic()->pause();
+
+         // Make a pause banner
+         m_pPauseBanner = new cPause(GetResources());
+         sf::Vector3<double> l_Position = GetPosition();
+
+         sf::Vector2<uint32_t>* l_pGridCellSize =
+            GetResources()->GetActiveLevelData()->GetGridCellSize();
+
+         l_Position.y += l_pGridCellSize->y * 2;
+         l_Position.x += l_pGridCellSize->x / 2;
+         m_pPauseBanner->SetPosition(l_Position, kNormal, false);
+         m_pPauseBanner->Initialize();
+      }
+      else
+      {
+         m_CurrentState = m_SavedState;
+
+         if (GetResources()->GetBackGroundMusic()->getStatus() == sf::SoundStream::Paused)
+         {
+            GetResources()->GetBackGroundMusic()->play();
+         }
+
+         if (m_pPauseBanner != NULL)
+         {
+            m_pPauseBanner->UnregisterObject(true);
+            m_pPauseBanner = NULL;
+         }
+      }
    }
 }
 

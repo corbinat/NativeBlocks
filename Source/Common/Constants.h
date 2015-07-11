@@ -9,5 +9,6 @@ const std::string g_kActionLeft = "Left";
 const std::string g_kActionRight = "Right";
 const std::string g_kActionRotateCounterClockwise = "RotateCounterClockwise";
 const std::string g_kActionRotateClockwise = "RotateClockwise";
+const std::string g_kActionPause = "Pause";
 
 #endif

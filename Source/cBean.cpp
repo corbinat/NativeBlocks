@@ -13,7 +13,9 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
    m_InPlay(false),
    m_ConnectedBeans(),
    m_Exploding(false),
-   m_ParentId(a_ParentId)
+   m_ParentId(a_ParentId),
+   m_Paused(false),
+   m_SavedVelocity()
 {
    SetType("Bean");
    SetSolid(true);
@@ -65,6 +67,22 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
       }
    }
 
+    // Look for messages indicating the game was paused
+   sMessage l_PauseRequest;
+   l_PauseRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_PauseRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_PauseRequest.m_Key = "PauseState";
+   l_PauseRequest.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   std::function<void(sMessage)> l_MessageCallback =
+      std::bind(&cBean::MessageReceived, this, std::placeholders::_1);
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_PauseRequest
+      );
+
 }
 
 cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
@@ -74,16 +92,36 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    m_InPlay(false),
    m_ConnectedBeans(),
    m_Exploding(false),
-   m_ParentId(a_ParentId)
+   m_ParentId(a_ParentId),
+   m_Paused(false),
+   m_SavedVelocity()
 {
    SetType("Bean");
    SetSolid(true);
    LoadAnimations("Media/Beans.ani");
    _SetBaseSprite();
+
+    // Look for messages indicating the game was paused
+   sMessage l_PauseRequest;
+   l_PauseRequest.m_From = GetResources()->GetMessageDispatcher()->AnyID();
+   l_PauseRequest.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_PauseRequest.m_Key = "PauseState";
+   l_PauseRequest.m_Value = GetResources()->GetMessageDispatcher()->Any();
+
+   std::function<void(sMessage)> l_MessageCallback =
+      std::bind(&cBean::MessageReceived, this, std::placeholders::_1);
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_PauseRequest
+      );
+
 }
 
 cBean::~cBean()
 {
+   GetResources()->GetMessageDispatcher()->CancelMessages(GetUniqueId());
 }
 
 void cBean::Event(std::list<sf::Event> * a_pEventList)
@@ -93,7 +131,7 @@ void cBean::Event(std::list<sf::Event> * a_pEventList)
 
 void cBean::Step (uint32_t a_ElapsedMiliSec)
 {
-   if (m_FreeFall && GetVelocity().y < 1000)
+   if (m_FreeFall && !m_Paused && GetVelocity().y < 1000)
    {
       SetVelocityY(2 * a_ElapsedMiliSec, kRelative);
    }
@@ -365,6 +403,28 @@ bool cBean::IsExploding()
 void cBean::ExplodeDone()
 {
    UnregisterObject(true);
+}
+
+void cBean::MessageReceived(sMessage a_Message)
+{
+   if(a_Message.m_Key == "PauseState")
+   {
+      if (a_Message.m_Value == "Pause")
+      {
+         m_Paused = true;
+         m_SavedVelocity = GetVelocity();
+         SetVelocityY(0, kNormal);
+         PauseAnimation(true);
+         SetVisible(false);
+      }
+      else
+      {
+         m_Paused = false;
+         SetVelocity(m_SavedVelocity, kNormal);
+         PauseAnimation(false);
+         SetVisible(true);
+      }
+   }
 }
 
 void cBean::_SetBaseSprite()

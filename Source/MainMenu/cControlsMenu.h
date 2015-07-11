@@ -33,6 +33,7 @@ private:
       kActionRight,
       kActionClockwise,
       kActionCounterClockwise,
+      kActionPause,
       kActionCount
    };
 

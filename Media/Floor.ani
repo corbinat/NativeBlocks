@@ -62,4 +62,25 @@ Animations:
       }
    }
 }
+{
+   Name: Pause
+   Speed: 8
+   Frames:
+   {
+      Image: Media/Textures2.png
+      X: 0
+      Y: 128
+      Height: 64
+      Width: 160
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 64
+         Width: 160
+      }
+   }
+}
 

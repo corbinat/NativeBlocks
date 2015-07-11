@@ -21,6 +21,7 @@ private:
    const uint32_t m_KeyRepeatLimit;
    bool m_LeftKeyDown;
    bool m_RightKeyDown;
+   bool m_Paused;
 
 };
 

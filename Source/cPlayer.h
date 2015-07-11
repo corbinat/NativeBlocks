@@ -23,6 +23,7 @@ enum ePlayerState
    kStateCheckForMatches,
    kStateDropGarbage,
    kStateCheckForLosingState,
+   kStatePaused,
    kStateGameLost
 };
 
@@ -44,6 +45,7 @@ enum eRotationDirection
 
 class cBean;
 class cBeanInfo;
+class cPause;
 
 class cPlayer: public cObject
 {
@@ -112,6 +114,10 @@ private:
    uint32_t _CalculateGarbageBeanNumber();
 
    ePlayerState m_CurrentState;
+   // Used so we know what state to be in after unpausing
+   ePlayerState m_SavedState;
+   cPause * m_pPauseBanner;
+
    eRotationState m_RotationState;
 
    // Beans in play
@@ -168,7 +174,6 @@ private:
 
    // Used so we can "shoot" each other
    cPlayer* m_pOpponent;
-
 };
 
 #endif

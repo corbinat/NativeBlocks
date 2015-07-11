@@ -54,6 +54,12 @@ cControlsMenu::cControlsMenu(cResources* a_pResources)
          l_ActionName =
             GetResources()->GetEventTranslator()->GetActionToEventString(g_kActionRotateCounterClockwise);
       }
+      else if (i == static_cast<int>(kActionPause))
+      {
+         l_LabelString = "Pause: ";
+         l_ActionName =
+            GetResources()->GetEventTranslator()->GetActionToEventString(g_kActionPause);
+      }
 
       std::pair<sf::Text, cButton*> l_NewAction;
 
@@ -217,6 +223,11 @@ void cControlsMenu::MessageReceived(sMessage a_Message)
       l_Capture = new cEventCapture(g_kActionRotateCounterClockwise, "Turn Left", GetResources());
       l_Capture->SetPosition(GetPosition(), kNormal, false);
    }
+   else if (a_Message.m_From == m_ActionButtons[kActionPause].second->GetUniqueId())
+   {
+      l_Capture = new cEventCapture(g_kActionPause, "Pause", GetResources());
+      l_Capture->SetPosition(GetPosition(), kNormal, false);
+   }
    else if (a_Message.m_From == m_pBackButton->GetUniqueId())
    {
       SetVelocityX(1000, kNormal);
@@ -266,6 +277,11 @@ void cControlsMenu::_UpdateButtons()
       {
          l_ActionName =
             GetResources()->GetEventTranslator()->GetActionToEventString(g_kActionRotateCounterClockwise);
+      }
+      else if (i == static_cast<int>(kActionPause))
+      {
+         l_ActionName =
+            GetResources()->GetEventTranslator()->GetActionToEventString(g_kActionPause);
       }
 
       m_ActionButtons[i].second->SetLabel(l_ActionName);
