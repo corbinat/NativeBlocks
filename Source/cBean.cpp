@@ -21,10 +21,8 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
    SetSolid(true);
    LoadAnimations("Media/Beans.ani");
 
-   //~ std::random_device l_Generator;
    std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
    std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 1);
-   //std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 4);
 
    int l_Number = l_Distribution(l_Generator);
    l_Number = l_Distribution(l_Generator);

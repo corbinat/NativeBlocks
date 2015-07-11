@@ -380,7 +380,6 @@ void cAiPlayer::_AnalyzeAllMoves()
    // towards.
    if (m_OptimalMoves.size() != 0)
    {
-      //~ std::random_device l_Generator;
       std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
       std::uniform_int_distribution<int> l_Distribution(0, m_OptimalMoves.size() - 1);
@@ -653,8 +652,7 @@ void cAiPlayer::_AnalyzeMove(
       else if (m_OptimalMoves.back().m_Score < a_InitialMove.m_Score)
       {
          // AIs might have a chance of not clearing out suboptimal moves
-         // TODO: random_device doesn't work on Windows.
-         std::random_device l_Generator;
+         std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
          std::uniform_int_distribution<int> l_Distribution(
             1,
             100

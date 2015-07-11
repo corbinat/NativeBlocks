@@ -226,9 +226,6 @@ void cAiPersonality::AdjustPersonalityToState(
    }
 
    // Calculate m_CurrentDelayToFirstMove
-   //~ std::random_device l_RandomSeeder;
-   //~ uint32_t l_Seed = l_RandomSeeder();
-   //~ std::minstd_rand l_Random(l_Seed);
    std::minstd_rand l_Random(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
    if (m_CurrentMinDelayToFirstMove >= m_CurrentMaxDelayToFirstMove)
