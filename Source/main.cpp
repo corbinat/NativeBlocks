@@ -4,6 +4,8 @@
 #include "ChallengeLevel/cChallengeLevel.h"
 #include "HighScores/cHighScoresLevel.h"
 
+#include "Common/Constants.h"
+
 #include "cResources.h"
 #include "cObject.h"
 #include "cLevelManager.h"
@@ -14,14 +16,21 @@ int main(int argc, char* argv[])
    l_Resources.CreateWindow(800, 600, "Native Blocks");
    l_Resources.AddAssetResourcePack("Media/Media.pak");
 
-   bool l_Success =
-      l_Resources.GetEventTranslator()->LoadFromFile("Config/EventBindings.bnd");
+   //~ bool l_Success =
+      //~ l_Resources.GetEventTranslator()->LoadFromFile("Config/EventBindings.bnd");
 
-   if (!l_Success)
-   {
-      std::cout << "Failed to load controls from Config/EventBindings.bnd" << std::endl;
-      return 0;
-   }
+   l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Down, g_kActionDown);
+   l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Left, g_kActionLeft);
+   l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Right, g_kActionRight);
+   l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Z, g_kActionRotateCounterClockwise);
+   l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::X, g_kActionRotateClockwise);
+   l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Escape, g_kActionPause);
+
+   //~ if (!l_Success)
+   //~ {
+      //~ std::cout << "Failed to load controls from Config/EventBindings.bnd" << std::endl;
+      //~ return 0;
+   //~ }
 
    cMainMenuLevel l_MainMenu(&l_Resources);
    cBeanLevel l_MainLevel(&l_Resources);
