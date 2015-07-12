@@ -37,6 +37,7 @@ private:
    cSlider * m_pMusicSlider;
    cButton * m_pKeyMapButton;
    cControlsMenu * m_pControlsMenu;
+   cButton * m_pCreditsButton;
    cButton * m_pBackButton;
 
    bool m_PostBackMessage;

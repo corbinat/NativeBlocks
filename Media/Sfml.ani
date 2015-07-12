@@ -1,0 +1,22 @@
+Animations:
+{
+   Name: SFML
+   Speed: 8
+   Frames:
+   {
+      Image: Media/sfml-logo-small.png
+      X: 0
+      Y: 0
+      Height: 78
+      Width: 256
+      Origin: 0
+      BoundingBoxes:
+      {
+         Name: Full Box
+         X: 0
+         Y: 0
+         Height: 78
+         Width: 256
+      }
+   }
+}

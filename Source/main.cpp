@@ -3,6 +3,7 @@
 #include "cMainMenuLevel.h"
 #include "ChallengeLevel/cChallengeLevel.h"
 #include "HighScores/cHighScoresLevel.h"
+#include "Credits/cCreditsLevel.h"
 
 #include "Common/Constants.h"
 
@@ -36,6 +37,7 @@ int main(int argc, char* argv[])
    cBeanLevel l_MainLevel(&l_Resources);
    cChallengeLevel l_ChallengeLevel(&l_Resources);
    cHighScoresLevel l_HighScoresLevel(&l_Resources);
+   cCreditsLevel l_CreditsLevel(&l_Resources);
 
    //l_Resources.SetActiveLevel("Level1", false);
    l_Resources.SetActiveLevel("MainMenu", false);
@@ -45,6 +47,7 @@ int main(int argc, char* argv[])
    l_LevelManager.AddLevel(&l_MainMenu);
    l_LevelManager.AddLevel(&l_ChallengeLevel);
    l_LevelManager.AddLevel(&l_HighScoresLevel);
+   l_LevelManager.AddLevel(&l_CreditsLevel);
 
    while (l_LevelManager.IsRunning())
    {

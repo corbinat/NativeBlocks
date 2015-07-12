@@ -27,6 +27,7 @@ srcs += $(wildcard Source/Common/Props/*.cpp)
 srcs += $(wildcard Source/Common/Widgets/*.cpp)
 srcs += $(wildcard Source/ChallengeLevel/*.cpp)
 srcs += $(wildcard Source/HighScores/*.cpp)
+srcs += $(wildcard Source/Credits/*.cpp)
 
 objs = $(srcs:.cpp=.o)
 deps = $(srcs:.cpp=.d)

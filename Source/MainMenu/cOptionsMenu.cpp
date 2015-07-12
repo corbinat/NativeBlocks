@@ -15,6 +15,7 @@ cOptionsMenu::cOptionsMenu(cResources* a_pResources)
      m_pMusicSlider(NULL),
      m_pKeyMapButton(NULL),
      m_pControlsMenu(NULL),
+     m_pCreditsButton(NULL),
      m_pBackButton(NULL),
      m_PostBackMessage(false)
 {
@@ -44,6 +45,10 @@ cOptionsMenu::cOptionsMenu(cResources* a_pResources)
 
    m_pControlsMenu = new cControlsMenu(GetResources());
 
+   m_pCreditsButton = new cButton(GetResources());
+   m_pCreditsButton->SetImage("Media/Title.ani", "BlankMediumButton");
+   m_pCreditsButton->SetLabel("Credits");
+
    m_pBackButton = new cButton(GetResources());
    m_pBackButton->SetImage("Media/Title.ani", "BlankMediumButton");
    m_pBackButton->SetLabel("Back");
@@ -51,6 +56,7 @@ cOptionsMenu::cOptionsMenu(cResources* a_pResources)
    AddChild(m_pSoundSlider);
    AddChild(m_pMusicSlider);
    AddChild(m_pKeyMapButton);
+   AddChild(m_pCreditsButton);
    AddChild(m_pBackButton);
 }
 
@@ -79,6 +85,8 @@ void cOptionsMenu::Initialize()
    l_Position.y += m_pMusicSlider->GetBoundingBox().height + 15;
    m_pKeyMapButton->SetPosition(l_Position, kNormal, false);
    l_Position.y += m_pKeyMapButton->GetBoundingBox().height + 5;
+   m_pCreditsButton->SetPosition(l_Position, kNormal, false);
+   l_Position.y += m_pCreditsButton->GetBoundingBox().height + 5;
    m_pBackButton->SetPosition(l_Position, kNormal, false);
 
    // Initialize widgets
@@ -94,6 +102,18 @@ void cOptionsMenu::Initialize()
 
    std::function<void(sMessage)> l_MessageCallback =
       std::bind(&cOptionsMenu::MessageReceived, this, std::placeholders::_1);
+
+   GetResources()->GetMessageDispatcher()->RegisterForMessages(
+      GetUniqueId(),
+      l_MessageCallback,
+      l_Request
+      );
+
+   // Receive messages when the Credits button is pushed
+   l_Request.m_From = m_pCreditsButton->GetUniqueId();
+   l_Request.m_Category = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Key = GetResources()->GetMessageDispatcher()->Any();
+   l_Request.m_Value = GetResources()->GetMessageDispatcher()->Any();
 
    GetResources()->GetMessageDispatcher()->RegisterForMessages(
       GetUniqueId(),
@@ -271,6 +291,10 @@ void cOptionsMenu::MessageReceived(sMessage a_Message)
    {
       double l_Volume = std::stod(a_Message.m_Value);
       GetResources()->GetBackGroundMusic()->setVolume(l_Volume);
+   }
+   else if (a_Message.m_From == m_pCreditsButton->GetUniqueId())
+   {
+      GetResources()->SetActiveLevel("Credits", true);
    }
    else if (a_Message.m_Key == "Menu Change" && a_Message.m_Value == "cOptionsMenu")
    {
