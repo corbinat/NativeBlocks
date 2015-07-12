@@ -1,6 +1,6 @@
 Gpp = g++
-#DEBUG = -O0 -g -DDEBUG_PRINTS
-DEBUG = -O2
+DEBUG = -O0 -g -DDEBUG_PRINTS
+#DEBUG = -O2
 
 # SFML library
 SFMLDIR = ../External/SFML-2.2
@@ -16,7 +16,7 @@ CFLAGS = -I${SFMLINC}
 CFLAGS += -ISource
 CFLAGS += -I${EngineINC}
 CFLAGS += ${DEBUG} -std=c++11
-LDFLAGS = -L${SFMLLIB} -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio -lpthread -Wl,-Bstatic -lphysfs -lz -Wl,-Bdynamic
+LDFLAGS = -L${SFMLLIB} -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio -lpthread -Wl,-Bstatic -lphysfs -lz -Wl,-Bdynamic -Wl,-rpath,Lib/
 
 SourceDir = Source
 

@@ -25,6 +25,10 @@ void cMainMenuLevel::Initialize()
    l_pFadeTransition->SetTransitionTime(1000);
    // Make sure the transition is in front of everything
    l_pFadeTransition->SetDepth(-10);
+
+   GetResources()->PlayBackgroundMusic("Media/Music/Intro.ogg");
+   GetResources()->GetBackGroundMusic()->setLoop(true);
+   GetResources()->GetBackGroundMusic()->play();
 }
 
 void cMainMenuLevel::Step(uint32_t a_ElapsedMiliSec)

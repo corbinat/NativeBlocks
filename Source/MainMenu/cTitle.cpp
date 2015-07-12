@@ -11,11 +11,6 @@ cTitle::cTitle(cResources* a_pResources)
    LoadAnimations("Media/Title.ani");
    PlayAnimationLoop("TitleBanner");
 
-   // The title plays the music
-   GetResources()->PlayBackgroundMusic("Media/Music/Intro.ogg");
-   GetResources()->GetBackGroundMusic()->setLoop(true);
-   GetResources()->GetBackGroundMusic()->play();
-
    // REMOVE THIS WHEN GAME IS COMPLETE
    std::shared_ptr<sf::Font> l_Font
       = GetResources()->LoadFont("Media/junegull.ttf");

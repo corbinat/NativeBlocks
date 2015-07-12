@@ -28,12 +28,12 @@ public:
 
 private:
    cButton * m_pChallengeButton;
+   cChallengeMenu * m_pChallengeMenu;
    cButton * m_pFreePlayButton;
-   cButton * m_pOptionsButton;
-
    cFreePlayMenu * m_pFreePlayMenu;
+   cButton * m_pOptionsButton;
    cOptionsMenu * m_pOptionsMenu;
-   cChallengeMenu * m_pChallengeMenu;;
+
 };
 
 #endif
