@@ -796,12 +796,12 @@ bool cPlayer::MoveControlledBeans(sf::Vector3<double> a_NewRelativePosition)
    sf::Vector3<double> l_Position = m_pPivotBean->GetPosition();
    l_Position += a_NewRelativePosition;
    std::list<cObject*> l_Collisions =
-      GetCollisions(m_pPivotBean, l_Position);
+      m_pPivotBean->GetCollisions(l_Position);
 
    l_Position = m_pSwingBean->GetPosition();
    l_Position += a_NewRelativePosition;
    std::list<cObject*> l_Collisions2 =
-      GetCollisions(m_pSwingBean, l_Position);
+      m_pSwingBean->GetCollisions(l_Position);
 
    // Join the collision lists together
    l_Collisions.splice(l_Collisions.end(), l_Collisions2);
@@ -898,7 +898,7 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
    }
 
    std::list<cObject*> l_Collisions =
-      GetCollisions(m_pPivotBean, l_Position);
+      m_pPivotBean->GetCollisions(l_Position);
 
    if (l_Collisions.size() == 0)
    {
@@ -933,7 +933,7 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
       }
 
       l_Collisions =
-         GetCollisions(m_pPivotBean, l_OppositePosition);
+         m_pPivotBean->GetCollisions(l_OppositePosition);
       if (l_Collisions.size() == 0)
       {
          m_pSwingBean->SetPosition(l_NewSwingPosition, kNormal, false);
@@ -1068,7 +1068,7 @@ bool cPlayer::_BeansAreResting()
       sf::Vector3<double> l_Position = m_pPivotBean->GetPosition();
       l_Position.y += l_pGridCellSize->y / 2;
       std::list<cObject*> l_Collisions =
-         GetCollisions(m_pPivotBean, l_Position);
+         m_pPivotBean->GetCollisions(l_Position);
 
       if (l_Collisions.size() > 0)
       {
@@ -1090,7 +1090,7 @@ bool cPlayer::_BeansAreResting()
       sf::Vector3<double> l_Position = m_pSwingBean->GetPosition();
       l_Position.y += l_pGridCellSize->y / 2;
       std::list<cObject*> l_Collisions =
-         GetCollisions(m_pSwingBean, l_Position);
+         m_pSwingBean->GetCollisions(l_Position);
 
       if (l_Collisions.size() > 0)
       {
