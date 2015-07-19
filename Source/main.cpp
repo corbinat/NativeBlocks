@@ -1,6 +1,6 @@
 // sudo ldconfig /home/corbin/Documents/c++/projects/External/SFML-2.2/lib/
 #include "cBeanLevel.h"
-#include "cMainMenuLevel.h"
+#include "MainMenu/cMainMenuLevel.h"
 #include "ChallengeLevel/cChallengeLevel.h"
 #include "HighScores/cHighScoresLevel.h"
 #include "Credits/cCreditsLevel.h"
