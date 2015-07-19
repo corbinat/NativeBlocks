@@ -8,6 +8,7 @@ cAiBlock::cAiBlock(cResources* a_pResources)
    SetType("cAiBlock");
 
    SetSolid(true);
+   SetCollidable(true);
 
    std::shared_ptr<sf::Font> l_Font
       = GetResources()->LoadFont("Media/junegull.ttf");

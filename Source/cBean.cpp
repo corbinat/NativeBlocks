@@ -19,6 +19,7 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
 {
    SetType("Bean");
    SetSolid(true);
+   SetCollidable(true);
    LoadAnimations("Media/Beans.ani");
 
    std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -96,6 +97,7 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
 {
    SetType("Bean");
    SetSolid(true);
+   SetCollidable(true);
    LoadAnimations("Media/Beans.ani");
    _SetBaseSprite();
 

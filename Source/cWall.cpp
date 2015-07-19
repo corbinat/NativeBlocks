@@ -5,6 +5,7 @@ cWall::cWall(cResources* a_pResources)
 {
    SetType("Wall");
    SetSolid(true);
+   SetCollidable(true);
    LoadAnimations("Media/Floor.ani");
    PlayAnimationLoop("Wall");
 }

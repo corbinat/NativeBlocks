@@ -5,6 +5,7 @@ cFloor::cFloor(cResources* a_pResources)
 {
    SetType("Floor");
    SetSolid(true);
+   SetCollidable(true);
    LoadAnimations("Media/Floor.ani");
    PlayAnimationLoop("Floor");
 }
