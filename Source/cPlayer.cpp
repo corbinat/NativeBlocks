@@ -30,7 +30,7 @@ cPlayer::cPlayer(
      m_RotationState(kRotationStateUp),
      m_pPivotBean(NULL),
      m_pSwingBean(NULL),
-     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId()),
+     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId(), 110),
      m_MiliSecPerFall(500),
      m_FallingBeans(),
      m_NewBeans(),
@@ -323,7 +323,6 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                StateChange(kStateWaitForBeansToSettle, kStateCheckForMatches);
             }
          }
-
          break;
       }
 
@@ -1126,7 +1125,7 @@ sf::Vector2<uint32_t> cPlayer::GetBeanGridPosition(cBean* a_pBean)
 
 void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
 {
-   cBean* l_pGarbageBean = new cBean(kBeanColorGarbage, GetResources(), GetUniqueId());
+   cBean* l_pGarbageBean = m_Staging.GetGarbageBean();
    sf::Vector3<double> l_Position = GetPosition();
 
    sf::Vector2<uint32_t>* l_pGridCellSize =

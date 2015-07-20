@@ -13,11 +13,13 @@ public:
    cStaging(
       cResources* a_pResources,
       std::minstd_rand a_RandomNumberEngine,
-      uint32_t a_PlayerId
+      uint32_t a_PlayerId,
+      size_t a_BeanPoolSize
       );
 
    ~cStaging();
 
+   cBean* GetGarbageBean();
    cBean* GetNextBean();
 
    // Position is 0 indexed where 0 is the next bean in the staging area
@@ -33,6 +35,9 @@ private:
    cResources* m_pResources;
 
    uint32_t m_PlayerId;
+
+   size_t m_BeanPoolSize;
+   std::vector<cBean*> m_BeenPool;
 
 };
 

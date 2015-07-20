@@ -6,13 +6,23 @@
 cStaging::cStaging(
    cResources* a_pResources,
    std::minstd_rand a_RandomNumberEngine,
-   uint32_t a_PlayerId
+   uint32_t a_PlayerId,
+   size_t a_BeanPoolSize
    )
    : m_pResources(a_pResources),
      m_RandomNumberEngine(),
-     m_PlayerId(a_PlayerId)
+     m_PlayerId(a_PlayerId),
+     m_BeanPoolSize(a_BeanPoolSize),
+     m_BeenPool()
 {
    m_RandomNumberEngine = a_RandomNumberEngine;
+
+   // We can have 6 * 12 beans in the playing area plus 6 * 5 garbage beans
+   // queued up. We'll do 110 just in case;
+   for (int i = 0; i < m_BeanPoolSize; ++i)
+   {
+      m_BeenPool.push_back(new cBean(kBeanColorBlue, m_pResources, m_PlayerId));
+   }
 }
 
 cStaging::~cStaging()
@@ -20,17 +30,66 @@ cStaging::~cStaging()
 
 }
 
+cBean* cStaging::GetGarbageBean()
+{
+   // Find an unused bean in the BeanPool
+   cBean* l_AvailableBean = NULL;
+
+   for (auto l_Bean : m_BeenPool)
+   {
+      if (!(l_Bean->IsVisible()))
+      {
+         l_Bean->ResetBean();
+         l_AvailableBean = l_Bean;
+         break;
+      }
+   }
+
+   if (l_AvailableBean == NULL)
+   {
+      // This shouldn't ever happen
+      std::cout << "Couldn't find an available Bean!!!!!" << std::endl;
+      l_AvailableBean = new cBean(kBeanColorGarbage, m_pResources, m_PlayerId);
+      m_BeenPool.push_back(l_AvailableBean);
+   }
+
+   l_AvailableBean->SetColor(kBeanColorGarbage);
+
+   return l_AvailableBean;
+}
+
 cBean* cStaging::GetNextBean()
 {
+   // Find an unused bean in the BeanPool
+   cBean* l_AvailableBean = NULL;
+
+   for (auto l_Bean : m_BeenPool)
+   {
+      if (!(l_Bean->IsVisible()))
+      {
+         l_Bean->ResetBean();
+         l_AvailableBean = l_Bean;
+         break;
+      }
+   }
+
    // Advance the random number engine
    std::uniform_int_distribution<int> l_Distribution(0, kBeanColorNumber - 1);
 
    int l_Number = l_Distribution(m_RandomNumberEngine);
    eBeanColor l_Color = _NumberToColor(l_Number);
 
-   cBean * a_pBean = new cBean(l_Color, m_pResources, m_PlayerId);
+   if (l_AvailableBean == NULL)
+   {
+      // This shouldn't ever happen
+      std::cout << "Couldn't find an available Bean!!!!!" << std::endl;
+      l_AvailableBean = new cBean(l_Color, m_pResources, m_PlayerId);
+      m_BeenPool.push_back(l_AvailableBean);
+   }
 
-   return a_pBean;
+   l_AvailableBean->SetColor(l_Color);
+
+   return l_AvailableBean;
 }
 
 eBeanColor cStaging::InspectNextBeanColor(uint32_t a_Position)

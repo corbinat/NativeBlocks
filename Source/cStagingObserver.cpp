@@ -4,7 +4,7 @@
 
 cStagingObserver::cStagingObserver(cResources* a_pResources, std::minstd_rand a_RandomNumberEngine, std::string a_Identifier)
    : cObject(a_pResources),
-     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId()),
+     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId(), 4),
      m_Identifier(a_Identifier),
      a_pPivotBean(NULL),
      a_pSwingBean(NULL)
@@ -64,11 +64,11 @@ void cStagingObserver::_GetNewBeans()
 {
    if (a_pPivotBean != NULL)
    {
-      a_pPivotBean->UnregisterObject(true);
+      a_pPivotBean->SetVisible(false);
    }
    if (a_pSwingBean != NULL)
    {
-      a_pSwingBean->UnregisterObject(true);
+      a_pSwingBean->SetVisible(false);
    }
 
    a_pPivotBean = m_Staging.GetNextBean();

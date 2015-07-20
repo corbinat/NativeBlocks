@@ -24,7 +24,9 @@ public:
    virtual void Step(uint32_t a_ElapsedMiliSec);
    virtual void Collision(cObject* a_pOther);
 
+   void ResetBean();
    void Fall();
+   void SetColor(eBeanColor a_Color);
    eBeanColor GetColor();
    void SetGlowLevel(uint32_t a_Level);
 
@@ -54,6 +56,8 @@ private:
 
    std::unordered_set<cBean*> m_ConnectedBeans;
 
+   // Prevents us from checking for connections and things if in the process
+   // of exploding
    bool m_Exploding;
 
    uint32_t m_ParentId;

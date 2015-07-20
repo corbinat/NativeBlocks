@@ -97,9 +97,12 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
 {
    SetType("Bean");
    SetSolid(true);
-   SetCollidable(true);
    LoadAnimations("Media/Beans.ani");
    _SetBaseSprite();
+
+   // These get set to true when the bean gets added to the game
+   SetVisible(false);
+   SetCollidable(false);
 
     // Look for messages indicating the game was paused
    sMessage l_PauseRequest;
@@ -176,6 +179,17 @@ void cBean::Collision(cObject* a_pOther)
    }
 }
 
+void cBean::ResetBean()
+{
+   m_FreeFall = false;
+   m_InPlay = false;
+   m_ConnectedBeans.clear();
+   m_Exploding = false;
+   SetVisible(true);
+   SetPosition(sf::Vector3<double>{0,0,0}, kNormal, false);
+   SetCollidable(true);
+}
+
 void cBean::Fall()
 {
    m_FreeFall = true;
@@ -186,6 +200,12 @@ void cBean::Fall()
       l_pBean->_SetBaseSprite();
    }
    m_ConnectedBeans.clear();
+}
+
+void cBean::SetColor(eBeanColor a_Color)
+{
+   m_Color = a_Color;
+   _SetBaseSprite();
 }
 
 eBeanColor cBean::GetColor()
@@ -402,7 +422,11 @@ bool cBean::IsExploding()
 
 void cBean::ExplodeDone()
 {
-   UnregisterObject(true);
+   SetVisible(false);
+   SetCollidable(false);
+   SetPosition(sf::Vector3<double>{0,0,0}, kNormal, false);
+   m_ConnectedBeans.clear();
+   //UnregisterObject(true);
 }
 
 void cBean::MessageReceived(sMessage a_Message)
