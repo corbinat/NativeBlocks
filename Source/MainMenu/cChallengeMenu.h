@@ -21,7 +21,7 @@ public:
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step (uint32_t a_ElapsedMiliSec);
-   void Draw();
+   void Draw(const sf::Vector2<float> & a_rkInterpolationOffset);
 
    // Used by child widgets to communicate to this parent widget
    void MessageReceived(sMessage a_Message);

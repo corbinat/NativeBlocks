@@ -50,7 +50,7 @@ void cRoof::Step (uint32_t a_ElapsedMiliSec)
 {
 
 }
-void cRoof::Draw()
+void cRoof::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    GetResources()->GetWindow()->draw(m_PlayerName);
 }

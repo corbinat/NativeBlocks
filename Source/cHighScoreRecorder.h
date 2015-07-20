@@ -15,7 +15,7 @@ public:
    virtual void Event(std::list<sf::Event> * a_pEventList);
    virtual void Step (uint32_t a_ElapsedMiliSec);
    virtual void Collision(cObject* a_pOther);
-   virtual void Draw();
+   virtual void Draw(const sf::Vector2<float> & a_rkInterpolationOffset);
 
 
 private:

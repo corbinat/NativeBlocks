@@ -187,11 +187,14 @@ void cControlsMenu::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cControlsMenu::Draw()
+void cControlsMenu::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    for (auto i = m_ActionButtons.begin(); i != m_ActionButtons.end(); ++i)
    {
+      sf::Vector2<float> l_OldPosition = i->first.getPosition();
+      i->first.setPosition(l_OldPosition + a_rkInterpolationOffset);
       GetResources()->GetWindow()->draw(i->first);
+      i->first.setPosition(l_OldPosition);
    }
 }
 

@@ -27,7 +27,7 @@ void cPortrait::Step (uint32_t a_ElapsedMiliSec)
 {
 
 }
-void cPortrait::Draw()
+void cPortrait::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 }
 

@@ -158,7 +158,7 @@ void cChallengeMenu::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cChallengeMenu::Draw()
+void cChallengeMenu::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 
 }

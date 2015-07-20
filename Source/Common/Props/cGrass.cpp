@@ -29,7 +29,7 @@ void cGrass::Step (uint32_t a_ElapsedMiliSec)
 {
 }
 
-void cGrass::Draw()
+void cGrass::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 
 }

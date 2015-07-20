@@ -49,7 +49,7 @@ void cCloud::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cCloud::Draw()
+void cCloud::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 
 }

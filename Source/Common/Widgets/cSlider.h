@@ -15,7 +15,7 @@ public:
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step(uint32_t a_ElapsedMiliSec);
-   void Draw();
+   void Draw(const sf::Vector2<float> & a_rkInterpolationOffset);
 
    void SetLimits(double a_Min, double a_Max);
 
@@ -33,7 +33,7 @@ public:
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step(uint32_t a_ElapsedMiliSec);
-   void Draw();
+   void Draw(const sf::Vector2<float> & a_rkInterpolationOffset);
 
    void RegisterCallback(std::function<void(cObject*)> a_Callback);
    void SetValue(double a_Value);

@@ -49,9 +49,12 @@ void cTextBox::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cTextBox::Draw()
+void cTextBox::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
+   sf::Vector2<float> l_OldPosition = m_Data.getPosition();
+   m_Data.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_Data);
+   m_Data.setPosition(l_OldPosition);
 }
 
 void cTextBox::ReplaceString(std::string a_String)

@@ -39,6 +39,6 @@ void cSfmlLogo::Step (uint32_t a_ElapsedMiliSec)
 {
 }
 
-void cSfmlLogo::Draw()
+void cSfmlLogo::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 }

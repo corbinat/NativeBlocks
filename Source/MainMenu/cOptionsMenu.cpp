@@ -262,10 +262,17 @@ void cOptionsMenu::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cOptionsMenu::Draw()
+void cOptionsMenu::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
+   sf::Vector2<float> l_OldPosition = m_SoundLabel.getPosition();
+   m_SoundLabel.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_SoundLabel);
+   m_SoundLabel.setPosition(l_OldPosition);
+
+   l_OldPosition = m_MusicLabel.getPosition();
+   m_MusicLabel.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_MusicLabel);
+   m_MusicLabel.setPosition(l_OldPosition);
 }
 
 void cOptionsMenu::MessageReceived(sMessage a_Message)

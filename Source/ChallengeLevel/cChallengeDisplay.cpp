@@ -328,7 +328,7 @@ void cChallengeDisplay::Step (uint32_t a_ElapsedMiliSec)
 
 }
 
-void cChallengeDisplay::Draw()
+void cChallengeDisplay::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    GetResources()->GetWindow()->draw(m_ContinueString);
 }

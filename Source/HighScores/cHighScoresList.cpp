@@ -125,7 +125,7 @@ void cHighScoresList::Step (uint32_t a_ElapsedMiliSec)
 {
 }
 
-void cHighScoresList::Draw()
+void cHighScoresList::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    GetResources()->GetWindow()->draw(m_Title);
 

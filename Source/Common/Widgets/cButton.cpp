@@ -70,9 +70,12 @@ void cButton::Step(uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cButton::Draw()
+void cButton::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
+   sf::Vector2<float> l_OldPosition = m_Label.getPosition();
+   m_Label.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_Label);
+   m_Label.setPosition(l_OldPosition);
 }
 
 void cButton::SetImage(std::string a_AniFile, std::string a_Sprite)

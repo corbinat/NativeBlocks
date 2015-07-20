@@ -99,7 +99,7 @@ void cSelectionBox::Step (uint32_t a_ElapsedMiliSec)
 {
 }
 
-void cSelectionBox::Draw()
+void cSelectionBox::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 }
 

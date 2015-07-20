@@ -197,11 +197,22 @@ void cFreePlayMenu::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cFreePlayMenu::Draw()
+void cFreePlayMenu::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
+   sf::Vector2<float> l_OldPosition = m_Player1Label.getPosition();
+   m_Player1Label.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_Player1Label);
+   m_Player1Label.setPosition(l_OldPosition);
+
+   l_OldPosition = m_Player2Label.getPosition();
+   m_Player2Label.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_Player2Label);
+   m_Player2Label.setPosition(l_OldPosition);
+
+   l_OldPosition = m_GameSpeedLabel.getPosition();
+   m_GameSpeedLabel.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_GameSpeedLabel);
+   m_GameSpeedLabel.setPosition(l_OldPosition);
 }
 
 void cFreePlayMenu::MessageReceived(sMessage a_Message)

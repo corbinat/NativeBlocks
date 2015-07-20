@@ -151,7 +151,7 @@ void cHighScoreRecorder::Collision(cObject* a_pOther)
 {
 }
 
-void cHighScoreRecorder::Draw()
+void cHighScoreRecorder::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    GetResources()->GetWindow()->draw(m_Description);
    GetResources()->GetWindow()->draw(m_Name);

@@ -27,7 +27,7 @@ void cSliderNub::Event(std::list<sf::Event> * a_pEventList)
 void cSliderNub::Step(uint32_t a_ElapsedMiliSec)
 {
 }
-void cSliderNub::Draw()
+void cSliderNub::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 }
 
@@ -45,6 +45,8 @@ cSlider::cSlider(cResources* a_pResources)
    PlayAnimationLoop("Slider");
 
    m_pSliderNub = new cSliderNub(a_pResources);
+
+   AddChild(m_pSliderNub);
 }
 
 cSlider::~cSlider()
@@ -115,7 +117,7 @@ void cSlider::Step(uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cSlider::Draw()
+void cSlider::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 }
 

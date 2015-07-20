@@ -156,7 +156,7 @@ void cMainMenu::Step (uint32_t a_ElapsedMiliSec)
    }
 }
 
-void cMainMenu::Draw()
+void cMainMenu::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 
 }

@@ -86,7 +86,10 @@ void cAiBlock::Collision(cObject* a_pOther)
    }
 }
 
-void cAiBlock::Draw()
+void cAiBlock::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
+   sf::Vector2<float> l_OldPosition = m_AiLabel.getPosition();
+   m_AiLabel.setPosition(l_OldPosition + a_rkInterpolationOffset);
    GetResources()->GetWindow()->draw(m_AiLabel);
+   m_AiLabel.setPosition(l_OldPosition);
 }

@@ -21,7 +21,7 @@ public:
    void SetTransitionTime(uint32_t a_TransitionTimeMs);
 
    // These functions are overloaded from cObject
-   virtual void Draw();
+   virtual void Draw(const sf::Vector2<float> & a_rkInterpolationOffset);
    virtual void Step (uint32_t a_ElapsedMiliSec);
 
 private:

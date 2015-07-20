@@ -41,7 +41,7 @@ public:
    void Collision(cObject* a_pOther);
    void Event(std::list<sf::Event> * a_pEventList);
    void Step (uint32_t a_ElapsedMiliSec);
-   void Draw();
+   void Draw(const sf::Vector2<float> & a_rkInterpolationOffset);
 
 private:
    void _EvaluateHighScoreList();

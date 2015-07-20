@@ -39,7 +39,7 @@ void cFadeTransition::SetTransitionTime(uint32_t a_TransitionTimeMs)
    m_TransitionTimeInMs = a_TransitionTimeMs;
 }
 
-void cFadeTransition::Draw()
+void cFadeTransition::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    // Do all of this in draw so that we don't have one quick frame where the
    // color isn't set right

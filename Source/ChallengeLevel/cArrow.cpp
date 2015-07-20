@@ -63,6 +63,6 @@ void cArrow::Step(uint32_t a_ElapsedMiliSec)
 void cArrow::Collision(cObject* a_pOther)
 {
 }
-void cArrow::Draw()
+void cArrow::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
 }

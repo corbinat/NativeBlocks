@@ -71,7 +71,7 @@ void cEventCapture::Step (uint32_t a_ElapsedMiliSec)
 {
 }
 
-void cEventCapture::Draw()
+void cEventCapture::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    GetResources()->GetWindow()->draw(m_NewActionLabel);
 }

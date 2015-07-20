@@ -45,7 +45,7 @@ void cTitle::Step (uint32_t a_ElapsedMiliSec)
 {
 }
 
-void cTitle::Draw()
+void cTitle::Draw(const sf::Vector2<float> & a_rkInterpolationOffset)
 {
    GetResources()->GetWindow()->draw(m_DemoString);
 }
