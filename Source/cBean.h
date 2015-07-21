@@ -65,6 +65,7 @@ private:
    // If the game is paused
    bool m_Paused;
    sf::Vector3<double> m_SavedVelocity;
+   bool m_SavedVisibleState;
 
 };
 

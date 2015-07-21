@@ -15,7 +15,8 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
    m_Exploding(false),
    m_ParentId(a_ParentId),
    m_Paused(false),
-   m_SavedVelocity()
+   m_SavedVelocity(),
+   m_SavedVisibleState(false)
 {
    SetType("Bean");
    SetSolid(true);
@@ -93,7 +94,8 @@ cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    m_Exploding(false),
    m_ParentId(a_ParentId),
    m_Paused(false),
-   m_SavedVelocity()
+   m_SavedVelocity(),
+   m_SavedVisibleState(false)
 {
    SetType("Bean");
    SetSolid(true);
@@ -439,6 +441,7 @@ void cBean::MessageReceived(sMessage a_Message)
          m_SavedVelocity = GetVelocity();
          SetVelocityY(0, kNormal);
          PauseAnimation(true);
+         m_SavedVisibleState = IsVisible();
          SetVisible(false);
       }
       else
@@ -446,7 +449,7 @@ void cBean::MessageReceived(sMessage a_Message)
          m_Paused = false;
          SetVelocity(m_SavedVelocity, kNormal);
          PauseAnimation(false);
-         SetVisible(true);
+         SetVisible(m_SavedVisibleState);
       }
    }
 }
