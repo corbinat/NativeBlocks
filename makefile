@@ -3,7 +3,7 @@ DEBUG = -O0 -g -DDEBUG_PRINTS
 #DEBUG = -O2
 
 # SFML library
-SFMLDIR = ../External/SFML-2.2
+SFMLDIR = ../External/SFML-2.3.1
 SFMLLIB = ${SFMLDIR}/lib
 SFMLINC = ${SFMLDIR}/include
 
