@@ -47,6 +47,7 @@ private:
    void _SetBaseSprite();
 
    eBeanColor m_Color;
+   uint32_t m_GlowLevel;
 
    // Whether this bean should be moved by gravity
    bool m_FreeFall;
@@ -55,6 +56,10 @@ private:
    bool m_InPlay;
 
    std::unordered_set<cBean*> m_ConnectedBeans;
+
+   // This is used so that we can update glow levels of ALL beans in our chain
+   // when this bean falls.
+   std::unordered_set<cBean*> m_CachedTotalConnectedBeans;
 
    // Prevents us from checking for connections and things if in the process
    // of exploding

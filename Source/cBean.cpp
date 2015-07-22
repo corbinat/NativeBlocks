@@ -9,9 +9,11 @@
 cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
    : cObject(a_pResources),
    m_Color(kBeanColorBlue),
+   m_GlowLevel(0),
    m_FreeFall(false),
    m_InPlay(false),
    m_ConnectedBeans(),
+   m_CachedTotalConnectedBeans(),
    m_Exploding(false),
    m_ParentId(a_ParentId),
    m_Paused(false),
@@ -88,9 +90,11 @@ cBean::cBean(cResources* a_pResources, uint32_t a_ParentId)
 cBean::cBean(eBeanColor a_Color, cResources* a_pResources, uint32_t a_ParentId)
    : cObject(a_pResources),
    m_Color(a_Color),
+   m_GlowLevel(0),
    m_FreeFall(false),
    m_InPlay(false),
    m_ConnectedBeans(),
+   m_CachedTotalConnectedBeans(),
    m_Exploding(false),
    m_ParentId(a_ParentId),
    m_Paused(false),
@@ -186,6 +190,7 @@ void cBean::ResetBean()
    m_FreeFall = false;
    m_InPlay = false;
    m_ConnectedBeans.clear();
+   m_CachedTotalConnectedBeans.clear();
    m_Exploding = false;
    SetVisible(true);
    SetPosition(sf::Vector3<double>{0,0,0}, kNormal, false);
@@ -199,8 +204,24 @@ void cBean::Fall()
    for (cBean* l_pBean : m_ConnectedBeans)
    {
       l_pBean->m_ConnectedBeans.erase(this);
-      l_pBean->_SetBaseSprite();
    }
+
+   for (cBean* l_pBean : m_CachedTotalConnectedBeans)
+   {
+      if (l_pBean == this)
+      {
+         continue;
+      }
+
+      // Subtract one from that bean's glow level and set the correct sprite.
+      if (l_pBean->m_GlowLevel > 0)
+      {
+         l_pBean->SetGlowLevel(l_pBean->m_GlowLevel - 1);
+         l_pBean->m_CachedTotalConnectedBeans.erase(this);
+      }
+   }
+
+   m_CachedTotalConnectedBeans.clear();
    m_ConnectedBeans.clear();
 }
 
@@ -217,6 +238,7 @@ eBeanColor cBean::GetColor()
 
 void cBean::SetGlowLevel(uint32_t a_Level)
 {
+   m_GlowLevel = a_Level;
    switch(m_Color)
    {
       case kBeanColorOrange:
@@ -337,16 +359,15 @@ std::unordered_set<cBean*> cBean::CountConnections()
    {
       l_pBean->_CountConnections(&a_ExcludeList);
    }
-   //~ for (cBean* l_pBean : a_ExcludeList)
-   //~ {
-      //~ std::cout << "\t" << l_pBean->GetPosition().y << std::endl;
-   //~ }
 
    // Use this oportunity to update the bean sprites so that they glow when
-   // making a connection
+   // making a connection. Also update everyones cache.
+   m_CachedTotalConnectedBeans = a_ExcludeList;
+   m_GlowLevel = a_ExcludeList.size();
    for (cBean* l_pBean : a_ExcludeList)
    {
-      l_pBean->SetGlowLevel(a_ExcludeList.size());
+      l_pBean->SetGlowLevel(m_GlowLevel);
+      l_pBean->m_CachedTotalConnectedBeans = m_CachedTotalConnectedBeans;
    }
 
    return a_ExcludeList;
@@ -367,11 +388,6 @@ void cBean::_CountConnections(std::unordered_set<cBean*>* a_ExcludeList)
 void cBean::Explode()
 {
    m_Exploding = true;
-   for (cBean* l_pBean : m_ConnectedBeans)
-   {
-      l_pBean->m_ConnectedBeans.erase(this);
-      l_pBean->_SetBaseSprite();
-   }
 
    std::function<void(void)> l_MessageCallback =
       std::bind(&cBean::ExplodeDone, this);
@@ -414,6 +430,8 @@ void cBean::Explode()
       }
    }
 
+   // Don't need to do anything with connected beans because they should be
+   // exploding too.
    //UnregisterObject(true);
 }
 
@@ -428,6 +446,7 @@ void cBean::ExplodeDone()
    SetCollidable(false);
    SetPosition(sf::Vector3<double>{0,0,0}, kNormal, false);
    m_ConnectedBeans.clear();
+   m_CachedTotalConnectedBeans.clear();
    //UnregisterObject(true);
 }
 
