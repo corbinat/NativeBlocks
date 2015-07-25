@@ -45,7 +45,7 @@ void cCloud::Step (uint32_t a_ElapsedMiliSec)
          0
          );
 
-      SetPosition(l_NewPosition, kNormal, false);
+      SetPosition(l_NewPosition, kNormal, false, false);
    }
 }
 

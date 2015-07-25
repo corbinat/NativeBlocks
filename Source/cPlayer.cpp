@@ -215,13 +215,13 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
          sf::Vector3<double> l_Position = GetPosition();
          l_Position.x += GetResources()->GetActiveLevelData()->GetGridCellSize()->x * 2;
          l_Position.y -= GetResources()->GetActiveLevelData()->GetGridCellSize()->y;
-         m_pPivotBean->SetPosition(l_Position, kNormal, false);
+         m_pPivotBean->SetPosition(l_Position, kNormal, false, false);
 
          m_pSwingBean = m_Staging.GetNextBean();
          l_Position = GetPosition();
          l_Position.x += GetResources()->GetActiveLevelData()->GetGridCellSize()->x * 2;
          l_Position.y -= GetResources()->GetActiveLevelData()->GetGridCellSize()->y * 2;
-         m_pSwingBean->SetPosition(l_Position, kNormal, false);
+         m_pSwingBean->SetPosition(l_Position, kNormal, false, false);
 
          // See if beans are already resting
          if (_BeansAreResting())
@@ -275,7 +275,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
             // Bean is not resting so move it down
             m_MiliSecSinceLastFall += a_ElapsedMiliSec;
             if (  m_MiliSecSinceLastFall > m_MiliSecPerFall
-               || (m_FastFall == true &&  m_MiliSecSinceLastFall > 15)
+               || (m_FastFall == true &&  m_MiliSecSinceLastFall >= 15)
                )
             {
                m_MiliSecSinceLastFall = 0;
@@ -459,7 +459,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   if (m_ChainCount > 0 & m_pOpponent != NULL && l_pConnection->GetColor() != kBeanColorGarbage)
                   {
                      cBonusShot * l_BonusShot = new cBonusShot(m_pOpponent->GetPosition(), GetResources());
-                     l_BonusShot->SetPosition(l_pConnection->GetPosition());
+                     l_BonusShot->SetPosition(l_pConnection->GetPosition(), kNormal, false, false);
                      l_BonusShot->Initialize();
                   }
 
@@ -665,7 +665,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
             GetResources()->GetActiveLevelData()->GetGridCellSize();
 
          l_Position.y += l_pGridCellSize->y;
-         l_pGameOverBanner->SetPosition(l_Position, kNormal, false);
+         l_pGameOverBanner->SetPosition(l_Position, kNormal, false, false);
          l_pGameOverBanner->Initialize();
 
          m_CurrentState = kStateIdle;
@@ -754,7 +754,7 @@ void cPlayer::MessageReceived(sMessage a_Message)
 
          l_Position.y += l_pGridCellSize->y * 2;
          l_Position.x += l_pGridCellSize->x / 2;
-         m_pPauseBanner->SetPosition(l_Position, kNormal, false);
+         m_pPauseBanner->SetPosition(l_Position, kNormal, false, false);
          m_pPauseBanner->Initialize();
       }
       else
@@ -901,7 +901,7 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
 
    if (l_Collisions.size() == 0)
    {
-      m_pSwingBean->SetPosition(l_Position, kNormal, false);
+      m_pSwingBean->SetPosition(l_Position, kNormal, false, false);
    }
    else
    {
@@ -1135,7 +1135,7 @@ void cPlayer::_CreateGarbageBean(uint32_t a_Column, uint32_t a_Row)
    l_Position.y -= l_pGridCellSize->y * (5 - a_Row);
    // Set visible to false because it starts above the playing area.
    // l_pGarbageBean->SetVisible(false);
-   l_pGarbageBean->SetPosition(l_Position, kNormal, false);
+   l_pGarbageBean->SetPosition(l_Position, kNormal, false, false);
    l_pGarbageBean->Fall();
    m_FallingBeans.push_back(l_pGarbageBean);
 }

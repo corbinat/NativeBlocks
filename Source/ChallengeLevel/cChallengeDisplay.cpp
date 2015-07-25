@@ -50,7 +50,7 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
          0
          );
 
-      l_NewBlock->SetPosition(l_Position, kNormal, false);
+      l_NewBlock->SetPosition(l_Position, kNormal, false, false);
       l_NewBlock->SetAiLabel(l_AINameVector[i]);
       l_NewBlock->Initialize();
       l_NewBlock->SetDepth(i);
@@ -265,7 +265,7 @@ void cChallengeDisplay::Step (uint32_t a_ElapsedMiliSec)
 
          uint32_t l_NextAINumber = std::stoi(l_NextAINumberString);
 
-         l_NewBlock->SetPosition(l_Position, kNormal, false);
+         l_NewBlock->SetPosition(l_Position, kNormal, false, false);
          l_NewBlock->SetAiLabel(cAiPersonality::GetAINames()[l_NextAINumber]);
          l_NewBlock->Initialize();
          l_NewBlock->Fall();
