@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
    //~ bool l_Success =
       //~ l_Resources.GetEventTranslator()->LoadFromFile("Config/EventBindings.bnd");
 
+   l_Resources.GetEventTranslator()->SetClassExclusive(true);
    l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Down, g_kActionDown);
    l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Left, g_kActionLeft);
    l_Resources.GetEventTranslator()->AddBinding(sf::Keyboard::Right, g_kActionRight);
