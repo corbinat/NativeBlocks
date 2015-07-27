@@ -188,10 +188,8 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
          // Save progress for testing
          // (*(GetResources()->GetGameConfigData()))["Challenge"].ExportToFile("Config/SaveGame.SG");
 
-         // See if the player has beaten all of the AIs. Subtract one because
-         // l_NextAiNumber is zero-based.
+         // See if the player has beaten all of the AIs.
          int32_t l_TotalAIs = cAiPersonality::GetAINames().size();
-         --l_TotalAIs;
          if (l_NextAiNumber >= l_TotalAIs)
          {
             _CreateChallengeVictoryMenu();
