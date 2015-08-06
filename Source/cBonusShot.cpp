@@ -58,10 +58,10 @@ void cBonusShot::Step (uint32_t a_ElapsedMiliSec)
       {
          m_Speed += g_kAcceleration * a_ElapsedMiliSec / 1000;
       }
-      else
-      {
-         std::cout << "MAXXXXXXXXXXXX" << std::endl;
-      }
+      //~ else
+      //~ {
+         //~ std::cout << "MAXXXXXXXXXXXX" << std::endl;
+      //~ }
 
       double l_DistanceToRotate = m_Speed / 1000 * 4 * g_kPI * a_ElapsedMiliSec / 1000.0;
       if (l_DistanceToRotate > fabs(l_AngleDiff))

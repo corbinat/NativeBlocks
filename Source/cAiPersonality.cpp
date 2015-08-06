@@ -297,7 +297,7 @@ uint32_t cAiPersonality::GetAIThoughtLevel()
    return m_CurrentAIThoughtLevel;
 }
 
-uint32_t cAiPersonality::GetHighestScore()
+int32_t cAiPersonality::GetHighestScore()
 {
    return m_HighestScore;
 }
@@ -683,7 +683,7 @@ uint32_t GetEmpySpaceAverage(
    )
 {
    uint32_t l_Average = 0;
-   for (int32_t l_Column = 0; l_Column < a_rPlayingField.size(); ++l_Column)
+   for (size_t l_Column = 0; l_Column < a_rPlayingField.size(); ++l_Column)
    {
       int32_t l_Row;
       for (l_Row = a_rPlayingField[l_Column].size() - 1; l_Row >= 0; --l_Row)

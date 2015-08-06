@@ -189,7 +189,7 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
          // (*(GetResources()->GetGameConfigData()))["Challenge"].ExportToFile("Config/SaveGame.SG");
 
          // See if the player has beaten all of the AIs.
-         int32_t l_TotalAIs = cAiPersonality::GetAINames().size();
+         size_t l_TotalAIs = cAiPersonality::GetAINames().size();
          if (l_NextAiNumber >= l_TotalAIs)
          {
             _CreateChallengeVictoryMenu();
@@ -224,8 +224,9 @@ void cFinalMenu::MessageReceived(sMessage a_Message)
       {
          if (_IsHighScore())
          {
-            cHighScoreRecorder * l_HighScoreRecorder =
-               new cHighScoreRecorder(GetResources());
+            // This looks suspicious, but the resources will take ownership
+            // of this object.
+            new cHighScoreRecorder(GetResources());
          }
          else
          {

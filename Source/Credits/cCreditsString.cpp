@@ -96,6 +96,10 @@ void cCreditsString::Event(std::list<sf::Event> * a_pEventList)
             GetResources()->SetActiveLevel("MainMenu", true);
             break;
          }
+         default:
+         {
+            break;
+         }
       }
    }
 }

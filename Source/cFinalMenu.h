@@ -30,10 +30,9 @@ private:
    void _CreateChallengeVictoryMenu();
    bool _IsHighScore();
 
-   bool m_NeedToActivateButtons;
-
    cButton * m_pPlayAgainButton;
    cButton * m_pMainMenuButton;
+   bool m_NeedToActivateButtons;
 
 };
 

@@ -59,7 +59,7 @@ public:
    uint32_t GetDelayToFirstMove();
    uint32_t GetDelayToFastFall();
    uint32_t GetAIThoughtLevel();
-   uint32_t GetHighestScore();
+   int32_t GetHighestScore();
    uint32_t GetOptimalMoveOdds();
    bool IsRotationLocked();
 

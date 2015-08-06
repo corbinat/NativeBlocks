@@ -113,6 +113,10 @@ void cHighScoreRecorder::Event(std::list<sf::Event> * a_pEventList)
 
             break;
          }
+         default:
+         {
+            break;
+         }
       }
 
       if (l_Continue)

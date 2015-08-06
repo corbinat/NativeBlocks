@@ -56,7 +56,6 @@ cSlider::~cSlider()
 // These functions are overloaded from cObject
 void cSlider::Initialize()
 {
-   sf::Vector3<double> l_Position = GetPosition();
    m_pSliderNub->SetPosition(GetPosition(), kNormal, false);
    m_pSliderNub->Initialize();
 }
@@ -105,6 +104,10 @@ void cSlider::Event(std::list<sf::Event> * a_pEventList)
             }
             break;
          }
+         default:
+         {
+            break;
+         }
       }
    }
 }
@@ -139,8 +142,6 @@ void cSlider::SetValue(double a_Value)
 void cSlider::_MoveNubToMouse(int32_t a_MouseX)
 {
    double l_NubHalfWidth = m_pSliderNub->GetBoundingBox().width / 2;
-   double l_NubPosition =
-      m_pSliderNub->GetPosition().x - l_NubHalfWidth;
 
    if (a_MouseX - l_NubHalfWidth < GetPosition().x)
    {

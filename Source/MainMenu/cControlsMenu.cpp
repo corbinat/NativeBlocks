@@ -252,7 +252,7 @@ void cControlsMenu::MessageReceived(sMessage a_Message)
 
 void cControlsMenu::_UpdateButtons()
 {
-   for (auto i = 0; i < m_ActionButtons.size(); ++i)
+   for (size_t i = 0; i < m_ActionButtons.size(); ++i)
    {
       std::string l_ActionName;
 

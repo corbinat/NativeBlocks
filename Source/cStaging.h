@@ -30,9 +30,9 @@ private:
 
    eBeanColor _NumberToColor(uint32_t a_Number);
 
-   std::minstd_rand m_RandomNumberEngine;
-
    cResources* m_pResources;
+
+   std::minstd_rand m_RandomNumberEngine;
 
    uint32_t m_PlayerId;
 

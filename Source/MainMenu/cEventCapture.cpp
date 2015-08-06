@@ -44,8 +44,8 @@ void cEventCapture::Collision(cObject* a_pOther)
 
 void cEventCapture::Event(std::list<sf::Event> * a_pEventList)
 {
-   std::list<sf::Event>::iterator i = a_pEventList->begin();
-   for (i; i != a_pEventList->end(); ++i)
+   std::list<sf::Event>::iterator i;
+   for (i = a_pEventList->begin(); i != a_pEventList->end(); ++i)
    {
       bool l_Success =
          GetResources()->GetEventTranslator()->AddBinding(*i, m_Action);

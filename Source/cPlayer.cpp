@@ -24,19 +24,19 @@ cPlayer::cPlayer(
    uint32_t a_SpeedLevel
    )
    : cObject(a_pResources),
+     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId(), 110),
+     m_MiliSecPerFall(500),
      m_CurrentState(kStateIdle),
      m_SavedState(kStateIdle),
      m_pPauseBanner(NULL),
      m_RotationState(kRotationStateUp),
      m_pPivotBean(NULL),
      m_pSwingBean(NULL),
-     m_Staging(GetResources(), a_RandomNumberEngine, GetUniqueId(), 110),
-     m_MiliSecPerFall(500),
      m_FallingBeans(),
      m_NewBeans(),
      m_Beans(6, std::vector<cBean*>(g_kTotalRows, NULL)),
-     m_SpeedController(a_SpeedLevel),
      m_MiliSecSinceLastFall(0),
+     m_SpeedController(a_SpeedLevel),
      m_RestingBeanTimer(0),
      m_RestingLimit(500),
      m_BeanIsResting(false),
@@ -456,7 +456,7 @@ void cPlayer::Step (uint32_t a_ElapsedMiliSec)
                   m_Beans[l_DeleteX][l_DeleteY] = NULL;
 
                   l_pConnection->Explode();
-                  if (m_ChainCount > 0 & m_pOpponent != NULL && l_pConnection->GetColor() != kBeanColorGarbage)
+                  if (m_ChainCount > 0 && m_pOpponent != NULL && l_pConnection->GetColor() != kBeanColorGarbage)
                   {
                      cBonusShot * l_BonusShot = new cBonusShot(m_pOpponent->GetPosition(), GetResources());
                      l_BonusShot->SetPosition(l_pConnection->GetPosition(), kNormal, false, false);
@@ -859,8 +859,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
    sf::Vector2<uint32_t>* l_pGridCellSize =
       GetResources()->GetActiveLevelData()->GetGridCellSize();
 
-   if (  m_RotationState == kRotationStateUp && a_Rotation == kRotateClockwise
-      || m_RotationState == kRotationStateDown && a_Rotation == kRotateCounterClockwise
+   if (  (m_RotationState == kRotationStateUp && a_Rotation == kRotateClockwise)
+      || (m_RotationState == kRotationStateDown && a_Rotation == kRotateCounterClockwise)
       )
    {
       // Check for collisions to the right of the pivot point
@@ -868,8 +868,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
       l_OppositePosition.x -= l_pGridCellSize->x;
       l_NewState = kRotationStateRight;
    }
-   else if (  m_RotationState == kRotationStateRight && a_Rotation == kRotateClockwise
-           || m_RotationState == kRotationStateLeft && a_Rotation == kRotateCounterClockwise
+   else if (  (m_RotationState == kRotationStateRight && a_Rotation == kRotateClockwise)
+           || (m_RotationState == kRotationStateLeft && a_Rotation == kRotateCounterClockwise)
            )
    {
       // Check for collisions under the pivot point
@@ -877,8 +877,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
       l_OppositePosition.y -= l_pGridCellSize->y;
       l_NewState = kRotationStateDown;
    }
-   else if (  m_RotationState == kRotationStateDown && a_Rotation == kRotateClockwise
-           || m_RotationState == kRotationStateUp && a_Rotation == kRotateCounterClockwise
+   else if (  (m_RotationState == kRotationStateDown && a_Rotation == kRotateClockwise)
+           || (m_RotationState == kRotationStateUp && a_Rotation == kRotateCounterClockwise)
            )
    {
       // Check for collisions left of the pivot point
@@ -886,8 +886,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
       l_OppositePosition.x += l_pGridCellSize->x;
       l_NewState = kRotationStateLeft;
    }
-   else if (  m_RotationState == kRotationStateLeft && a_Rotation == kRotateClockwise
-           || m_RotationState == kRotationStateRight && a_Rotation == kRotateCounterClockwise
+   else if (  (m_RotationState == kRotationStateLeft && a_Rotation == kRotateClockwise)
+           || (m_RotationState == kRotationStateRight && a_Rotation == kRotateCounterClockwise)
            )
    {
       // Check for collisions above the pivot point
@@ -907,8 +907,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
    {
       // There is something in the rotation space. If we're trying to rotate up
       // then just quit because we don't want to be pushed down.
-      if (  m_RotationState == kRotationStateLeft && a_Rotation == kRotateClockwise
-         || m_RotationState == kRotationStateRight && a_Rotation == kRotateCounterClockwise
+      if (  (m_RotationState == kRotationStateLeft && a_Rotation == kRotateClockwise)
+         || (m_RotationState == kRotationStateRight && a_Rotation == kRotateCounterClockwise)
          )
       {
          return;
@@ -917,8 +917,8 @@ void cPlayer::RotateBeans(eRotationDirection a_Rotation)
       // See if we can scootch over.
       sf::Vector3<double> l_NewSwingPosition = m_pPivotBean->GetPosition();
 
-      if (  m_RotationState == kRotationStateRight && a_Rotation == kRotateClockwise
-         || m_RotationState == kRotationStateLeft && a_Rotation == kRotateCounterClockwise
+      if (  (m_RotationState == kRotationStateRight && a_Rotation == kRotateClockwise)
+         || (m_RotationState == kRotationStateLeft && a_Rotation == kRotateCounterClockwise)
          )
       {
          // If trying to rotate down see if we have to scootch a full space or

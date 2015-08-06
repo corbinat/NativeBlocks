@@ -117,6 +117,10 @@ void cHighScoresList::Event(std::list<sf::Event> * a_pEventList)
             GetResources()->SetActiveLevel("MainMenu", true);
             break;
          }
+         default:
+         {
+            break;
+         }
       }
    }
 }

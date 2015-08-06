@@ -12,9 +12,10 @@ cAiPlayer::cAiPlayer(
    uint32_t a_SpeedLevel,
    std::string a_Personality
    ): cPlayer(a_pResources, a_RandomNumberEngine, a_Identifier, a_SpeedLevel),
-      m_OptimalMoves(),
       m_DoneThinking(false),
       m_StartThinking(false),
+      m_RotationStatesToTest(),
+      m_OptimalMoves(),
       m_FirstMoveMade(false),
       m_WantingToFastFall(false),
       m_DelayTimer(0),
@@ -448,8 +449,6 @@ void cAiPlayer::_AnalyzeAllSecondayMoves(
    uint32_t l_MinRow = 0;
    uint32_t l_MaxRow = 5;
 
-   bool l_SkipThisRotation = false;
-
    std::vector<eRotationState>l_RotationStates;
    l_RotationStates.push_back(kRotationStateDown);
    l_RotationStates.push_back(kRotationStateUp);
@@ -600,9 +599,6 @@ void cAiPlayer::_AnalyzeMove(
    uint32_t a_Depth
    )
 {
-   sf::Vector2<uint32_t> l_PivotPosition = a_rBean1.GetGridPosition();
-   sf::Vector2<uint32_t> l_SwingPosition = a_rBean2.GetGridPosition();
-
    if (a_Depth == 0)
    {
       a_InitialMove.m_Column = a_rBean1.GetGridPosition().x;
@@ -653,12 +649,12 @@ void cAiPlayer::_AnalyzeMove(
       {
          // AIs might have a chance of not clearing out suboptimal moves
          std::minstd_rand l_Generator(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-         std::uniform_int_distribution<int> l_Distribution(
+         std::uniform_int_distribution<uint32_t> l_Distribution(
             1,
             100
             );
 
-         int l_Number = l_Distribution(l_Generator);
+         uint32_t l_Number = l_Distribution(l_Generator);
          l_Number = l_Distribution(l_Generator);
          //~ std::cout << "Random: " << l_Number << std::endl;
 
@@ -831,7 +827,7 @@ bool cAiPlayer::_BubbleBeansDown(
 {
    bool l_SawNull = false;
    bool l_RowUpdated = false;
-   uint32_t l_FirstNull = a_rColumn.size() - 1;
+   int32_t l_FirstNull = a_rColumn.size() - 1;
    for (
       int32_t i = a_rColumn.size() - 1;
       i >= 0;
@@ -972,10 +968,10 @@ bool cAiPlayer::_IsCurrentColumnUrgencyHigh()
 void cAiPlayer::_RotateBeans(eRotationState a_RotationGoal)
 {
    eRotationDirection l_Direction = kRotateClockwise;
-   if (  GetRotationState() == kRotationStateUp && a_RotationGoal == kRotationStateLeft
-      || GetRotationState() == kRotationStateLeft && a_RotationGoal == kRotationStateDown
-      || GetRotationState() == kRotationStateDown && a_RotationGoal == kRotationStateRight
-      || GetRotationState() == kRotationStateRight && a_RotationGoal == kRotationStateUp
+   if (  (GetRotationState() == kRotationStateUp && a_RotationGoal == kRotationStateLeft)
+      || (GetRotationState() == kRotationStateLeft && a_RotationGoal == kRotationStateDown)
+      || (GetRotationState() == kRotationStateDown && a_RotationGoal == kRotationStateRight)
+      || (GetRotationState() == kRotationStateRight && a_RotationGoal == kRotationStateUp)
       )
    {
       l_Direction = kRotateCounterClockwise;

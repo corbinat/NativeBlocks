@@ -148,7 +148,7 @@ private:
    bool m_FastFall;
 
    // We must wait in the settle time state for a minimum amount of time
-   int32_t m_TotalSettleTime;
+   uint32_t m_TotalSettleTime;
    const uint32_t m_MinSettleTime;
 
    // Scoring--------

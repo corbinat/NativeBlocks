@@ -41,7 +41,7 @@ cChallengeDisplay::cChallengeDisplay(cResources* a_pResources)
    uint32_t l_NextAINumber = std::stoi(l_NextAINumberString);
 
    // Create the blocks
-   for (int32_t i = 0; i < l_NextAINumber+1; ++i)
+   for (uint32_t i = 0; i < l_NextAINumber+1; ++i)
    {
       cAiBlock * l_NewBlock = new cAiBlock(GetResources());
       sf::Vector3<double> l_Position(
@@ -155,7 +155,6 @@ void cChallengeDisplay::Collision(cObject* a_pOther)
 
 void cChallengeDisplay::Event(std::list<sf::Event> * a_pEventList)
 {
-   // TODO: This is DEBUGGING
    for (std::list<sf::Event>::iterator i = a_pEventList->begin();
       i != a_pEventList->end();
       ++i
@@ -192,30 +191,34 @@ void cChallengeDisplay::Event(std::list<sf::Event> * a_pEventList)
                m_pArrow->SetView(NULL);
             }
 
+            // TODO: This is DEBUGGING
+            //~ if ((*i).key.code == sf::Keyboard::Num0)
+            //~ {
+               //~ (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "0";
+            //~ }
+            //~ else if ((*i).key.code == sf::Keyboard::Num1)
+            //~ {
+               //~ (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "1";
+            //~ }
+            //~ else if ((*i).key.code == sf::Keyboard::Num2)
+            //~ {
+               //~ (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "2";
+            //~ }
+            //~ else if ((*i).key.code == sf::Keyboard::A)
+            //~ {
+               //~ (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "Player1";
+            //~ }
+            //~ else if ((*i).key.code == sf::Keyboard::B)
+            //~ {
+               //~ GetResources()->SetActiveLevel("MainMenu", true);
 
-            if ((*i).key.code == sf::Keyboard::Num0)
-            {
-               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "0";
-            }
-            else if ((*i).key.code == sf::Keyboard::Num1)
-            {
-               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "1";
-            }
-            else if ((*i).key.code == sf::Keyboard::Num2)
-            {
-               (*(GetResources()->GetGameConfigData()))["Challenge"]["NextAINumber"] = "2";
-            }
-            else if ((*i).key.code == sf::Keyboard::A)
-            {
-               (*(GetResources()->GetGameConfigData()))["Challenge"]["LastWinner"] = "Player1";
-            }
-            else if ((*i).key.code == sf::Keyboard::B)
-            {
-               GetResources()->SetActiveLevel("MainMenu", true);
-
-               // Turn off the arrow's control of the view and reset it to normal
-               m_pArrow->SetView(NULL);
-            }
+               //~ // Turn off the arrow's control of the view and reset it to normal
+               //~ m_pArrow->SetView(NULL);
+            //~ }
+            //~ break;
+         }
+         default:
+         {
             break;
          }
       }

@@ -15,7 +15,7 @@ struct sOptimalPosition
    {
    }
 
-   uint32_t m_Score;
+   int32_t m_Score;
    uint32_t m_Column;
    eRotationState m_Rotation;
 };

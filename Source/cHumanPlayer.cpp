@@ -19,8 +19,8 @@ cHumanPlayer::~cHumanPlayer()
 
 void cHumanPlayer::Event(std::list<sf::Event> * a_pEventList)
 {
-   std::list<sf::Event>::iterator i = a_pEventList->begin();
-   for (i; i != a_pEventList->end(); ++i)
+   std::list<sf::Event>::iterator i;
+   for (i = a_pEventList->begin(); i != a_pEventList->end(); ++i)
    {
       switch((*i).type)
       {

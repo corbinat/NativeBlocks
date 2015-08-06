@@ -19,7 +19,7 @@ cStaging::cStaging(
 
    // We can have 6 * 12 beans in the playing area plus 6 * 5 garbage beans
    // queued up. We'll do 110 just in case;
-   for (int i = 0; i < m_BeanPoolSize; ++i)
+   for (size_t i = 0; i < m_BeanPoolSize; ++i)
    {
       m_BeenPool.push_back(new cBean(kBeanColorBlue, m_pResources, m_PlayerId));
    }
@@ -97,7 +97,7 @@ eBeanColor cStaging::InspectNextBeanColor(uint32_t a_Position)
    // Copy the number engine so we don't advance the real thing
    std::minstd_rand l_Engine = m_RandomNumberEngine;
 
-   for (int32_t i = 0; i < a_Position; ++i)
+   for (uint32_t i = 0; i < a_Position; ++i)
    {
       l_Engine();
    }
