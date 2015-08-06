@@ -92,7 +92,7 @@ void cSlider::Event(std::list<sf::Event> * a_pEventList)
          {
             if (m_Active)
             {
-               PlaySound("Media/Sounds/Click1.wav");
+               PlaySound("Media/Sounds/Click1.ogg");
             }
             m_Active = false;
             break;
