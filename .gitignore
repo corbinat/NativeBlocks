@@ -8,5 +8,6 @@ main
 Export/*
 *.zip
 Mock Ups/*
-Media/Sounds/*
-Media/Music/*
+NativeBlocks/Media/Sounds/*
+NativeBlocks/Media/Music/*
+NativeBlocks/Lib/*
