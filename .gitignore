@@ -10,4 +10,5 @@ Export/*
 Mock Ups/*
 NativeBlocks/Media/Sounds/*
 NativeBlocks/Media/Music/*
-NativeBlocks/Lib/*
+NativeBlocks/Ext/Lib/*
+NativeBlocks/Ext/Include/*

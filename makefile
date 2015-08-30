@@ -1,11 +1,11 @@
 Gpp = g++
-DEBUG = -O0 -g -DDEBUG_PRINTS -Wall -Werror
-#DEBUG = -O2
+#DEBUG = -O0 -g -DDEBUG_PRINTS -Wall -Werror
+DEBUG = -O2
 
 # SFML library
-SFMLDIR = ../External/SFML-2.3.1
-SFMLLIB = ${SFMLDIR}/lib
-SFMLINC = ${SFMLDIR}/include
+SFMLDIR = NativeBlocks/Ext
+SFMLLIB = ${SFMLDIR}/Lib
+SFMLINC = ${SFMLDIR}/Include
 
 # 2d Engine
 EngineDIR = NativeBlocks/2dEngine
@@ -43,17 +43,18 @@ main: $(objs)
 # $(RM) is rm -f by default
 clean:
 	$(RM) $(objs) $(deps) main
+	$(RM) -r Export/
 
 #///////////////////////////////
 # Export
 #//////////////////////////////
 .PHONY: export
 
-export:
+export: main
 	# zip media folder
 	(cd NativeBlocks/ && zip Media.pak -r Media.zip Media/)
 	# copy files to export folder
-	mkdir -p Export/ && cp main Export/NativeBlocks
+	mkdir -p Export/ && mv main Export/NativeBlocks
 	mkdir -p Export/Media && mv NativeBlocks/Media.pak Export/Media
 	mkdir -p Export/Lib && cp -r ${SFMLLIB}/. Export/Lib
 	# Create the config folder
